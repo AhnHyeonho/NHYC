@@ -7,42 +7,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7f0ad29a-3935-4e2f-a772-3c7657776af4" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/.idea/artifacts/project_war_exploded.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/.idea/compiler.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/.idea/libraries/JAX_WS_Glassfish___JAX_WS_2_2_RI___Metro_1_X___JWSDP_2_2.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/.idea/libraries/Spring_MVC_5_2_3_RELEASE.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/lib/FastInoset.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/lib/gmbal-api-only.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/lib/ha-api.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/lib/javax.annotation.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/lib/jaxb-api.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/lib/jaxb-impl.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/lib/jaxb-xjc.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/lib/jaxws-api.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/lib/jaxws-rt.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/lib/jaxws-tools.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/lib/jsr181-api.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/lib/mail.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/lib/management-api.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/lib/mimepull.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/lib/policy.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/lib/saaj-api.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/lib/saaj-impl.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/lib/spring-web-5.2.3.RELEASE.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/lib/spring-webmvc-5.2.3.RELEASE.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/lib/stax-ex.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/lib/stax2-api.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/lib/streambuffer.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/lib/woodstox-core-asl.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/project.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/web/WEB-INF/applicationContext.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/web/WEB-INF/dispatcher-servlet.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/web/WEB-INF/web.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nhyc-gp/web/index.jsp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/index.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/web/index.jsp" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -183,7 +149,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1582429915495</updated>
-      <workItem from="1582429918144" duration="1447000" />
+      <workItem from="1582429918144" duration="2169000" />
     </task>
     <servers />
   </component>

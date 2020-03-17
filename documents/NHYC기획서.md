@@ -1,6 +1,8 @@
 ## 대학생 및 1인 가구를 위한 원룸 중개 및 정보 조회 사이트
 
 
+<center>![img1](https://lh4.googleusercontent.com/ZYQEZhfBOleSL4ToY0Z05iw5DjuGGfHJ4VU3tbPCClKd_G2YKFr7c3vVXy2EyFtwu6t2xWctCXXMKsvZKt7XDV6YvAdiAaeh9tUANr06pSUUgwW5AH70q5VGk8yd6gNxfHJiq4Ev-6A){: width="100" height="100"}</center>
+
 
 ### 프로토타입 기능
 

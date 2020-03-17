@@ -24,12 +24,12 @@
 
 #### 2. 줌 인/아웃 시 동, 구, 시 단위로 매물 평균가 보여주기
 
-**[줌 인]**
+> **[줌 인]**<br>
 <img src="https://lh3.googleusercontent.com/l_yVKoY68iZfdcUiafZbxMceKfHx43e0h_6LeBsoEwPHPXuVbweLKklBRQcVZKBEvC4UhRPWPG08McNP07AsGvit85J54vrj4mVMe9mtXDfXUuVO8s1ZEb2EGLaBNJEeE9MN1Zlwgo0" alt="img" style="zoom: 78%;" />
 
 
 
-**[줌 아웃]**
+> **[줌 아웃]**<br>
 <img src="https://lh4.googleusercontent.com/q2CgYn5IFnMg95FDNbbjuzRCEleogKTEJNekuV4vYlkS8IQhJGHSQQ6RfNJj6DZKaUXcijgmrThlzjfPKBpHPKQP4DdRY1poMV3BAAoFjPT5njx5AiHvzS2A31y0Py_m-70MiLtoqFs" alt="img" style="zoom:55%;" />
 
 <br>
@@ -88,7 +88,8 @@
 거래를 원하는 사람(매매자)이 직접 매물을 등록하도록 함. 이 때, 등록자가 자신이 거래하는 부동산 또한 직접 등록하도록 함(부동산에 대한 평가 또한 동시에 발생 할 수 있도록 하고싶음)
 
 
-
+<br>
+<br>
 #### 사용 API 및 데이터
 
 - 카카오 지도 API (각종 샘플 기능 사용 - http://apis.map.kakao.com/web/sample/) 

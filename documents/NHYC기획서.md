@@ -4,7 +4,8 @@
 
 ### 프로토타입 기능
 
-1. **지도 마커에 다가구(월세) 실거래가 띄우기**<img src="https://lh4.googleusercontent.com/ZYQEZhfBOleSL4ToY0Z05iw5DjuGGfHJ4VU3tbPCClKd_G2YKFr7c3vVXy2EyFtwu6t2xWctCXXMKsvZKt7XDV6YvAdiAaeh9tUANr06pSUUgwW5AH70q5VGk8yd6gNxfHJiq4Ev-6A" alt="img" style="zoom: 35%;" />
+1. 지도 마커에 다가구(월세) 실거래가 띄우기
+<center><img src="https://lh4.googleusercontent.com/ZYQEZhfBOleSL4ToY0Z05iw5DjuGGfHJ4VU3tbPCClKd_G2YKFr7c3vVXy2EyFtwu6t2xWctCXXMKsvZKt7XDV6YvAdiAaeh9tUANr06pSUUgwW5AH70q5VGk8yd6gNxfHJiq4Ev-6A" alt="img" style="zoom: 35%;" /></center>
 
    
 

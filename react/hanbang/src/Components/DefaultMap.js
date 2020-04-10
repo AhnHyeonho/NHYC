@@ -3,7 +3,7 @@ import React from 'react';
 import './DefaultMap.css'
 
 class DefaultMap extends React.Component {
-   
+
     constructor(props) {
         super(props);	
     }
@@ -14,12 +14,13 @@ class DefaultMap extends React.Component {
             center: new kakao.maps.LatLng(35.157588, 129.058822), //지도의 중심좌표.
             level: 5 //지도의 레벨(확대, 축소 정도)
         };
-	    this.map = new kakao.maps.Map(container, options); //지도 생성 및 객체 리턴
+	    var map = new kakao.maps.Map(container, options); //지도 생성 및 객체 리턴
+        this.map = map 
     }
 
     render() {
         return (
-            <div id='map'>
+            <div id='map' className='map'>
             </div>
         )
     }

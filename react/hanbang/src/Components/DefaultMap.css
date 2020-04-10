@@ -1,4 +1,5 @@
-#map {
-    width: 100vw;
-    height: 100vh;
+.map {
+    position: absolute;
+    width: 100em;
+    height: 100em;
 }

@@ -15,7 +15,7 @@ class Address(models.Model):
     dong = models.CharField(max_length=50)
 
 class MemberInfo(models.Model):
-    id = models.ForeignKey('Member', on_delete=models.CASCADE, primary_key=True)
+    member = models.OneToOneField('Member', on_delete=models.CASCADE, default=None)
     gender = models.CharField(max_length=1)
     birth = models.CharField(max_length=4)
     money = models.IntegerField()
@@ -24,9 +24,10 @@ class MemberInfo(models.Model):
         return self.id
 
 class FrequentPlace(models.Model):
-    id = models.ForeignKey('Member', on_delete=models.CASCADE, primary_key=True)
-    latitude = models.FloatField(primary_key=True)
-    longitude = models.FloatField(primary_key=True)
+    placeId = models.IntegerField(primary_key=True)
+    id = models.ForeignKey('Member', on_delete=models.CASCADE)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
     placeName = models.CharField(max_length=100)
     areaCode = models.ForeignKey('Address', on_delete=models.CASCADE)
 
@@ -45,7 +46,8 @@ class HouseInfo(models.Model):
         return self.houseName
 
 class CostRecord(models.Model):
-    houseNumber = models.ForeignKey('HouseInfo', on_delete=models.CASCADE, primary_key=True)
+    costRecord = models.IntegerField(primary_key=True)
+    houseNumber = models.ForeignKey('HouseInfo', on_delete=models.CASCADE)
     day = models.DateField()
     rentalFee = models.IntegerField()
     deposit = models.IntegerField()
@@ -54,24 +56,27 @@ class CostRecord(models.Model):
         return [self.day, self.rentalFee, self.deposit]
 
 class CCTV(models.Model):
-    latitude = models.FloatField(primary_key=True)
-    longitude = models.FloatField(primary_key=True)
+    cctvId = models.IntegerField(primary_key=True)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
     areaCode = models.ForeignKey('Address', on_delete=models.CASCADE)
 
     def __str__(self):
         return [self.latitude, self.longitude]
 
 class SecurityLight(models.Model):
-    latitude = models.FloatField(primary_key=True)
-    longitude = models.FloatField(primary_key=True)
+    lightId = models.IntegerField(primary_key=True)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
     areaCode = models.ForeignKey('Address', on_delete=models.CASCADE)
 
     def __str__(self):
         return [self.latitude, self.longitude]
 
 class PoliceOffice(models.Model):
-    latitude = models.FloatField(primary_key=True)
-    longitude = models.FloatField(primary_key=True)
+    policeId = models.IntegerField(primary_key=True)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
     policeOfficeName = models.CharField(max_length=50)
     areaCode = models.ForeignKey('Address', on_delete=models.CASCADE)
 

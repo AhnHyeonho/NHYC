@@ -38,8 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    #test
-    'dataProcess'
+    #app
 ]
 
 REST_FRAMEWORK = {

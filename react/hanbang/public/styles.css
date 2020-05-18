@@ -10,6 +10,9 @@
  * Copyright 2011-2019 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
+ @import "~react-vis/dist/style";
+ @import "~react-vis/dist/styles/legends";
+ 
 :root {
   --blue: #007bff;
   --indigo: #6610f2;
@@ -9980,7 +9983,10 @@ hr.light {
 }
 
 .page-section {
+  height: 100vh;
   padding: 8rem 0;
+  /* padding-top: 10rem;
+  padding-bottom: calc(10rem - 4.5rem); */
 }
 
 #mainNav {

@@ -1,9 +1,8 @@
-body {
+/* body {
   margin: 0;
   padding: 0;
   background: #f9f9f9;
 
-  /* body의 아래 항목은 나중에 다시 편집*/
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
@@ -14,7 +13,7 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
-}
+} */
 
 /*
 .background {

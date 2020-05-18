@@ -1,7 +1,7 @@
 from django.db import models
 
 class Member(models.Model):
-    id = models.CharField(max_length=50, primary_key=True)
+    id = models.CharField(max_length=50)
     password = models.CharField(max_length=50)
     name = models.CharField(max_length=50)
 
@@ -9,33 +9,32 @@ class Member(models.Model):
         return self.id
 
 class Address(models.Model):
-    areaCode = models.CharField(max_length=10, primary_key=True)
+    areaCode = models.CharField(max_length=10)
     si = models.CharField(max_length=50)
     gu = models.CharField(max_length=50)
     dong = models.CharField(max_length=50)
 
 class MemberInfo(models.Model):
-    member = models.OneToOneField('Member', on_delete=models.CASCADE, default=None)
+    id = models.ForeignKey('Member', on_delete=models.CASCADE)
     gender = models.CharField(max_length=1)
-    birth = models.CharField(max_length=4)
+    birth = models.IntegerField(max_length=4)
     money = models.IntegerField()
 
     def __str__(self):
         return self.id
 
 class FrequentPlace(models.Model):
-    placeId = models.IntegerField(primary_key=True)
     id = models.ForeignKey('Member', on_delete=models.CASCADE)
+    placeName = models.CharField(max_length=100)
     latitude = models.FloatField()
     longitude = models.FloatField()
-    placeName = models.CharField(max_length=100)
     areaCode = models.ForeignKey('Address', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.placeName
 
 class HouseInfo(models.Model):
-    houseNumber = models.IntegerField(primary_key=True)
+    houseNumber = models.IntegerField()
     latitude = models.FloatField()
     longitude = models.FloatField()
     pyeong = models.FloatField()
@@ -46,7 +45,6 @@ class HouseInfo(models.Model):
         return self.houseName
 
 class CostRecord(models.Model):
-    costRecord = models.IntegerField(primary_key=True)
     houseNumber = models.ForeignKey('HouseInfo', on_delete=models.CASCADE)
     day = models.DateField()
     rentalFee = models.IntegerField()
@@ -56,7 +54,6 @@ class CostRecord(models.Model):
         return [self.day, self.rentalFee, self.deposit]
 
 class CCTV(models.Model):
-    cctvId = models.IntegerField(primary_key=True)
     latitude = models.FloatField()
     longitude = models.FloatField()
     areaCode = models.ForeignKey('Address', on_delete=models.CASCADE)
@@ -65,7 +62,6 @@ class CCTV(models.Model):
         return [self.latitude, self.longitude]
 
 class SecurityLight(models.Model):
-    lightId = models.IntegerField(primary_key=True)
     latitude = models.FloatField()
     longitude = models.FloatField()
     areaCode = models.ForeignKey('Address', on_delete=models.CASCADE)
@@ -74,7 +70,6 @@ class SecurityLight(models.Model):
         return [self.latitude, self.longitude]
 
 class PoliceOffice(models.Model):
-    policeId = models.IntegerField(primary_key=True)
     latitude = models.FloatField()
     longitude = models.FloatField()
     policeOfficeName = models.CharField(max_length=50)

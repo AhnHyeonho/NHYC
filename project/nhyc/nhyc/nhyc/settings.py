@@ -38,20 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
     #app
-=======
-    #test
->>>>>>> parent of 52d5c40... 임시저장2
-=======
-    #test
->>>>>>> parent of 52d5c40... 임시저장2
     'dataProcess'
-=======
-    #app
->>>>>>> 52d5c409f58c0b9c3394ab3452db4f92993e54cb
 ]
 
 REST_FRAMEWORK = {

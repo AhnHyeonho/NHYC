@@ -134,4 +134,7 @@ psd
 thumb
 sketch
 
+###private ignore###
+**/.idea/workspace.xml
+
 # End of https://www.gitignore.io/api/react,django

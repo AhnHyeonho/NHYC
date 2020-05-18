@@ -39,6 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     #app
+<<<<<<< HEAD
+=======
+    'dataProcess'
+>>>>>>> 3f2c8ec3e4e5eeba5c44a2d6b2f3dc4a43602d38
 ]
 
 REST_FRAMEWORK = {

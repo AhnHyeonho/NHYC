@@ -39,7 +39,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
 <<<<<<< HEAD
+<<<<<<< HEAD
     #app
+=======
+    #test
+>>>>>>> parent of 52d5c40... 임시저장2
 =======
     #test
 >>>>>>> parent of 52d5c40... 임시저장2

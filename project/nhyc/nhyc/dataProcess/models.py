@@ -13,6 +13,8 @@ class Address(models.Model):
     si = models.CharField(max_length=50)
     gu = models.CharField(max_length=50)
     dong = models.CharField(max_length=50)
+    def __str__(self):
+        return self.areaCode
 
 class MemberInfo(models.Model):
     member = models.OneToOneField('Member', on_delete=models.CASCADE, default=None)
@@ -35,7 +37,7 @@ class FrequentPlace(models.Model):
         return self.placeName
 
 class HouseInfo(models.Model):
-    houseNumber = models.IntegerField(primary_key=True)
+    houseNumber = models.CharField(max_length=19, primary_key=True)
     latitude = models.FloatField()
     longitude = models.FloatField()
     pyeong = models.FloatField()
@@ -46,7 +48,7 @@ class HouseInfo(models.Model):
         return self.houseName
 
 class CostRecord(models.Model):
-    costRecord = models.IntegerField(primary_key=True)
+    costRecordId = models.CharField(max_length=25, primary_key=True, default="0")
     houseNumber = models.ForeignKey('HouseInfo', on_delete=models.CASCADE)
     day = models.DateField()
     rentalFee = models.IntegerField()

@@ -7,7 +7,7 @@
 }
 
 .title {
-    vertical-align: middle ;
+    vertical-align: middle;
     color: #6a6a6a;
     font-family: AppleSDGothicNeo;
     font-stretch: normal;
@@ -15,3 +15,13 @@
     line-height: normal;
     letter-spacing: normal;
 }
+
+.graph {
+    display: inline-block;
+    margin: 30px;
+}
+
+.graph-title{
+    text-align: left;
+}
+

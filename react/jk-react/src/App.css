@@ -1,0 +1,11 @@
+.App {
+    height: 100vh;
+}
+
+.App-Header{
+    height: 10vh;
+}
+
+.App-Body{
+    height: 90vh;
+}

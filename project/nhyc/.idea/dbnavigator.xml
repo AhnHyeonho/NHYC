@@ -25,7 +25,7 @@
     <show-object-properties value="true" />
     <loaded-nodes>
       <connection connection-id="443cd28c-dcfc-4f3c-b0e4-f4e285ccf586">
-        <schema name="hanbangdb" object-types="table, view" />
+        <schema name="hanbangdb" object-types="view, table" />
       </connection>
     </loaded-nodes>
   </component>

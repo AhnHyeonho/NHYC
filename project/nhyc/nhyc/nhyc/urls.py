@@ -15,7 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from dataProcess import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+path('admin/address', views.getAddress, name='getAddress'),
+    path('', views.getHouseInfo, name='getHouseInfo')
 ]

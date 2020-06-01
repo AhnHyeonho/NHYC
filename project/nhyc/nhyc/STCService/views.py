@@ -325,3 +325,12 @@ def loadSeoulSiData():
 
     for currentGu in seoulGu:  # 종로구 areaCode전체 하나하나 돌면서
         getCCTVInfosByGu
+
+
+
+######################### Login ####################################
+
+'''def login(request):
+    accessToken = request.headers["AccessToken"]
+    baseUrl = "kapi.kakao.com"'''
+

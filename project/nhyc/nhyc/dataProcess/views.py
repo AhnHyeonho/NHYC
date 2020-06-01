@@ -47,8 +47,8 @@ def getAddress(reqeust):
 
 def getHouseInfo(request):
     url = "http://openapi.seoul.go.kr:8088/545149464a73696c39326f47667644/json/houseRentPriceInfo/"
-    start = 1349001
-    end = 1350000
+    start = 1
+    end = 1000
 
     while (True):
 
@@ -61,7 +61,7 @@ def getHouseInfo(request):
         data = jsonData["houseRentPriceInfo"]["row"]
 
         for info in data:
-            if (info["HOUSE_GBN_NM"] == "다세대/연립" and info["RENT_CASE_NM"] == "월세"):
+            if (info["HOUSE_GBN_NM"] == "다세대/연립" and "월세" in info["RENT_CASE_NM"]):
                 if (HouseInfo.objects.filter(houseNumber=info["LAND_CD"]).count() == 0):
                     houseNumber = info["LAND_CD"]
                     pyeong = float(info["RENT_AREA"]) * 0.3025

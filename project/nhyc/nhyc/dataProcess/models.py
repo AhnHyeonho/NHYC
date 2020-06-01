@@ -58,7 +58,7 @@ class CostRecord(models.Model):
         return [self.day, self.rentalFee, self.deposit]
 
 class CCTV(models.Model):
-    cctvId = models.IntegerField(primary_key=True)
+    cctvId = models.AutoField(primary_key=True)
     latitude = models.FloatField()
     longitude = models.FloatField()
     areaCode = models.ForeignKey('Address', on_delete=models.CASCADE)
@@ -67,7 +67,7 @@ class CCTV(models.Model):
         return [self.latitude, self.longitude]
 
 class SecurityLight(models.Model):
-    lightId = models.IntegerField(primary_key=True)
+    lightId = models.AutoField(primary_key=True)
     latitude = models.FloatField()
     longitude = models.FloatField()
     areaCode = models.ForeignKey('Address', on_delete=models.CASCADE)
@@ -76,7 +76,7 @@ class SecurityLight(models.Model):
         return [self.latitude, self.longitude]
 
 class PoliceOffice(models.Model):
-    policeId = models.IntegerField(primary_key=True)
+    policeId = models.AutoField(primary_key=True)
     latitude = models.FloatField()
     longitude = models.FloatField()
     policeOfficeName = models.CharField(max_length=50)

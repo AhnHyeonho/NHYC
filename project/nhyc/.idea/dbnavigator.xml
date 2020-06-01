@@ -25,18 +25,20 @@
     <show-object-properties value="true" />
     <loaded-nodes>
       <connection connection-id="443cd28c-dcfc-4f3c-b0e4-f4e285ccf586">
-        <schema name="hanbangdb" object-types="view, table" />
+        <schema name="hanbangdb" object-types="constraint, table, procedure, column, view, function, dataset trigger, index" />
       </connection>
     </loaded-nodes>
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="443cd28c-dcfc-4f3c-b0e4-f4e285ccf586">
       <console name="Connection" type="STANDARD" schema="" session="Main" />
-      <console name="hanbangdb" type="STANDARD" schema="hanbangdb" session="Main">select * from dataprocess_houseinfo;</console>
+      <console name="hanbangdb" type="STANDARD" schema="hanbangdb" session="Main"><![CDATA[select * from dataprocess_houseinfo;]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
-    <open-files />
+    <open-files>
+      <object connection-id="443cd28c-dcfc-4f3c-b0e4-f4e285ccf586" object-ref="schemas/hanbangdb/tables/dataprocess_houseinfo" />
+    </open-files>
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
     <connection id="443cd28c-dcfc-4f3c-b0e4-f4e285ccf586" />

@@ -47,8 +47,8 @@ def getAddress(reqeust):
 
 def getHouseInfo(request):
     url = "http://openapi.seoul.go.kr:8088/545149464a73696c39326f47667644/json/houseRentPriceInfo/"
-    start = 1349001
-    end = 1350000
+    start = 1
+    end = 1000
 
     while (True):
 

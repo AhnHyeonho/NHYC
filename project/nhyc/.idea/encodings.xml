@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding">
+    <file url="PROJECT" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/nhyc/dataProcess/경찰관서위치_20200409.csv" charset="x-windows-949" />
     <file url="file://$PROJECT_DIR$/nhyc/dataProcess/경찰청_지역경찰관서 주소(지파출소)_20181017.csv" charset="x-windows-949" />
   </component>

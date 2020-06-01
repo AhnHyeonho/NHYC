@@ -13,15 +13,29 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf.urls import url
 from django.contrib import admin
 from django.urls import path
-from dataProcess import views
+from dataProcess import views as dpviews
+from django.urls import path, include  ### 현호추가
+from django.contrib.auth.models import User  ### 현호추가
+from STCService import views as stcViews  ### 현호추가
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('admin/addresses', views.getAddress, name='getAddress'),
-    path('admin/houseinfos', views.getHouseInfo, name='getHouseInfo'),
-    path('admin/cctvs', views.getCCTV, name='getCCTV'),
-    path('admin/securitylights', views.getSecurityLight, name='getSecurityLight'),
-    path('admin/policeoffice', views.getPoliceOffice, name='getPoliceOffice')
+    path('admin/addresses', dpviews.getAddress, name='getAddress'),
+    path('admin/houseinfos', dpviews.getHouseInfo, name='getHouseInfo'),
+    path('admin/cctvs', dpviews.getCCTV, name='getCCTV'),
+    path('admin/securitylights', dpviews.getSecurityLight, name='getSecurityLight'),
+    path('admin/policeoffice', dpviews.getPoliceOffice, name='getPoliceOffice'),
+  
+    ## 현호추가 -->
+    path('admin/서울시/', stcViews.getGu),
+    path('test/<str:gu>/', stcViews.testQuery),
+    path('test/', stcViews.getGu),
+    path('houseInfos/', stcViews.houseInfos),
+    path('houseInfos/<int:areaCode>/', stcViews.houseInfos),
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+    ## <-- 현호추가
 ]

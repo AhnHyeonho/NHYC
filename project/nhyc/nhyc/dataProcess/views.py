@@ -22,6 +22,7 @@ naverClientId = "tw8yh1kfp6"
 naverClientPasswd = "Djx3jNQ1bbXODDxgZM9GS8XL391dPXB2VyxsbO2E"
 naverGeocodeURL = "https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode"
 
+
 def getAddress(reqeust):
     data = pandas.read_excel(os.path.join(settings.BASE_DIR, "dataProcess/법정동코드 전체자료.xlsx"))
 
@@ -34,7 +35,7 @@ def getAddress(reqeust):
     data = data.reset_index(drop=True, inplace=False)
 
     for i in data.index:
-        areaCode = data.get_value(i, "법정동코드")
+        areaCode = data.get_value(i, "법정동코드")# <<<---여기인거 같어
         si = data.get_value(i, "시")
         gu = data.get_value(i, "구")
         dong = data.get_value(i, "동")
@@ -43,12 +44,13 @@ def getAddress(reqeust):
 
     return HttpResponse()
 
+
 def getHouseInfo(request):
     url = "http://openapi.seoul.go.kr:8088/545149464a73696c39326f47667644/json/houseRentPriceInfo/"
     start = 1349001
     end = 1350000
 
-    while(True):
+    while (True):
 
         http = httplib2.Http()
         finalurl = url + str(start) + "/" + str(end)
@@ -59,13 +61,14 @@ def getHouseInfo(request):
         data = jsonData["houseRentPriceInfo"]["row"]
 
         for info in data:
-            if(info["HOUSE_GBN_NM"] == "다세대/연립" and info["RENT_CASE_NM"] == "월세"):
-                if(HouseInfo.objects.filter(houseNumber=info["LAND_CD"]).count() == 0):
+            if (info["HOUSE_GBN_NM"] == "다세대/연립" and info["RENT_CASE_NM"] == "월세"):
+                if (HouseInfo.objects.filter(houseNumber=info["LAND_CD"]).count() == 0):
                     houseNumber = info["LAND_CD"]
                     pyeong = float(info["RENT_AREA"]) * 0.3025
                     houseName = info["BLDG_NM"]
                     areaCode = Address.objects.get(gu=info["SGG_NM"], dong=info["BJDONG_NM"])
-                    query =  info["SGG_NM"] + " " + info["BJDONG_NM"] + " " + str(int(info["BOBN"])) + "-" + str(int(info["BUBN"]))
+                    query = info["SGG_NM"] + " " + info["BJDONG_NM"] + " " + str(int(info["BOBN"])) + "-" + str(
+                        int(info["BUBN"]))
                     naverURL = naverGeocodeURL + "?query=" + quote(query)
                     https = urllib.request.Request(naverURL)
                     https.add_header("X-NCP-APIGW-API-KEY-ID", naverClientId)
@@ -84,7 +87,8 @@ def getHouseInfo(request):
                 houseNumber = HouseInfo.objects.get(houseNumber=info["LAND_CD"])
                 day = datetime.strptime(info["CNTRCT_DE"], "%Y%m%d").date()
                 if (CostRecord.objects.filter(houseNumber=houseNumber, day=day).count() == 0):
-                    costRecordId = houseNumber.houseNumber + str(CostRecord.objects.filter(houseNumber=houseNumber).count() + 1)
+                    costRecordId = houseNumber.houseNumber + str(
+                        CostRecord.objects.filter(houseNumber=houseNumber).count() + 1)
                     rentalFee = info["RENT_FEE"]
                     deposit = info["RENT_GTN"]
                     costRecord = CostRecord(costRecordId=costRecordId, houseNumber=houseNumber,
@@ -95,9 +99,7 @@ def getHouseInfo(request):
         print(start)
         start = end + 1
         end = start + 999
-
-
-
+        
     return HttpResponse(jsonData)
 
 def getCCTV(request):

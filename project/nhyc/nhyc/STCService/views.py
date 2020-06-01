@@ -1,7 +1,7 @@
 from collections import OrderedDict
 
 from django.db.models.query import QuerySet
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 
 # Create your views here.
@@ -313,7 +313,15 @@ def getGu(request):
         returnString.append(i)
         print(i)
 
-    return JsonResponse(returnString, safe=False)
+    return myJsonResponse(returnString)
+
+    # return JsonResponse(returnString, safe=False).encode("utf-8")
+    # return JsonResponse(json.dumps(returnString, ensure_ascii=False), safe=False)
+
+
+@csrf_exempt
+def myJsonResponse(data):
+    return HttpResponse(json.dumps(data, ensure_ascii=False))
 
 
 ########################## ↑↑↑↑↑↑↑↑ ############################

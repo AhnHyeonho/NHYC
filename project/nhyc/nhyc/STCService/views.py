@@ -6,6 +6,7 @@ from django.shortcuts import render
 
 # Create your views here.
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Avg
 from rest_framework.parsers import JSONParser
 from rest_framework import viewsets
 from rest_framework import permissions
@@ -24,14 +25,59 @@ from dataProcess.models import SecurityLight
 from .serializers import SecurityLightSerializer
 from dataProcess.models import Address
 from .serializers import AddressSerializer
+from dataProcess.models import CostRecord
+from .serializers import CostRecordSerializer
+from .models import Average
 
 # 서울시 행정구
-seoulGu = ["종로구", "중구", "용산구", "성동구", "광진구",
-           "동대문구", "중랑구", "성북구", "강북구", "도봉구",
-           "노원구", "은평구", "서대문구", "마포구", "양천구",
-           "강서구", "구로구", "금천구", "영등포구", "동작구",
-           "관악구", "서초구", "강남구", "송파구", "강동구"]
+seoulGu = {'중구': '10100',
+           '종로구': '10110',
+           '서대문구': '10120',
+           '마포구': '10121',
+           '은평구': '10122',
+           '동대문구': '10130',
+           '중랑구': '10131',
+           '도봉구': '10132',
+           '성동구': '10133',
+           '강동구': '10134',
+           '강남구': '10135',
+           '성북구': '10136',
+           '서초구': '10137',
+           '송파구': '10138',
+           '노원구': '10139',
+           '용산구': '10140',
+           '강북구': '10142',
+           '광진구': '10143',
+           '영등포구': '10150',
+           '관악구': '10151',
+           '구로구': '10152',
+           '금천구': '10153',
+           '동작구': '10156',
+           '강서구': '10157',
+           '양천구': '10158'}
 
+
+##### 메모장..
+# for gu, gu_areaCode in seoulGu.items():  # Dict형 key, value읽어오기
+
+#####
+
+
+# ########################### ↓↓↓↓테스트 코드↓↓↓↓ ###########################
+# @csrf_exempt
+# def testQuery(request):  # areaCode입력 안 할 경우 전체 CCTV 검색
+#     name_map = {'B.gu': 'gu', 'avg(A.rentalFee)': 'rentalFee', 'avg(A.deposit)': 'deposit'}
+#     for i in Average.objects.raw('''
+#     SELECT B.gu , avg(A.rentalFee), avg(A.deposit)
+# FROM dataprocess_costrecord A
+# LEFT JOIN dataprocess_address B
+# ON left(A.houseNumber_id, 10) = B.areaCode
+# GROUP BY left(A.houseNumber_id ,5)
+#     '''):
+#         print(i)
+
+
+# ########################### ↑↑↑↑테스트 코드↑↑↑↑ ###########################
 
 @csrf_exempt
 def Member(request, id):
@@ -74,9 +120,9 @@ def testQuery(request, gu):  # areaCode입력 안 할 경우 전체 CCTV 검색
 
     serializer = HouseInfoSerializer(TOT, many=True)
 
-    print("TEST>>>>>>>>>>>>>>>>>>>>>>>>>>")
-    print(finalResult.get(gu).length)
-    print("TEST>>>>>>>>>>>>>>>>>>>>>>>>>>")
+    # print("TEST>>>>>>>>>>>>>>>>>>>>>>>>>>")
+    # print(finalResult.get(gu).length)
+    # print("TEST>>>>>>>>>>>>>>>>>>>>>>>>>>")
     finalResult = JsonResponse({gu: serializer.data}, safe=False)  # <class 'django.http.response.JsonResponse'>
 
     return finalResult
@@ -257,6 +303,17 @@ def getPoliceOfficeInfosByGu(gu=None):  # 입력한 gu에 있는 경찰시설 �
     serializer = HouseInfoSerializer(TOT, many=True)
     finalResult = JsonResponse({gu: serializer.data}, safe=False)  # <class 'django.http.response.JsonResponse'>
     return finalResult
+
+
+@csrf_exempt
+def getGu(request):
+    # 구 이름만 배열로..
+    returnString = []
+    for i in seoulGu:
+        returnString.append(i)
+        print(i)
+
+    return JsonResponse(returnString, safe=False)
 
 
 ########################## ↑↑↑↑↑↑↑↑ ############################

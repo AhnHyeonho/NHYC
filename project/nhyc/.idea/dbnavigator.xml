@@ -37,7 +37,8 @@
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
     <open-files>
-      <object connection-id="443cd28c-dcfc-4f3c-b0e4-f4e285ccf586" object-ref="schemas/hanbangdb/tables/dataprocess_houseinfo" />
+      <object connection-id="443cd28c-dcfc-4f3c-b0e4-f4e285ccf586" object-ref="schemas/hanbangdb/tables/dataprocess_address" />
+      <object connection-id="443cd28c-dcfc-4f3c-b0e4-f4e285ccf586" object-ref="schemas/hanbangdb/tables/dataprocess_costrecord" />
     </open-files>
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
@@ -47,6 +48,7 @@
     <filter-actions connection-id="443cd28c-dcfc-4f3c-b0e4-f4e285ccf586" dataset="hanbangdb.dataprocess_member" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="443cd28c-dcfc-4f3c-b0e4-f4e285ccf586" dataset="hanbangdb.dataprocess_cctv" active-filter-id="" />
     <filter-actions connection-id="443cd28c-dcfc-4f3c-b0e4-f4e285ccf586" dataset="hanbangdb.dataprocess_address" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="443cd28c-dcfc-4f3c-b0e4-f4e285ccf586" dataset="hanbangdb.dataprocess_costrecord" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="443cd28c-dcfc-4f3c-b0e4-f4e285ccf586" dataset="hanbangdb.dataprocess_houseinfo" active-filter-id="EMPTY_FILTER" />
   </component>
   <component name="DBNavigator.Project.EditorStateManager">

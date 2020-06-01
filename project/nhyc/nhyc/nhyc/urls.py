@@ -28,7 +28,9 @@ urlpatterns = [
     path('', dpviews.getHouseInfo, name='getHouseInfo'),
 
     ## 현호추가 -->
+    path('admin/서울시/', stcViews.getGu),
     path('test/<str:gu>/', stcViews.testQuery),
+    path('test/', stcViews.getGu),
     path('houseInfos/', stcViews.houseInfos),
     path('houseInfos/<int:areaCode>/', stcViews.houseInfos),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))

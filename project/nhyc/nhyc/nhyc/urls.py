@@ -19,6 +19,9 @@ from dataProcess import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-path('admin/address', views.getAddress, name='getAddress'),
-    path('', views.getHouseInfo, name='getHouseInfo')
+    path('admin/addresses', views.getAddress, name='getAddress'),
+    path('admin/houseinfos', views.getHouseInfo, name='getHouseInfo'),
+    path('admin/cctvs', views.getCCTV, name='getCCTV'),
+    path('admin/securitylights', views.getSecurityLight, name='getSecurityLight'),
+    path('admin/policeoffice', views.getPoliceOffice, name='getPoliceOffice')
 ]

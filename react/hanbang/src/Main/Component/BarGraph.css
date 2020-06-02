@@ -1,0 +1,27 @@
+.line {
+    background-color: #f4623a;
+    display: inline-block;
+    width: 10px;
+    height: 32px;
+    vertical-align: text-bottom;
+}
+
+.title {
+    vertical-align: middle;
+    color: #6a6a6a;
+    font-family: AppleSDGothicNeo;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+}
+
+.graph {
+    display: inline-block;
+    margin: 30px;
+}
+
+.graph-title{
+    text-align: left;
+}
+

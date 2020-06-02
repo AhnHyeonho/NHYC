@@ -1,0 +1,19 @@
+
+.search-input {
+    display: inline;
+    margin: 21px 21px 20px 25px;
+}
+
+.btn-search {
+    display: inline;
+    margin: 20px 24px 19px 0px;
+}
+
+.search-group {
+    z-index: 100;
+    position: absolute;
+    top: 62px;
+    left: 54px;
+    width: 504px;
+    height: 69px
+}

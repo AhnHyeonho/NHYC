@@ -1,10 +1,17 @@
-.app-header{
-    position: relative;
-    max-width: 100%;
-    height: 70px;
-    box-shadow: 0px 5px 10px 1px gray;
+
+/* 상단 메뉴바 (header) */
+.header-block{
+    display: block;
+    position: absolute;
+    width: 100%;
+    /* max-width: 100%; */
+    height: inherit;
+    box-shadow: 0px 5px 10px 1px rgba(0, 0, 0, 0.5);
+    z-index: 100;
+
 }
 
+/* 상단 메뉴 버튼 */
 a{
     text-decoration: none; 
     vertical-align: top;  
@@ -13,42 +20,42 @@ a{
     color: black;
 }
 
+/* 상단 메뉴 버튼 마우스 오버 */
 a:hover{
     color: orange;
 }
 
 .header{
-    max-width: 100%;
-    height: 100%;
-    display: inline-block;
+
+    width: fit-content;
+    height: fit-content;
     vertical-align: top;
-    font-size: 1.3em;
     font-family: Helvetica, sans-serif;
     font-weight: 700;
     color: black;
-    
+    top: 30%;
+
 }
 
-.header.about{
-    position: relative;
-    top: 33%;
-    left:60%;
+.header.logo{
+    display: inline;
+    vertical-align: middle; 
+    padding-left: 30px;
+    font-size: 1.2em;
+
 }
 
-.header.map{
-    position: relative;
-    top: 33%;
-    left:65%;
+.header.buttons{
+    display: inline-block;
+    width: 100%;
+    height: fit-content;
+    text-align: right;
+    padding-right: 20px;
 }
 
-.header.graph{
+.header.item{
     position: relative;
-    top: 33%;
-    left:70%;
-}
-
-.header.info{
-    position: relative;
-    top: 33%;
-    left:75%;
+    padding-left: 30px;
+    padding-right: 30px;
+    font-size: 1.2em;
 }

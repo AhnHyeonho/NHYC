@@ -1,0 +1,8 @@
+.graph-area {
+    text-align: center;
+    width: 100%;
+
+    columns: 2;
+    column-width: 400px;
+    column-gap: 30px;
+}

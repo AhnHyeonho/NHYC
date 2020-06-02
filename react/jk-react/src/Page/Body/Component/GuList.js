@@ -59,7 +59,7 @@ class GuList extends React.Component{
               </MDBRow>
 
               <MDBRow>
-                  <MDBBtn color="orangered"  size="lg" className="guName" style={{color:"white"}} onClick={()=>this.props.handleChange('노원구 (5)')}>
+                  <MDBBtn color="orangered"  size="lg" className="guName" style={{color:"white"}} onClick={()=>this.props.handleChange('노원구')}>
                   <div className="fo">노원구</div>
                   </MDBBtn>               
               </MDBRow>

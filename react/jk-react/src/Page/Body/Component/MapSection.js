@@ -2,7 +2,7 @@ import React from 'react';
 import SeoulMap from '../../../Img/map.gif';
 import Inform from '../../../Img/mapAlt.png';
 
-
+import '../Component/Map.css'
 
 class MapSection extends React.Component {
     
@@ -13,7 +13,7 @@ class MapSection extends React.Component {
             <img src={Inform} className="mapImg info"></img>
             <img src={SeoulMap} className="mapImg" alt="서울시지도" border="0" useMap="#Map" ></img>
             <map name="Map">
-                <area shape="poly" coords="276,30,284,29,287,22,297,33,307,32,300,41,307,53,304,68,306,84,315,88,320,99,312,102,312,110,295,115,285,118,270,104,276,93,280,66,274,55" href="#nowon" alt="노원" onClick={()=>this.props.handleChange('노원구 (5)')} />
+                <area shape="poly" coords="276,30,284,29,287,22,297,33,307,32,300,41,307,53,304,68,306,84,315,88,320,99,312,102,312,110,295,115,285,118,270,104,276,93,280,66,274,55" href="#nowon" alt="노원" onClick={()=>this.props.handleChange('노원구')} />
                 <area shape="poly" coords="236,25,250,23,251,32,267,33,271,41,272,53,277,69,268,100,251,81,234,68" href="#dobong" alt="도봉" />
                 <area shape="poly" coords="222,42,231,40,229,66,240,82,253,92,263,113,250,124,237,122,233,104,211,94,212,66" href="#gangbuk" alt="강북"/>
                 <area shape="poly" coords="204,98,211,97,231,109,240,129,261,128,266,117,274,124,282,130,258,141,244,154,238,158,223,144,213,140,218,125" href="#sungbuk" alt="성북"/>

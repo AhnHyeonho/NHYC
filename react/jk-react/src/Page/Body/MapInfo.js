@@ -4,10 +4,13 @@ import GuListComponent from './Component/GuList';
 import NowonGuListComponent from './Component/NowonGu/NowonGuList';
 import './MapInfo.css';
 
-import SeoulCityCCTV from './Component/SeoulCity/SeoulCityCCTV';
-import NowonGuCCTV from './Component/NowonGu/NowonGuCCTV';
-import Nowon1DongCCTV from './Component/NowonGu/Nowon1DongCCTV';
+import SeoulCityChart from './Component/SeoulCity/SeoulCityChart';
 
+
+import NowonGuChart from './Component/NowonGu/NowonGuChart';
+import Nowon1DongChart from './Component/NowonGu/Nowon1DongChart';
+
+import ChartArea from './Component/ChartArea';
 
 
 import MapSection from './Component/MapSection';
@@ -21,7 +24,7 @@ class MapInfo extends React.Component{
       this.handleChange = this.handleChange.bind(this);
       this.handleDongNum = this.handleDongNum.bind(this);
 
-      this.state = {gu_name :'서울시 (25)' ,
+      this.state = {gu_name :'서울시' ,
                     dong_num : 0,
 
                     coord: [    
@@ -38,12 +41,11 @@ class MapInfo extends React.Component{
                       /*8노원*/
                       [
                       {id : '0', latitude :'37.652560' , logitude :'127.075252', zoom : '7'}, //  노원구
-                      {id : '1', latitude:'37.629114' , logitude :'127.056937', zoom : '5'}, // 월계동
-                      {id : '2', latitude:'37.630618' , logitude :'127.087265', zoom : '5'}, // 공릉동
-                      {id : '3', latitude:'37.637873' , logitude :'127.071660', zoom : '5'}, //하계동
-                      {id : '4', latitude:'37.652405' , logitude :'127.078938', zoom : '5'}, //중계동
-                      {id : '5', latitude:'37.674435' , logitude :'127.060167', zoom : '5'} //상계동
-                      
+                      {id : '1', latitude :'37.629114' , logitude :'127.056937', zoom : '5'}, // 월계동
+                      {id : '2', latitude :'37.630618' , logitude :'127.087265', zoom : '5'}, // 공릉동
+                      {id : '3', latitude :'37.637873' , logitude :'127.071660', zoom : '5'}, //하계동
+                      {id : '4', latitude :'37.652405' , logitude :'127.078938', zoom : '5'}, //중계동
+                      {id : '5', latitude :'37.674435' , logitude :'127.060167', zoom : '5'} //상계동
                       ]
                       
                     ]
@@ -56,7 +58,7 @@ class MapInfo extends React.Component{
 
     handleChange(name){
       if(this.state.gu_name == name){
-        this.setState({gu_name: '서울시 (25)'})
+        this.setState({gu_name: '서울시'})
       }else{
         this.setState({gu_name: name});
       } 
@@ -80,10 +82,10 @@ class MapInfo extends React.Component{
       
       function ListSelect(props){
         const name = props.guName;
-        if(name =='서울시 (25)'){
+        if(name =='서울시'){
           return <GuListComponent handleChange = {props.handleChange}/>;
         }
-        if(name == '노원구 (5)'){
+        if(name == '노원구'){
           return <NowonGuListComponent handleDongNum ={props.handleDongNum} />;
         }
 
@@ -92,19 +94,16 @@ class MapInfo extends React.Component{
 
 
 
-      function CCTVSelect(props){
+      function ChartSelect(props){
         const name = props.guName;
         const dongNum = props.dongNum;
 
-        if(name =='서울시 (25)'){
-          return <SeoulCityCCTV/>;
+        if(name =='서울시'){
+          return <SeoulCityChart/>;
         }
-        if(name == '노원구 (5)'){
-          if(dongNum == 0)
-            return <NowonGuCCTV/>;
-          if(dongNum == 1)
-            return <Nowon1DongCCTV/>;
-
+        if(name == '노원구'){
+          if(dongNum == 0 || dongNum ==1 || dongNum == 2)
+            return <ChartArea name = {props.guName} dongNum={props.dongNum}/>
         }
       }
 
@@ -115,14 +114,15 @@ class MapInfo extends React.Component{
         const name = props.guName;
         const num = props.dongNum;
 
-        if(name =='서울시 (25)'){
+        if(name =='서울시'){
           return <MapSection handleChange = {props.handleChange}/>;
         }
-        if(name == '노원구 (5)'){
+        if(name == '노원구'){
           return <Maps latitude={props.coord[8][num].latitude} logitude ={props.coord[8][num].logitude} zoom = {props.coord[8][num].zoom}/>;
         }
 
       }
+
 
 
 
@@ -138,7 +138,12 @@ class MapInfo extends React.Component{
                 <div className="header SeoulComent">
                   월세/보증금 실거래가 평균
                 </div>
+                
               </div> {/* header 제목 끝*/}
+
+
+
+
 
 
 
@@ -163,21 +168,16 @@ class MapInfo extends React.Component{
 
 
 
-              {/* 월세 가격 순위 및 추이 섹션*/}
-              <div className="monthly-section-container">
-               
-              </div> {/* 월세 가격 순위 및 추이 섹션 끝*/}
-
-
-
-
-
 
 
               {/* 서울시 cctv 설치 현황 차트 */}
-              <div className="cctv-section-container">
-                <CCTVSelect guName ={this.state.gu_name} dongNum = {this.state.dong_num}/>            
+              <div className="chart-section-container">
+                <ChartSelect guName ={this.state.gu_name} dongNum = {this.state.dong_num}/>
+          
               </div> {/*서울시 cctv 설치 현황 차트 끝*/}
+
+
+
 
 
             </div>
@@ -185,5 +185,11 @@ class MapInfo extends React.Component{
         );
     }
 }
+
+
+
+
+
+
       
 export default MapInfo;

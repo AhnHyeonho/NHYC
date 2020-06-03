@@ -24,7 +24,7 @@ SECRET_KEY = 'hj3qrkf75k1ijble9mfila7m8gdi4pa&6dg)@!4cm07)l9)*@-'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOST = ['172.20.10.1', '127.0.0.1']
+ALLOWED_HOST = ['*']
 
 # Application definition
 
@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'rest_framework',
     # app
     'dataProcess',
-    'STCService'
+    'STCService',
 ]
 
 REST_FRAMEWORK = {

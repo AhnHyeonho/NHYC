@@ -27,8 +27,8 @@ urlpatterns = [
     path('admin/houseinfos', dpviews.getHouseInfo, name='getHouseInfo'),
     path('admin/cctvs', dpviews.getCCTV, name='getCCTV'),
     path('admin/securitylights', dpviews.getSecurityLight, name='getSecurityLight'),
-    path('admin/policeoffice', dpviews.getPoliceOffice, name='getPoliceOffice'),
-
+    path('admin/policeoffices', dpviews.getPoliceOffice, name='getPoliceOffice'),
+  
     ## 현호추가 -->
     path('houseInfos/<int:areaCode>/', stcViews.houseInfos),
     path('houseInfos/', stcViews.houseInfos),
@@ -42,9 +42,7 @@ urlpatterns = [
     path('getPoliceOfficeCnt/', stcViews.getPoliceOfficeCnt),
     path('getPoliceOfficeCnt/<str:gu>/', stcViews.getPoliceOfficeCnt),
 
-
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-
     path('test/', stcViews.testQuery),
     path('test/<str:gu>/', stcViews.testQuery),
     path('test2/', stcViews.testQuery2),

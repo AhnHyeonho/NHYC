@@ -30,8 +30,7 @@ urlpatterns = [
     path('admin/policeoffices', dpviews.getPoliceOffice, name='getPoliceOffice'),
   
     ## 현호추가 -->
-    path('houseInfos/<int:areaCode>/', stcViews.houseInfos),
-    path('houseInfos/', stcViews.houseInfos),
+    
     ## 확정 url
     path('getGu/', stcViews.getGu),
     path('getDong/<str:gu>/', stcViews.getDong),

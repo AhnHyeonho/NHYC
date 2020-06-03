@@ -2,7 +2,7 @@
 .recommand-page.container {
     position: relative;
     margin: 100px 70px 100px 70px;
-    width: 100%;
+    width: 100vw;
     height: auto;
 }
 
@@ -15,18 +15,15 @@
     align-items: center;
 }
 
-.recommand-page.section.map{ 
+.recommand-page.section.map{    
+
     position: relative;
     display: inline-block;
     margin-top: 10px;
     width: 70%;
     width: 100%;
-}
 
-/* .recommand-map {
-    width: 100%;
-    height: 100%;
-} */
+}
 
 /* 상단 타이틀 오렌지색 바 */
 .decorate-bar {
@@ -35,6 +32,26 @@
     width: 7px;
     height: 30px;
     line-height: 1px;
+}
+
+.recommand-page.map{
+    display: inline-block;
+}
+
+.recommand-databoard {
+    display: inline-block;
+    width: 100%;
+    height: fit-content;
+}
+
+/* .recommand-map {
+    display: inline-block;
+} */
+
+.kakao {
+    display: inline-block;
+    width: 100%;
+    height: 100%;
 }
 
 .accent-name {

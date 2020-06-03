@@ -15,8 +15,6 @@ let mouseOutTime = 0;  // 마우스 내려온 시간 저장
 
 			tooltips: {
 				custom: function (tooltip) {
-					// console.log(tooltip);  
-					// console.log(options.title);
 
 					// tooltip 보일 때
 					if (tooltip.opacity > 0) {
@@ -63,7 +61,6 @@ let mouseOutTime = 0;  // 마우스 내려온 시간 저장
 
 			title: {
 				display: true,
-				//text: 'Ice Cream Truck',
 				position: 'bottom'
 			},
 
@@ -104,7 +101,6 @@ class BarGraph extends Component {
 				console.log(res.json()[0]['userId']);
 
 			})
-
 			// .then(data => title = data["0"]["title"])
 			// .then(data => console.log(data))
 			// .then(data => options["title"]["text"] = title)
@@ -134,8 +130,6 @@ class BarGraph extends Component {
 		return (
 			<div
 				className="graph"
-			// onMouseEnter={this.handlerMouseOverOut}
-			// onMouseLeave={this.handlerMouseOverOut}>
 			>
 				<div className="graph-title">
 					<h2 className="title"><span className="line" />  {this.props.name}</h2>

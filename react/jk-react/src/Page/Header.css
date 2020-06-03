@@ -46,6 +46,7 @@ a:hover{
 }
 
 .header.buttons{
+    position: relative;
     display: inline-block;
     width: 100%;
     height: fit-content;

@@ -5,6 +5,7 @@ import middleBar from '../../Img/middle-bar.png';
 import button1 from '../../Img/button1.png';
 
 import Carousel from 'react-bootstrap/Carousel'
+import LineGraph from './Component/LineGraph'
 
 
 import './About.css';
@@ -18,7 +19,7 @@ class About extends React.Component{
                 <div className="app-body-about">
 
                     <div className ="logo-image-wrapper-wrapper">
-                        <div className = "logo-image-wrapper"><img className="logo1" src={logo}/><div className="middle-bar" /></div>
+                        <div className = "logo-image-wrapper"><LineGraph/><img className="logo1" src={logo}/><div className="middle-bar" /></div>
                     </div>
 
                     <div className ="middle-bar-image-wrapper-wrapper">

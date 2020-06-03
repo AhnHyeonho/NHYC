@@ -32,7 +32,7 @@ urlpatterns = [
   
     ## 현호추가 -->
     path('admin/서울시/', stcViews.getGu),
-    path('test/<str:gu>/', stcViews.testQuery),
+    path('test/<str:gu>/', stcViews.getDong),
     path('test/', stcViews.getGu),
     path('houseInfos/', stcViews.houseInfos),
     path('houseInfos/<int:areaCode>/', stcViews.houseInfos),

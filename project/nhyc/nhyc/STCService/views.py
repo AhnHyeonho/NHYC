@@ -188,7 +188,7 @@ def getGu(request):
     for i in seoulGu:
         returnString.append(i)
         print(i)
-    returnString.sort()
+    returnString.sort()  # 구 내용 정렬
     return myJsonResponse(returnString)
 
 
@@ -243,7 +243,6 @@ def testQuery2(request):  # 각 구별 월세, 보증금 데이터 읽기.
     guList = []
     rentalFeeList = []
     depositList = []
-
 
     for i in querySet:
         guList.append(i.gu)

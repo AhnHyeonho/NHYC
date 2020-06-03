@@ -28,7 +28,7 @@ urlpatterns = [
     path('admin/houseinfos', dpviews.getHouseInfo, name='getHouseInfo'),
     path('admin/cctvs', dpviews.getCCTV, name='getCCTV'),
     path('admin/securitylights', dpviews.getSecurityLight, name='getSecurityLight'),
-    path('admin/policeoffice', dpviews.getPoliceOffice, name='getPoliceOffice'),
+    path('admin/policeoffices', dpviews.getPoliceOffice, name='getPoliceOffice'),
   
     ## 현호추가 -->
     path('admin/서울시/', stcViews.getGu),

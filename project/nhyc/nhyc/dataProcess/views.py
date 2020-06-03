@@ -78,22 +78,25 @@ def getHouseInfo(request):
                     content = content.decode("utf-8")
 
                     geocode = json.loads(content)
-                    latitude = geocode["addresses"][0]["y"]
-                    longitude = geocode["addresses"][0]["x"]
-                    houseInfo = HouseInfo(houseNumber=houseNumber, latitude=latitude, longitude=longitude,
-                                          pyeong=pyeong, houseName=houseName, areaCode=areaCode)
-                    houseInfo.save()
-
-                houseNumber = HouseInfo.objects.get(houseNumber=info["LAND_CD"])
-                day = datetime.strptime(info["CNTRCT_DE"], "%Y%m%d").date()
-                if (CostRecord.objects.filter(houseNumber=houseNumber, day=day).count() == 0):
-                    costRecordId = houseNumber.houseNumber + str(
-                        CostRecord.objects.filter(houseNumber=houseNumber).count() + 1)
-                    rentalFee = info["RENT_FEE"]
-                    deposit = info["RENT_GTN"]
-                    costRecord = CostRecord(costRecordId=costRecordId, houseNumber=houseNumber,
-                                            day=day, rentalFee=rentalFee, deposit=deposit)
-                    costRecord.save()
+                    if geocode["meta"]["count"] != 0:
+                        latitude = geocode["addresses"][0]["y"]
+                        longitude = geocode["addresses"][0]["x"]
+                        houseInfo = HouseInfo(houseNumber=houseNumber, latitude=latitude, longitude=longitude,
+                                              pyeong=pyeong, houseName=houseName, areaCode=areaCode)
+                        houseInfo.save()
+                    else:
+                        print(query)
+                if (HouseInfo.objects.filter(houseNumber=info["LAND_CD"]).count() == 1):
+                    houseNumber = HouseInfo.objects.get(houseNumber=info["LAND_CD"])
+                    day = datetime.strptime(info["CNTRCT_DE"], "%Y%m%d").date()
+                    if (CostRecord.objects.filter(houseNumber=houseNumber, day=day).count() == 0):
+                        costRecordId = houseNumber.houseNumber + str(
+                            CostRecord.objects.filter(houseNumber=houseNumber).count() + 1)
+                        rentalFee = info["RENT_FEE"]
+                        deposit = info["RENT_GTN"]
+                        costRecord = CostRecord(costRecordId=costRecordId, houseNumber=houseNumber,
+                                                day=day, rentalFee=rentalFee, deposit=deposit)
+                        costRecord.save()
 
         if len(data) != 1000: break;
         print(start)

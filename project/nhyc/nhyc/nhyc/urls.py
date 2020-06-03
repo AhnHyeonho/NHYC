@@ -30,12 +30,22 @@ urlpatterns = [
     path('admin/policeoffice', dpviews.getPoliceOffice, name='getPoliceOffice'),
 
     ## 현호추가 -->
-    path('getDong/<str:gu>/', stcViews.getDong),
-    path('getGu/', stcViews.getGu),
-    path('houseInfos/', stcViews.houseInfos),
     path('houseInfos/<int:areaCode>/', stcViews.houseInfos),
+    path('houseInfos/', stcViews.houseInfos),
+    ## 확정 url
+    path('getGu/', stcViews.getGu),
+    path('getDong/<str:gu>/', stcViews.getDong),
+    path('getCCTVCnt/', stcViews.getCCTVCnt),
+    path('getCCTVCnt/<str:gu>/', stcViews.getCCTVCnt),
+    path('getSecurityLightCnt/', stcViews.getSecurityLightCnt),
+    path('getSecurityLightCnt/<str:gu>/', stcViews.getSecurityLightCnt),
+    path('getPoliceOfficeCnt/', stcViews.getPoliceOfficeCnt),
+    path('getPoliceOfficeCnt/<str:gu>/', stcViews.getPoliceOfficeCnt),
+
+
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 
+    path('test/', stcViews.testQuery),
     path('test/<str:gu>/', stcViews.testQuery),
     path('test2/', stcViews.testQuery2),
 

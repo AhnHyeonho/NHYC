@@ -203,29 +203,183 @@ def getDong(request, gu):
     return myJsonResponse(resultString)
 
 
+@csrf_exempt
+def getCCTVCnt(request, gu=None):
+    '''
+    :param request: 
+    :param gu: 
+    :return: 서울시 내의 구들의 cctv 갯수를 리턴. (구이름으로 정렬된 데이터)
+             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 cctv 갯수를 리턴 (동이름으로 정렬된 데이터)
+    '''
+
+    resultString = []
+
+    if gu is None:
+        querySet = Result_GuCnt.objects.raw('''
+            select gu, count(cctvId) as cnt
+            from dataprocess_address A
+            left outer join dataprocess_cctv B
+            on A.areaCode = B.areaCode_id
+            group by gu
+            order by gu
+            ''')
+        print("querySet ::: ", querySet)
+        for i in querySet:
+            #print(i.gu, i.cnt)
+            resultString.append(i.cnt)
+
+    else:
+        querySet = Result_GuDongCnt.objects.raw('''
+            select gu, dong, count(cctvId) as cnt
+            from dataprocess_address A
+            left outer join dataprocess_cctv B
+            on A.areaCode = B.areaCode_id
+            where gu = '%s'
+            group by dong
+            order by dong
+            ''' % gu)
+        print(querySet)
+        for i in querySet:
+            #print(i.gu, i.dong, i.cnt)
+            resultString.append(i.cnt)
+
+    print(resultString)
+    return myJsonResponse(resultString)
+
+
+@csrf_exempt
+def getSecurityLightCnt(request, gu=None):
+    '''
+    :param request:
+    :param gu:
+    :return: 서울시 내의 구들의 보안등 갯수를 리턴. (구이름으로 정렬된 데이터)
+             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 보안등 갯수를 리턴 (동이름으로 정렬된 데이터)
+    '''
+
+    resultString = []
+
+    if gu is None:
+        querySet = Result_GuCnt.objects.raw('''
+            select gu, count(lightId) as cnt
+            from dataprocess_address A
+            left outer join dataprocess_securitylight B
+            on A.areaCode = B.areaCode_id
+            group by gu
+            order by gu
+            ''')
+        print("querySet ::: ", querySet)
+        for i in querySet:
+            #print(i.gu, i.cnt)
+            resultString.append(i.cnt)
+
+    else:
+        querySet = Result_GuDongCnt.objects.raw('''
+            select gu, dong, count(lightId) as cnt
+            from dataprocess_address A
+            left outer join dataprocess_securitylight B
+            on A.areaCode = B.areaCode_id
+            where gu = '%s'
+            group by dong
+            order by dong
+            ''' % gu)
+        print(querySet)
+        for i in querySet:
+            #print(i.gu, i.dong, i.cnt)
+            resultString.append(i.cnt)
+
+    print(resultString)
+    return myJsonResponse(resultString)
+
+
+@csrf_exempt
+def getPoliceOfficeCnt(request, gu=None):
+    '''
+    :param request:
+    :param gu:
+    :return: 서울시 내의 구들의 경찰시설 갯수를 리턴. (구이름으로 정렬된 데이터)
+             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 경찰시설 갯수를 리턴 (동이름으로 정렬된 데이터)
+    '''
+
+    resultString = []
+
+    if gu is None:
+        querySet = Result_GuCnt.objects.raw('''
+            select gu, count(policeId) as cnt
+            from dataprocess_address A
+            left outer join dataprocess_policeoffice B
+            on A.areaCode = B.areaCode_id
+            group by gu
+            order by gu
+            ''')
+        print("querySet ::: ", querySet)
+        for i in querySet:
+            #print(i.gu, i.cnt)
+            resultString.append(i.cnt)
+
+    else:
+        querySet = Result_GuDongCnt.objects.raw('''
+            select gu, dong, count(policeId) as cnt
+            from dataprocess_address A
+            left outer join dataprocess_policeoffice B
+            on A.areaCode = B.areaCode_id
+            where gu = '%s'
+            group by dong
+            order by dong
+            ''' % gu)
+        print(querySet)
+        for i in querySet:
+            #print(i.gu, i.dong, i.cnt)
+            resultString.append(i.cnt)
+
+    print(resultString)
+    return myJsonResponse(resultString)
+
 ########################## ↑↑↑↑↑↑↑↑ ############################
 
 
 # ########################### ↓↓↓↓테스트 코드↓↓↓↓ ###########################
 @csrf_exempt
-def testQuery(request, gu):
-    # 시 전체 기준
-    #
-    # return cctv 갯수 list
-    querySet = Result_GuCnt.objects.raw('''
-    select gu, count(cctvId)
-from dataprocess_address A
-left outer join dataprocess_cctv B
-on A.areaCode = B.areaCode_id
-group by gu
-order by gu
-    ''')
+def testQuery(request, gu=None):
+    '''
+    :param request:
+    :param gu:
+    :return: 서울시 내의 구들의 보안등 갯수를 리턴. (구이름으로 정렬된 데이터)
+             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 보안등 갯수를 리턴 (동이름으로 정렬된 데이터)
+    '''
+
     resultString = []
-    for i in querySet:
-        print(i.gu, i.dong, i.cnt)
-        resultString.append(i.cnt)
+
+    if gu is None:
+        querySet = Result_GuCnt.objects.raw('''
+            select gu, count(lightId) as cnt
+            from dataprocess_address A
+            left outer join dataprocess_securitylight B
+            on A.areaCode = B.areaCode_id
+            group by gu
+            order by gu
+            ''')
+        print("querySet ::: ", querySet)
+        for i in querySet:
+            # print(i.gu, i.cnt)
+            resultString.append(i.cnt)
+
+    else:
+        querySet = Result_GuDongCnt.objects.raw('''
+            select gu, dong, count(lightId) as cnt
+            from dataprocess_address A
+            left outer join dataprocess_securitylight B
+            on A.areaCode = B.areaCode_id
+            where gu = '%s'
+            group by dong
+            order by dong
+            ''' % gu)
+        print(querySet)
+        for i in querySet:
+            print(i.gu, i.dong, i.cnt)
+            resultString.append(i.cnt)
 
     print(resultString)
+    return myJsonResponse(resultString)
 
 
 @csrf_exempt
@@ -263,25 +417,6 @@ def testQuery2(request):  # 각 구별 월세, 보증금 데이터 읽기.
 
 
 # ########################### ↑↑↑↑테스트 코드↑↑↑↑ ###########################
-
-@csrf_exempt
-def Member(request, id):
-    if request.method == 'GET':
-        if id is not None:
-            query_set = Member.objects.filter(id=id)
-        else:
-            query_set = Member.objects.all()
-
-        serializer = MemberSerializer(query_set, many=True)
-        return JsonResponse(serializer.data, safe=False)  # << 이부분을 입맛에 따라 변경. 현재는 Json List 형식으로 리턴.
-
-    elif request.method == 'POST':
-        data = JSONParser().parse(request)
-        serializer = MemberSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
 
 
 # @csrf_exempt

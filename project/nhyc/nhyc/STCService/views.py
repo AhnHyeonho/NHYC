@@ -217,22 +217,22 @@ def getCCTVCnt(request, gu=None):
     if gu is None:
         querySet = Result_GuCnt.objects.raw('''
             select gu, count(cctvId) as cnt
-            from dataprocess_address A
-            left outer join dataprocess_cctv B
+            from dataProcess_address A
+            left outer join dataProcess_cctv B
             on A.areaCode = B.areaCode_id
             group by gu
             order by gu
             ''')
         print("querySet ::: ", querySet)
         for i in querySet:
-            #print(i.gu, i.cnt)
+            # print(i.gu, i.cnt)
             resultString.append(i.cnt)
 
     else:
         querySet = Result_GuDongCnt.objects.raw('''
             select gu, dong, count(cctvId) as cnt
-            from dataprocess_address A
-            left outer join dataprocess_cctv B
+            from dataProcess_address A
+            left outer join dataProcess_cctv B
             on A.areaCode = B.areaCode_id
             where gu = '%s'
             group by dong
@@ -240,7 +240,7 @@ def getCCTVCnt(request, gu=None):
             ''' % gu)
         print(querySet)
         for i in querySet:
-            #print(i.gu, i.dong, i.cnt)
+            # print(i.gu, i.dong, i.cnt)
             resultString.append(i.cnt)
 
     print(resultString)
@@ -261,22 +261,22 @@ def getSecurityLightCnt(request, gu=None):
     if gu is None:
         querySet = Result_GuCnt.objects.raw('''
             select gu, count(lightId) as cnt
-            from dataprocess_address A
-            left outer join dataprocess_securitylight B
+            from dataProcess_address A
+            left outer join dataProcess_securitylight B
             on A.areaCode = B.areaCode_id
             group by gu
             order by gu
             ''')
         print("querySet ::: ", querySet)
         for i in querySet:
-            #print(i.gu, i.cnt)
+            # print(i.gu, i.cnt)
             resultString.append(i.cnt)
 
     else:
         querySet = Result_GuDongCnt.objects.raw('''
             select gu, dong, count(lightId) as cnt
             from dataprocess_address A
-            left outer join dataprocess_securitylight B
+            left outer join dataProcess_securitylight B
             on A.areaCode = B.areaCode_id
             where gu = '%s'
             group by dong
@@ -284,7 +284,7 @@ def getSecurityLightCnt(request, gu=None):
             ''' % gu)
         print(querySet)
         for i in querySet:
-            #print(i.gu, i.dong, i.cnt)
+            # print(i.gu, i.dong, i.cnt)
             resultString.append(i.cnt)
 
     print(resultString)
@@ -305,55 +305,8 @@ def getPoliceOfficeCnt(request, gu=None):
     if gu is None:
         querySet = Result_GuCnt.objects.raw('''
             select gu, count(policeId) as cnt
-            from dataprocess_address A
-            left outer join dataprocess_policeoffice B
-            on A.areaCode = B.areaCode_id
-            group by gu
-            order by gu
-            ''')
-        print("querySet ::: ", querySet)
-        for i in querySet:
-            #print(i.gu, i.cnt)
-            resultString.append(i.cnt)
-
-    else:
-        querySet = Result_GuDongCnt.objects.raw('''
-            select gu, dong, count(policeId) as cnt
-            from dataprocess_address A
-            left outer join dataprocess_policeoffice B
-            on A.areaCode = B.areaCode_id
-            where gu = '%s'
-            group by dong
-            order by dong
-            ''' % gu)
-        print(querySet)
-        for i in querySet:
-            #print(i.gu, i.dong, i.cnt)
-            resultString.append(i.cnt)
-
-    print(resultString)
-    return myJsonResponse(resultString)
-
-########################## ↑↑↑↑↑↑↑↑ ############################
-
-
-# ########################### ↓↓↓↓테스트 코드↓↓↓↓ ###########################
-@csrf_exempt
-def testQuery(request, gu=None):
-    '''
-    :param request:
-    :param gu:
-    :return: 서울시 내의 구들의 보안등 갯수를 리턴. (구이름으로 정렬된 데이터)
-             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 보안등 갯수를 리턴 (동이름으로 정렬된 데이터)
-    '''
-
-    resultString = []
-
-    if gu is None:
-        querySet = Result_GuCnt.objects.raw('''
-            select gu, count(lightId) as cnt
-            from dataprocess_address A
-            left outer join dataprocess_securitylight B
+            from dataProcess_address A
+            left outer join dataProcess_policeoffice B
             on A.areaCode = B.areaCode_id
             group by gu
             order by gu
@@ -365,9 +318,9 @@ def testQuery(request, gu=None):
 
     else:
         querySet = Result_GuDongCnt.objects.raw('''
-            select gu, dong, count(lightId) as cnt
-            from dataprocess_address A
-            left outer join dataprocess_securitylight B
+            select gu, dong, count(policeId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_policeoffice B
             on A.areaCode = B.areaCode_id
             where gu = '%s'
             group by dong
@@ -375,11 +328,29 @@ def testQuery(request, gu=None):
             ''' % gu)
         print(querySet)
         for i in querySet:
-            print(i.gu, i.dong, i.cnt)
+            # print(i.gu, i.dong, i.cnt)
             resultString.append(i.cnt)
 
     print(resultString)
     return myJsonResponse(resultString)
+
+
+########################## ↑↑↑↑↑↑↑↑ ############################
+
+
+# ########################### ↓↓↓↓테스트 코드↓↓↓↓ ###########################
+@csrf_exempt
+def testQuery(request, gu, dong=None):
+    '''
+    :param request:
+    :param gu: 원하는 구
+    :param dong: 원하는 동 ()
+    :return:
+    '''
+    if dong is None:
+        resultXY = Gu.objects.filter(gu=gu)
+    else:
+        resultXY = Address.objects.filter(gu=gu, dong=dong)
 
 
 @csrf_exempt
@@ -388,8 +359,8 @@ def testQuery2(request):  # 각 구별 월세, 보증금 데이터 읽기.
 
     querySet = Average.objects.raw('''
     SELECT gu , avg(rentalFee) as rentalFee, avg(deposit) as deposit 
-    FROM dataprocess_address A 
-    LEFT OUTER JOIN dataprocess_costrecord B 
+    FROM dataProcess_address A 
+    LEFT OUTER JOIN dataProcess_costrecord B 
     ON A.areaCode = left(B.houseNumber_id, 10) 
     GROUP BY gu
     ORDER BY gu

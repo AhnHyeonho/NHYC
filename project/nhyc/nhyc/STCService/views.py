@@ -1,9 +1,8 @@
 from collections import OrderedDict
 
-from django.db.models.query import QuerySet
+from django.db.models.query import QuerySet, RawQuerySet
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
-
 # Create your views here.
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Avg
@@ -11,6 +10,7 @@ from rest_framework.parsers import JSONParser
 from rest_framework import viewsets
 from rest_framework import permissions
 import json
+import pandas
 import numpy as np
 import httplib2
 
@@ -28,7 +28,7 @@ from dataProcess.models import Address
 from .serializers import AddressSerializer
 from dataProcess.models import CostRecord
 from .serializers import CostRecordSerializer
-from .models import Average
+from .models import Average, Result_GuCnt, Result_GuDongCnt
 
 # 서울시 행정구
 seoulGu = {'중구': '10100',
@@ -60,6 +60,7 @@ seoulGu = {'중구': '10100',
 
 ##### 메모장..
 # for gu, gu_areaCode in seoulGu.items():  # Dict형 key, value읽어오기
+# query = 'SELECT * FROM myapp_person WHERE last_name = %s' % gu
 
 #####
 ########################## ↓↓↓↓↓↓↓↓ ############################
@@ -187,6 +188,7 @@ def getGu(request):
     for i in seoulGu:
         returnString.append(i)
         print(i)
+    returnString.sort()
     return myJsonResponse(returnString)
 
 
@@ -206,16 +208,59 @@ def getDong(request, gu):
 
 # ########################### ↓↓↓↓테스트 코드↓↓↓↓ ###########################
 @csrf_exempt
-def testQuery(request):  # areaCode입력 안 할 경우 전체 CCTV 검색
-    name_map = {'B.gu': 'gu', 'avg(A.rentalFee)': 'rentalFee', 'avg(A.deposit)': 'deposit'}
-    for i in Average.objects.raw('''
-    SELECT B.gu , avg(A.rentalFee), avg(A.deposit)
-FROM dataprocess_costrecord A
-LEFT JOIN dataprocess_address B
-ON left(A.houseNumber_id, 10) = B.areaCode
-GROUP BY left(A.houseNumber_id ,5)
-    '''):
-        print(i)
+def testQuery(request, gu):
+    # 시 전체 기준
+    #
+    # return cctv 갯수 list
+    querySet = Result_GuCnt.objects.raw('''
+    select gu, count(cctvId)
+from dataprocess_address A
+left outer join dataprocess_cctv B
+on A.areaCode = B.areaCode_id
+group by gu
+order by gu
+    ''')
+    resultString = []
+    for i in querySet:
+        print(i.gu, i.dong, i.cnt)
+        resultString.append(i.cnt)
+
+    print(resultString)
+
+
+@csrf_exempt
+def testQuery2(request):  # 각 구별 월세, 보증금 데이터 읽기. 
+    # 분석을 위해 pandas DataFrame 구조로 변환까지 완료
+
+    querySet = Average.objects.raw('''
+    SELECT gu , avg(rentalFee) as rentalFee, avg(deposit) as deposit 
+    FROM dataprocess_address A 
+    LEFT OUTER JOIN dataprocess_costrecord B 
+    ON A.areaCode = left(B.houseNumber_id, 10) 
+    GROUP BY gu
+    ORDER BY gu
+    ''')
+    guList = []
+    rentalFeeList = []
+    depositList = []
+
+
+    for i in querySet:
+        guList.append(i.gu)
+        rentalFeeList.append(i.rentalFee)
+        depositList.append(i.deposit)
+
+        print(i.gu, i.rentalFee, i.deposit)
+
+    data = {'rentalFee': rentalFeeList,
+            'deposit': depositList}
+
+    df = pandas.DataFrame(data, index=guList)
+
+    for i in df:
+        print(df)
+
+    return myJsonResponse(querySet)
 
 
 # ########################### ↑↑↑↑테스트 코드↑↑↑↑ ###########################
@@ -240,33 +285,33 @@ def Member(request, id):
         return JsonResponse(serializer.errors, status=400)
 
 
-@csrf_exempt
-def testQuery(request, gu):  # areaCode입력 안 할 경우 전체 CCTV 검색
-    if request.method == 'GET':
-        resultArr = []  # HouseInfo들을 받아내는 최종 결과 배열
-
-        areaCodeArr = findGuAreaCodes(gu)
-
-        TOT = queryResult = HouseInfo.objects.filter(
-            areaCode=areaCodeArr[0])
-        for i in TOT:
-            resultArr.append(i)  # 그 결과값들을 resultArr에 붙여서 저장한다.
-
-        for currentAreaCode in areaCodeArr[1:]:
-            queryResult = HouseInfo.objects.filter(
-                areaCode=currentAreaCode)  # 해당 areaCode로 검색된 결과(HouseInfo)를 testInfos에 저장
-            for i in queryResult:
-                resultArr.append(i)  # 그 결과값들을 resultArr에 붙여서 저장한다.
-            TOT = TOT | queryResult
-
-    serializer = HouseInfoSerializer(TOT, many=True)
-
-    # print("TEST>>>>>>>>>>>>>>>>>>>>>>>>>>")
-    # print(finalResult.get(gu).length)
-    # print("TEST>>>>>>>>>>>>>>>>>>>>>>>>>>")
-    finalResult = JsonResponse({gu: serializer.data}, safe=False)  # <class 'django.http.response.JsonResponse'>
-
-    return finalResult
+# @csrf_exempt
+# def testQuery(request, gu):  # areaCode입력 안 할 경우 전체 CCTV 검색
+#     if request.method == 'GET':
+#         resultArr = []  # HouseInfo들을 받아내는 최종 결과 배열
+#
+#         areaCodeArr = findGuAreaCodes(gu)
+#
+#         TOT = queryResult = HouseInfo.objects.filter(
+#             areaCode=areaCodeArr[0])
+#         for i in TOT:
+#             resultArr.append(i)  # 그 결과값들을 resultArr에 붙여서 저장한다.
+#
+#         for currentAreaCode in areaCodeArr[1:]:
+#             queryResult = HouseInfo.objects.filter(
+#                 areaCode=currentAreaCode)  # 해당 areaCode로 검색된 결과(HouseInfo)를 testInfos에 저장
+#             for i in queryResult:
+#                 resultArr.append(i)  # 그 결과값들을 resultArr에 붙여서 저장한다.
+#             TOT = TOT | queryResult
+#
+#     serializer = HouseInfoSerializer(TOT, many=True)
+#
+#     # print("TEST>>>>>>>>>>>>>>>>>>>>>>>>>>")
+#     # print(finalResult.get(gu).length)
+#     # print("TEST>>>>>>>>>>>>>>>>>>>>>>>>>>")
+#     finalResult = JsonResponse({gu: serializer.data}, safe=False)  # <class 'django.http.response.JsonResponse'>
+#
+#     return finalResult
 
 
 @csrf_exempt
@@ -363,7 +408,8 @@ def login(request):
     propertyKeys = ["properties.nickname", "kakao_account.age_range", "kakao_account.gender"]
 
     http = httplib2.Http()
-    response, content = http.request(baseUrl, method="POST", headers={"Authorization" : authorization}, body={"property_keys" : propertyKeys})
+    response, content = http.request(baseUrl, method="POST", headers={"Authorization": authorization},
+                                     body={"property_keys": propertyKeys})
     content = content.decode("utf-8")
     jsonData = json.loads(content)
     print(jsonData)

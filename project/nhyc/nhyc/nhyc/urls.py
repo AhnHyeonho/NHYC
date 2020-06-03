@@ -21,7 +21,6 @@ from django.urls import path, include  ### 현호추가
 from django.contrib.auth.models import User  ### 현호추가
 from STCService import views as stcViews  ### 현호추가
 
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('admin/addresses', dpviews.getAddress, name='getAddress'),
@@ -29,13 +28,17 @@ urlpatterns = [
     path('admin/cctvs', dpviews.getCCTV, name='getCCTV'),
     path('admin/securitylights', dpviews.getSecurityLight, name='getSecurityLight'),
     path('admin/policeoffice', dpviews.getPoliceOffice, name='getPoliceOffice'),
-  
+
     ## 현호추가 -->
-    path('admin/서울시/', stcViews.getGu),
-    path('test/<str:gu>/', stcViews.getDong),
-    path('test/', stcViews.getGu),
+    path('getDong/<str:gu>/', stcViews.getDong),
+    path('getGu/', stcViews.getGu),
     path('houseInfos/', stcViews.houseInfos),
     path('houseInfos/<int:areaCode>/', stcViews.houseInfos),
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+
+    path('test/<str:gu>/', stcViews.testQuery),
+    path('test2/', stcViews.testQuery2),
+
     ## <-- 현호추가
+
 ]

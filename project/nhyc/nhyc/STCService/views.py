@@ -12,6 +12,7 @@ from rest_framework import viewsets
 from rest_framework import permissions
 import json
 import numpy as np
+import httplib2
 
 from dataProcess.models import Member
 from .serializers import MemberSerializer
@@ -338,7 +339,18 @@ def loadSeoulSiData():
 
 ######################### Login ####################################
 
-'''def login(request):
+def login(request):
     accessToken = request.headers["AccessToken"]
-    baseUrl = "kapi.kakao.com"'''
+    baseUrl = "https://kapi.kakao.com/v2/user/me"
+    authorization = "Bearer " + accessToken
+    propertyKeys = ["properties.nickname", "kakao_account.age_range", "kakao_account.gender"]
+
+    http = httplib2.Http()
+    response, content = http.request(baseUrl, method="POST", headers={"Authorization" : authorization}, body={"property_keys" : propertyKeys})
+    content = content.decode("utf-8")
+    jsonData = json.loads(content)
+    print(jsonData)
+
+    return HttpResponse(jsonData)
+
 

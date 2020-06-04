@@ -29,7 +29,7 @@ urlpatterns = [
     path('admin/securitylights', dpviews.getSecurityLight, name='getSecurityLight'),
     path('admin/policeoffices', dpviews.getPoliceOffice, name='getPoliceOffice'),
     path('kakaojoin', stcViews.kakaoJoin, name='kakaoJoin'),
-  
+
     ## 현호추가 -->
 
     ## 확정 url
@@ -41,10 +41,13 @@ urlpatterns = [
     path('getSecurityLightCnt/<str:gu>/', stcViews.getSecurityLightCnt),
     path('getPoliceOfficeCnt/', stcViews.getPoliceOfficeCnt),
     path('getPoliceOfficeCnt/<str:gu>/', stcViews.getPoliceOfficeCnt),
+    path('getRankingChartData/<str:division>/', stcViews.getRankingChartData),
 
+    ## 테스트 url
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('test/', stcViews.testQuery),
-    path('test/<str:ascending>/', stcViews.testQuery),
+    path('test/<str:division>/', stcViews.testQuery),
+    path('getRankingChartData/<str:division>/', stcViews.getRankingChartData),
     path('test2/', stcViews.testQuery2),
 
     ## <-- 현호추가

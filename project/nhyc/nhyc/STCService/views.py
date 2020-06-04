@@ -385,11 +385,10 @@ def testQuery(request, gu=None):
 
 
 @csrf_exempt
-<<<<<<< HEAD
 def testQuery(request, gu):  # areaCode입력 안 할 경우 전체 CCTV 검색
     if request.method == 'GET':
         resultArr = []  # HouseInfo들을 받아내는 최종 결과 배열
-=======
+
 def testQuery2(request):  # 각 구별 월세, 보증금 데이터 읽기. 
     # 분석을 위해 pandas DataFrame 구조로 변환까지 완료
 
@@ -416,7 +415,6 @@ def testQuery2(request):  # 각 구별 월세, 보증금 데이터 읽기.
             'deposit': depositList}
 
     df = pandas.DataFrame(data, index=guList)
->>>>>>> 815dd2dfe8994d37ef275fdcad9e88f193f5e672
 
     for i in df:
         print(df)
@@ -551,17 +549,13 @@ def kakaoJoin(request):
     print(str(propertyKeys))
 
     http = httplib2.Http()
-<<<<<<< HEAD
     response, content = http.request(baseUrl, method="POST", headers={"Authorization" : authorization}, body="property_keys=" + str(propertyKeys))
-=======
     response, content = http.request(baseUrl, method="POST", headers={"Authorization": authorization},
                                      body={"property_keys": propertyKeys})
->>>>>>> 815dd2dfe8994d37ef275fdcad9e88f193f5e672
     content = content.decode("utf-8")
     jsonData = json.loads(content)
     print(jsonData)
 
-<<<<<<< HEAD
     id = jsonData["id"]
     if Member.objects.filter(id=id).count == 0:
         password = ""
@@ -581,6 +575,3 @@ def kakaoJoin(request):
         memberInfo.save()
 
     return HttpResponse(jsonData)
-=======
-    return HttpResponse(jsonData)
->>>>>>> 815dd2dfe8994d37ef275fdcad9e88f193f5e672

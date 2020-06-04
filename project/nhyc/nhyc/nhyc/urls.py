@@ -31,8 +31,7 @@ urlpatterns = [
     path('kakaojoin', stcViews.kakaoJoin, name='kakaoJoin'),
   
     ## 현호추가 -->
-    path('houseInfos/<int:areaCode>/', stcViews.houseInfos),
-    path('houseInfos/', stcViews.houseInfos),
+
     ## 확정 url
     path('getGu/', stcViews.getGu),
     path('getDong/<str:gu>/', stcViews.getDong),
@@ -45,7 +44,7 @@ urlpatterns = [
 
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('test/', stcViews.testQuery),
-    path('test/<str:gu>/', stcViews.testQuery),
+    path('test/<str:ascending>/', stcViews.testQuery),
     path('test2/', stcViews.testQuery2),
 
     ## <-- 현호추가

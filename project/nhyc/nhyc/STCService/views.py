@@ -228,17 +228,67 @@ def getPoliceOfficeCnt(request, gu=None):
 
 # ########################### ↓↓↓↓테스트 코드↓↓↓↓ ###########################
 @csrf_exempt
-def testQuery(request, gu, dong=None):
-    '''
-    :param request:
-    :param gu: 원하는 구
-    :param dong: 원하는 동 ()
-    :return:
-    '''
-    if dong is None:
-        resultXY = Gu.objects.filter(gu=gu)
-    else:
-        resultXY = Address.objects.filter(gu=gu, dong=dong)
+# def testQuery(request, ascending):  # 각 구별 월세, 보증금 데이터 읽기.
+#     # 분석을 위해 pandas DataFrame 구조로 변환까지 완료
+#     # ascending이 안오면 내림차순(비싼 순)으로 정렬 ascending이 true면 오름차순으로 정렬
+#
+#     querySet = Average.objects.raw('''
+#     SELECT gu , avg(rentalFee) as rentalFee, avg(deposit) as deposit
+#     FROM dataProcess_address A
+#     LEFT OUTER JOIN dataProcess_costrecord B
+#     ON A.areaCode = left(B.houseNumber_id, 10)
+#     GROUP BY gu
+#     ORDER BY gu
+#     ''')
+#
+#     resultKeyString = []  # key값(gu)가 저장 될 배열
+#     resultValue1String = []  # value1값(rentalFee)가 저장 될 배열
+#     resultValue2String = []  # value1값(deposit)가 저장 될 배열
+#     guList = []
+#     rentalFeeList = []
+#     depositList = []
+#
+#     for i in querySet:
+#         guList.append(i.gu)
+#         rentalFeeList.append(i.rentalFee)
+#         depositList.append(i.deposit)
+#
+#         # print(i.gu, i.rentalFee, i.deposit)
+#
+#     data = {'gu': guList,
+#             'rentalFee': rentalFeeList,
+#             'deposit': depositList}
+#
+#     df = pandas.DataFrame(data)
+#
+#     # print(df)
+#
+#     rentalFeeRank = df[['gu', 'rentalFee', 'deposit']].copy()
+#     rentalFeeRank['rank'] = rentalFeeRank['rentalFee'] \
+#         .rank(method='min', ascending=True)
+#
+#     if ascending.lower() == 'true':
+#         rentalFeeRank.sort_values(by=['rentalFee'], axis=0, inplace=True, ascending=True)  # 오름차순 (싼 순위)
+#     elif ascending.lower() == 'false':
+#         rentalFeeRank.sort_values(by=['rentalFee'], axis=0, inplace=True, ascending=False)  # 내림차순 (비싼 순위)
+#     else:
+#         return JsonResponse(data.errors, status=400)
+#
+#     # print(rentalFeeRank)
+#
+#     resultKeyString = rentalFeeRank['gu'].tolist()
+#     resultValue1String = rentalFeeRank['rentalFee'].tolist()
+#     resultValue2String = rentalFeeRank['rentalFee'].tolist()
+#
+#     resultValue1String = list(map(str, resultValue1String))  # Decimal 형태의 index들을 단순 string으로 변환
+#     resultString = dict(zip(resultKeyString, resultValueString))
+#
+#     print("resultString >>> ::", resultString)
+#
+#     return myJsonResponse(resultString)
+
+
+# return myJsonResponse(querySet)
 
 
 @csrf_exempt
@@ -336,7 +386,6 @@ def testQuery2(request):  # 각 구별 월세, 보증금 데이터 읽기.
 #             serializer.save()
 #             return JsonResponse(serializer.data, status=201)
 #         return JsonResponse(serializer.errors, status=400)
-
 
 
 ##################### ↓↓↓↓ 당장에 안쓰는 메소드 ↓↓↓↓ #####################

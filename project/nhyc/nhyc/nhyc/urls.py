@@ -42,13 +42,16 @@ urlpatterns = [
     path('getPoliceOfficeCnt/', stcViews.getPoliceOfficeCnt),
     path('getPoliceOfficeCnt/<str:gu>/', stcViews.getPoliceOfficeCnt),
     path('getRankingChartData/<str:division>/', stcViews.getRankingChartData),
+    path('getTrendChartData/<str:division>/<int:term>/', stcViews.getTrendChartData),
+    path('getTrendChartData/<str:division>/<int:term>/<str:gu>', stcViews.getTrendChartData),
 
     ## 테스트 url
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('test/', stcViews.testQuery),
-    path('test/<str:division>/', stcViews.testQuery),
+    path('test/<str:division>/<int:term>/', stcViews.testQuery),
+    path('test/<str:division>/<int:term>/<str:gu>', stcViews.testQuery),
     path('getRankingChartData/<str:division>/', stcViews.getRankingChartData),
-    path('test2/', stcViews.testQuery2),
+    #path('test2/', stcViews.testQuery2),
 
     ## <-- 현호추가
 

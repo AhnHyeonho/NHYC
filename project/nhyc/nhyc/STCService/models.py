@@ -19,3 +19,8 @@ class Result_GuDongCnt(models.Model):
     dong = models.CharField(max_length=50, primary_key=True)
     cnt = models.IntegerField()
 
+
+class TrendChartData(models.Model):
+    date = models.DateField(primary_key=True)
+    avg_rentalFee = models.IntegerField()
+    avg_deposit = models.IntegerField()

@@ -30,7 +30,7 @@ from dataProcess.models import Address
 from .serializers import AddressSerializer
 from dataProcess.models import CostRecord
 from .serializers import CostRecordSerializer
-from .models import Average, Result_GuCnt, Result_GuDongCnt
+from .models import Average, Result_GuCnt, Result_GuDongCnt, TrendChartData
 
 # 서울시 행정구
 seoulGu = {'중구': '10100',
@@ -128,7 +128,7 @@ def getCCTVCnt(request, gu=None):
             group by dong
             order by dong
             ''' % gu)
-        print(querySet)
+        print("querySet ::: ", querySet)
         for i in querySet:
             # print(i.gu, i.dong, i.cnt)
             resultString.append(i.cnt)
@@ -292,115 +292,153 @@ def getRankingChartData(request, division):
     return myJsonResponse(json_data)
 
 
+@csrf_exempt
+def getTrendChartData(request, division, term, gu=None):
+    '''
+    :param request:
+    :param division: rent면 월세, depo면 보증금 추이 차트 리딩
+    :param term: 몇 개월 간의 데이터를 보여줄지 정하는 변수
+    :param gu: 있으면 해당 구의 차트 데이터 리딩
+    :return: 정렬된 구, 월세, 보증금 리스트를 담은 JSON을 리턴
+    '''
+
+    if gu is None:
+        print("서울시 기준 ::: ")
+        queryString = '''
+        SELECT EXTRACT(YEAR_MONTH FROM `day`) as date, avg(rentalFee) as avg_rentalFee, avg(deposit) as avg_deposit
+        FROM dataProcess_costrecord
+        WHERE day >= DATE_ADD(NOW(), INTERVAL -12 MONTH)
+        GROUP BY date
+        ORDER BY date;
+        '''
+    else:
+        print("%s 기준 ::: " % gu)
+        queryString = '''
+        SELECT EXTRACT(YEAR_MONTH FROM `day`) as date, avg(rentalFee) as avg_rentalFee, avg(deposit) as avg_deposit
+        FROM dataProcess_costrecord A
+        LEFT JOIN dataProcess_address B
+        ON LEFT(A.houseNumber_id, 10) = B.areaCode
+        WHERE day >= DATE_ADD(NOW(), INTERVAL -12 MONTH) AND gu = '%s'
+        GROUP BY date
+        ORDER BY date
+        ''' % gu
+    print("querySet ::: ", queryString)
+    querySet = TrendChartData.objects.raw(queryString)
+
+    dataList = []
+    avgRentalFeeList = []
+    avgDepositList = []
+
+    for i in querySet:
+        dataList.append(i.date)
+        avgRentalFeeList.append(i.avg_rentalFee)
+        avgDepositList.append(i.avg_deposit)
+        print(i.date, i.avg_rentalFee, i.avg_deposit)
+
+    avgRentalFeeList = list(map(str, avgRentalFeeList))  # Decimal 형태의 index들을 단순 string으로 변환
+    avgDepositList = list(map(str, avgDepositList))  # Decimal 형태의 index들을 단순 string으로 변환
+
+    json_data = OrderedDict()
+    json_data['dataList'] = dataList[-term:]
+    if division == 'rent':
+        json_data['avgRentalFeeList'] = avgRentalFeeList[-term:]
+    elif division == 'depo':
+        json_data['avgDepositList'] = avgDepositList[-term:]
+
+    return myJsonResponse(json_data)
+
+
 ########################## ↑↑↑↑↑↑↑↑ ############################
 
 
 # ########################### ↓↓↓↓테스트 코드↓↓↓↓ ###########################
 @csrf_exempt
-def testQuery(request, division):
+def testQuery(request, division, term, gu=None):
     '''
     :param request:
-    :param division: rent면 월세기준, depo면 보증금 기준, rent-depo면 월세*12 + 보증금 기준
+    :param division: rent면 월세, depo면 보증금 추이 차트 리딩
+    :param term: 몇 개월 간의 데이터를 보여줄지 정하는 변수
+    :param gu: 있으면 해당 구의 차트 데이터 리딩
     :return: 정렬된 구, 월세, 보증금 리스트를 담은 JSON을 리턴
     '''
 
-    querySet = Average.objects.raw('''
-    SELECT gu , avg(rentalFee) as rentalFee, avg(deposit) as deposit
-    FROM dataProcess_address A
-    LEFT OUTER JOIN dataProcess_costrecord B
-    ON A.areaCode = left(B.houseNumber_id, 10)
-    GROUP BY gu
-    ORDER BY gu
-    ''')
+    if gu is None:
+        print("서울시 기준 ::: ")
+        queryString = '''
+        SELECT EXTRACT(YEAR_MONTH FROM `day`) as date, avg(rentalFee) as avg_rentalFee, avg(deposit) as avg_deposit
+        FROM dataProcess_costrecord
+        WHERE day >= DATE_ADD(NOW(), INTERVAL -12 MONTH)
+        GROUP BY date
+        ORDER BY date;
+        '''
+    else:
+        print("%s 기준 ::: " % gu)
+        queryString = '''
+        SELECT EXTRACT(YEAR_MONTH FROM `day`) as date, avg(rentalFee) as avg_rentalFee, avg(deposit) as avg_deposit
+        FROM dataProcess_costrecord A
+        LEFT JOIN dataProcess_address B
+        ON LEFT(A.houseNumber_id, 10) = B.areaCode
+        WHERE day >= DATE_ADD(NOW(), INTERVAL -12 MONTH) AND gu = '%s'
+        GROUP BY date
+        ORDER BY date
+        ''' % gu
+    print("querySet ::: ", queryString)
+    querySet = TrendChartData.objects.raw(queryString)
 
-    guList = []
-    rentalFeeList = []
-    depositList = []
+    dataList = []
+    avgRentalFeeList = []
+    avgDepositList = []
 
     for i in querySet:
-        guList.append(i.gu)
-        rentalFeeList.append(i.rentalFee)
-        depositList.append(i.deposit)
+        dataList.append(i.date)
+        avgRentalFeeList.append(i.avg_rentalFee)
+        avgDepositList.append(i.avg_deposit)
+        print(i.date, i.avg_rentalFee, i.avg_deposit)
 
-        # print(i.gu, i.rentalFee, i.deposit)
-
-    data = {'gu': guList,
-            'rentalFee': rentalFeeList,
-            'deposit': depositList}
-
-    df = pandas.DataFrame(data)
-
-    # print(df)
-
-    rentalFeeRank = df[['gu', 'rentalFee', 'deposit']].copy()
-
-    if division == 'rent':
-        # 월세 기준
-        print('월세 기준 >> :::')
-        rentalFeeRank['rank'] = rentalFeeRank['rentalFee'].rank(method='min', ascending=True)  # 낮은 가격순으로 순위 저장
-        rentalFeeRank.sort_values(by=['rentalFee'], axis=0, inplace=True, ascending=True)  # 낮은 순위부터 정렬
-    elif division == 'depo':
-        # 보증금 기준
-        print('보증금 기준 >> :::')
-        rentalFeeRank['rank'] = rentalFeeRank['deposit'].rank(method='min', ascending=True)  # 낮은 가격순으로 순위 저장
-        rentalFeeRank.sort_values(by=['deposit'], axis=0, inplace=True, ascending=True)  # 낮은 순위부터 정렬
-    elif division == 'rent-depo':
-        # 월세 1년치(12개월) + 보증금 기준
-        print('월세 1년치(12개월) + 보증금 기준 >> :::')
-        rentalFeeRank['year-rent'] = rentalFeeRank['rentalFee'] * 12  # 12개월치 월세
-        rentalFeeRank['rent-deposit'] = rentalFeeRank['year-rent'] + rentalFeeRank['deposit']  # 12개월치 월세 + 보증금
-        rentalFeeRank['rank'] = rentalFeeRank['rent-deposit'].rank(method='min', ascending=True)  # 낮은 가격순으로 순위 저장
-        rentalFeeRank.sort_values(by=['deposit'], axis=0, inplace=True, ascending=True)  # 낮은 순위부터 정렬
-    else:
-        return JsonResponse(data.errors, status=400)
-
-    print(rentalFeeRank)
-
-    guList = rentalFeeRank['gu'].tolist()
-    rentalFeeList = rentalFeeRank['rentalFee'].tolist()
-    depositList = rentalFeeRank['deposit'].tolist()
-    rentalFeeList = list(map(str, rentalFeeList))  # Decimal 형태의 index들을 단순 string으로 변환
-    depositList = list(map(str, depositList))  # Decimal 형태의 index들을 단순 string으로 변환
+    avgRentalFeeList = list(map(str, avgRentalFeeList))  # Decimal 형태의 index들을 단순 string으로 변환
+    avgDepositList = list(map(str, avgDepositList))  # Decimal 형태의 index들을 단순 string으로 변환
 
     json_data = OrderedDict()
-    json_data['gu'] = guList
-    json_data['rentalFee'] = rentalFeeList
-    json_data['deposit'] = depositList
+    json_data['dataList'] = dataList[-term:]
+    if division == 'rent':
+        json_data['avgRentalFeeList'] = avgRentalFeeList[-term:]
+    elif division == 'depo':
+        json_data['avgDepositList'] = avgDepositList[-term:]
 
     return myJsonResponse(json_data)
 
 
-def testQuery2(request):  # 각 구별 월세, 보증금 데이터 읽기. 
-    # 분석을 위해 pandas DataFrame 구조로 변환까지 완료
-
-    querySet = Average.objects.raw('''
-    SELECT gu , avg(rentalFee) as rentalFee, avg(deposit) as deposit 
-    FROM dataProcess_address A 
-    LEFT OUTER JOIN dataProcess_costrecord B 
-    ON A.areaCode = left(B.houseNumber_id, 10) 
-    GROUP BY gu
-    ORDER BY gu
-    ''')
-    guList = []
-    rentalFeeList = []
-    depositList = []
-
-    for i in querySet:
-        guList.append(i.gu)
-        rentalFeeList.append(i.rentalFee)
-        depositList.append(i.deposit)
-
-        print(i.gu, i.rentalFee, i.deposit)
-
-    data = {'rentalFee': rentalFeeList,
-            'deposit': depositList}
-
-    df = pandas.DataFrame(data, index=guList)
-
-    for i in df:
-        print(df)
-
-    return myJsonResponse(querySet)
+# def testQuery2(request):  # 각 구별 월세, 보증금 데이터 읽기.
+#     # 분석을 위해 pandas DataFrame 구조로 변환까지 완료
+#
+#     querySet = Average.objects.raw('''
+#     SELECT gu , avg(rentalFee) as rentalFee, avg(deposit) as deposit
+#     FROM dataProcess_address A
+#     LEFT OUTER JOIN dataProcess_costrecord B
+#     ON A.areaCode = left(B.houseNumber_id, 10)
+#     GROUP BY gu
+#     ORDER BY gu
+#     ''')
+#     guList = []
+#     rentalFeeList = []
+#     depositList = []
+#
+#     for i in querySet:
+#         guList.append(i.gu)
+#         rentalFeeList.append(i.rentalFee)
+#         depositList.append(i.deposit)
+#
+#         print(i.gu, i.rentalFee, i.deposit)
+#
+#     data = {'rentalFee': rentalFeeList,
+#             'deposit': depositList}
+#
+#     df = pandas.DataFrame(data, index=guList)
+#
+#     for i in df:
+#         print(df)
+#
+#     return myJsonResponse(querySet)
 
 
 # ########################### ↑↑↑↑테스트 코드↑↑↑↑ ###########################

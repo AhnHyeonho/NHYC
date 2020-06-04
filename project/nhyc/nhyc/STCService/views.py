@@ -165,7 +165,7 @@ def getSecurityLightCnt(request, gu=None):
     else:
         querySet = Result_GuDongCnt.objects.raw('''
             select gu, dong, count(lightId) as cnt
-            from dataprocess_address A
+            from dataProcess_address A
             left outer join dataProcess_securitylight B
             on A.areaCode = B.areaCode_id
             where gu = '%s'

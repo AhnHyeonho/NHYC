@@ -40,8 +40,9 @@ urlpatterns = [
     path('getSecurityLightCnt/', stcViews.getSecurityLightCnt),
     path('getSecurityLightCnt/<str:gu>/', stcViews.getSecurityLightCnt),
     path('getPoliceOfficeCnt/', stcViews.getPoliceOfficeCnt),
-    path('getPoliceOfficeCnt/<str:gu>/', stcViews.getPoliceOfficeCnt),
+    path('getPoliceOfficeCnt/<str:gfiu>/', stcViews.getPoliceOfficeCnt),
     path('getRankingChartData/<str:division>/', stcViews.getRankingChartData),
+    path('getRankingChartData/<str:division>/<str:gu>', stcViews.getRankingChartData),
     path('getTrendChartData/<str:division>/<int:term>/', stcViews.getTrendChartData),
     path('getTrendChartData/<str:division>/<int:term>/<str:gu>', stcViews.getTrendChartData),
 
@@ -51,7 +52,7 @@ urlpatterns = [
     path('test/<str:division>/<int:term>/', stcViews.testQuery),
     path('test/<str:division>/<int:term>/<str:gu>', stcViews.testQuery),
     path('getRankingChartData/<str:division>/', stcViews.getRankingChartData),
-    #path('test2/', stcViews.testQuery2),
+    # path('test2/', stcViews.testQuery2),
 
     ## <-- 현호추가
 

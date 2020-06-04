@@ -226,21 +226,38 @@ def getPoliceOfficeCnt(request, gu=None):
 
 
 @csrf_exempt
-def getRankingChartData(request, division):
+def getRankingChartData(request, division, gu=None):
     '''
     :param request:
     :param division: rent면 월세기준, depo면 보증금 기준, rent-depo면 월세*12 + 보증금 기준
+    :param gu: 있으면 해당 구의 차트 데이터 리딩
     :return: 정렬된 구, 월세, 보증금 리스트를 담은 JSON을 리턴
     '''
 
-    querySet = Average.objects.raw('''
-    SELECT gu , avg(rentalFee) as rentalFee, avg(deposit) as deposit
-    FROM dataProcess_address A
-    LEFT OUTER JOIN dataProcess_costrecord B
-    ON A.areaCode = left(B.houseNumber_id, 10)
-    GROUP BY gu
-    ORDER BY gu
-    ''')
+    if gu is None:
+        print("서울시 기준 ::: ")
+        queryString = '''
+        SELECT gu , avg(rentalFee) as rentalFee, avg(deposit) as deposit
+        FROM dataProcess_address A
+        LEFT OUTER JOIN dataProcess_costrecord B
+        ON A.areaCode = left(B.houseNumber_id, 10)
+        GROUP BY gu
+        ORDER BY gu
+        '''
+
+    else:
+        print("%s 기준 ::: " % gu)
+        queryString = '''
+        SELECT dong as gu, avg(rentalFee) as rentalFee, avg(deposit) as deposit
+        FROM dataProcess_address A
+        LEFT OUTER JOIN dataProcess_costrecord B
+        ON A.areaCode = left(B.houseNumber_id, 10)
+        WHERE gu = '%s'
+        GROUP BY dong
+        ORDER BY dong
+        ''' % gu
+
+    querySet = Average.objects.raw(queryString)
 
     guList = []
     rentalFeeList = []

@@ -16,6 +16,8 @@ import httplib2
 
 from dataProcess.models import Member
 from .serializers import MemberSerializer
+from dataProcess.models import MemberInfo
+from .serializers import MemberInfoSerializer
 from dataProcess.models import HouseInfo
 from .serializers import HouseInfoSerializer
 from dataProcess.models import CCTV
@@ -221,26 +223,6 @@ GROUP BY left(A.houseNumber_id ,5)
 # ########################### ↑↑↑↑테스트 코드↑↑↑↑ ###########################
 
 @csrf_exempt
-def Member(request, id):
-    if request.method == 'GET':
-        if id is not None:
-            query_set = Member.objects.filter(id=id)
-        else:
-            query_set = Member.objects.all()
-
-        serializer = MemberSerializer(query_set, many=True)
-        return JsonResponse(serializer.data, safe=False)  # << 이부분을 입맛에 따라 변경. 현재는 Json List 형식으로 리턴.
-
-    elif request.method == 'POST':
-        data = JSONParser().parse(request)
-        serializer = MemberSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
-
-
-@csrf_exempt
 def testQuery(request, gu):  # areaCode입력 안 할 경우 전체 CCTV 검색
     if request.method == 'GET':
         resultArr = []  # HouseInfo들을 받아내는 최종 결과 배열
@@ -356,16 +338,35 @@ def getCCTVsInSi(request, si, gu=None):
 
 ######################### Login ####################################
 
-def login(request):
+def kakaoJoin(request):
     accessToken = request.headers["AccessToken"]
     baseUrl = "https://kapi.kakao.com/v2/user/me"
     authorization = "Bearer " + accessToken
     propertyKeys = ["properties.nickname", "kakao_account.age_range", "kakao_account.gender"]
+    print(str(propertyKeys))
 
     http = httplib2.Http()
-    response, content = http.request(baseUrl, method="POST", headers={"Authorization" : authorization}, body={"property_keys" : propertyKeys})
+    response, content = http.request(baseUrl, method="POST", headers={"Authorization" : authorization}, body="property_keys=" + str(propertyKeys))
     content = content.decode("utf-8")
     jsonData = json.loads(content)
     print(jsonData)
+
+    id = jsonData["id"]
+    if Member.objects.filter(id=id).count == 0:
+        password = ""
+        name = jsonData["properties"]["nickname"]
+        member = Member(id=id, password=password, name=name)
+        member.save()
+
+        memberInfo = MemberInfo(member=member, gender=None, age_range=None, money=None)
+        if (jsonData["kakao_account"]["age_range_needs_agreement"] == "False" and jsonData["kakao_account"]["has_age_range"] == "True"):
+            age_range = jsonData["kakao_account"]["age_range"]
+            setattr(memberInfo, "age_range", age_range)
+
+        if (jsonData["kakao_account"]["gender_needs_agreement"] == "False" and jsonData["kakao_account"]["has_gender"] == "True"):
+            gender = jsonData["kakao_account"]["gender"]
+            setattr(memberInfo, "gender", gender)
+
+        memberInfo.save()
 
     return HttpResponse(jsonData)

@@ -8,19 +8,32 @@ class Member(models.Model):
     def __str__(self):
         return self.id
 
+class Gu(models.Model):
+    areaCode = models.CharField(max_length=10, primary_key=True)
+    si = models.CharField(max_length=50)
+    gu = models.CharField(max_length=50)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+
+    def __str__(self):
+        return self.areaCode
+
 class Address(models.Model):
     areaCode = models.CharField(max_length=10, primary_key=True)
     si = models.CharField(max_length=50)
     gu = models.CharField(max_length=50)
     dong = models.CharField(max_length=50)
+    latitude = models.FloatField(null=True)
+    longitude = models.FloatField(null=True)
+
     def __str__(self):
         return self.areaCode
 
 class MemberInfo(models.Model):
     member = models.OneToOneField('Member', on_delete=models.CASCADE, default=None)
-    gender = models.CharField(max_length=1)
-    birth = models.CharField(max_length=4)
-    money = models.IntegerField()
+    gender = models.CharField(max_length=1, null=True)
+    age_range = models.CharField(max_length=10, null=True)
+    money = models.IntegerField(null=True)
 
     def __str__(self):
         return self.id

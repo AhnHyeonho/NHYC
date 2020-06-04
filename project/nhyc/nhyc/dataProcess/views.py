@@ -45,13 +45,12 @@ def getAddress(reqeust):
     return HttpResponse()
 
 
-def getHouseInfo(request):
+def getHouseInfo(request, num):
     url = "http://openapi.seoul.go.kr:8088/545149464a73696c39326f47667644/json/houseRentPriceInfo/"
-    start = 1
-    end = 1000
+    start = num
+    end = num + 999
 
     while (True):
-
         http = httplib2.Http()
         finalurl = url + str(start) + "/" + str(end)
         response, content = http.request(finalurl, "GET")
@@ -139,20 +138,22 @@ def getCCTV(request):
 
                 http = urllib.request.Request(url)
                 response = urllib.request.urlopen(http)
-                content = response.read()
-                content = content.decode("utf-8")
-                jsonData = json.loads(content)
-                resultCode = jsonData["response"]["status"]
-                if resultCode == "OK":
-                    code = jsonData["response"]["result"]["items"][0]["id"]
-                    code = code[0:10]
+                print(response.status)
+                if(response.status == 200):
+                    content = response.read()
+                    content = content.decode("utf-8")
+                    jsonData = json.loads(content)
+                    resultCode = jsonData["response"]["status"]
+                    if resultCode == "OK":
+                        code = jsonData["response"]["result"]["items"][0]["id"]
+                        code = code[0:10]
 
-                    areaCode = Address.objects.get(areaCode = code)
-                    print(areaCode.gu + " " + areaCode.dong)
-                    cctv = CCTV(latitude=latitude, longitude=longitude, areaCode=areaCode)
-                    cctv.save()
-                else:
-                    print(address)
+                        areaCode = Address.objects.get(areaCode = code)
+                        print(areaCode.gu + " " + areaCode.dong)
+                        cctv = CCTV(latitude=latitude, longitude=longitude, areaCode=areaCode)
+                        cctv.save()
+                    else:
+                        print(address)
 
     return HttpResponse(fields)
 
@@ -225,30 +226,28 @@ def getPoliceOffice(request):
             content = response.read()
             content = content.decode("utf-8")
             jsonData = json.loads(content)
-            print(jsonData)
 
-            url = baseUrl + "?request=search&type=address&category=road&size=1&key=" + key + "&query=" + quote(
-                jsonData["response"]["result"]["items"][0]["address"]["road"])
-            print(url)
-            http = urllib.request.Request(url)
-            response = urllib.request.urlopen(http)
-            content = response.read()
-            content = content.decode("utf-8")
-            jsonData = json.loads(content)
+            if jsonData["response"]["status"] == "OK":
+                url = baseUrl + "?request=search&type=address&category=road&size=1&key=" + key + "&query=" + quote(
+                    jsonData["response"]["result"]["items"][0]["address"]["road"])
+                http = urllib.request.Request(url)
+                response = urllib.request.urlopen(http)
+                content = response.read()
+                content = content.decode("utf-8")
+                jsonData = json.loads(content)
 
-            resultCode = jsonData["response"]["status"]
-            print(jsonData)
-            if resultCode == "OK":
-                code = jsonData["response"]["result"]["items"][0]["id"]
-                code = code[0:10]
-                print(code)
-                if Address.objects.filter(areaCode=code).count() == 1:
-                    areaCode = Address.objects.get(areaCode=code)
-                    print(areaCode.gu + " " + areaCode.dong)
-                    policeOffice = PoliceOffice(latitude=latitude, longitude=longitude, policeOfficeName=policeOfficeName,areaCode=areaCode)
-                    policeOffice.save()
+                resultCode = jsonData["response"]["status"]
+                if resultCode == "OK":
+                    code = jsonData["response"]["result"]["items"][0]["id"]
+                    code = code[0:10]
+                    print(code)
+                    if Address.objects.filter(areaCode=code).count() == 1:
+                        areaCode = Address.objects.get(areaCode=code)
+                        print(areaCode.gu + " " + areaCode.dong)
+                        policeOffice = PoliceOffice(latitude=latitude, longitude=longitude, policeOfficeName=policeOfficeName, areaCode=areaCode)
+                        policeOffice.save()
+                    else:
+                        print(address + " failed 2")
                 else:
-                    print(address + " failed 2")
-            else:
-                print(address + " failed")
+                    print(address + " failed")
     return HttpResponse(csv)

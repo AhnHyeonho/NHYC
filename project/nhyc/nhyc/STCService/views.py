@@ -16,6 +16,8 @@ import httplib2
 
 from dataProcess.models import Member
 from .serializers import MemberSerializer
+from dataProcess.models import MemberInfo
+from .serializers import MemberInfoSerializer
 from dataProcess.models import HouseInfo
 from .serializers import HouseInfoSerializer
 from dataProcess.models import CCTV
@@ -383,6 +385,11 @@ def testQuery(request, gu=None):
 
 
 @csrf_exempt
+<<<<<<< HEAD
+def testQuery(request, gu):  # areaCode입력 안 할 경우 전체 CCTV 검색
+    if request.method == 'GET':
+        resultArr = []  # HouseInfo들을 받아내는 최종 결과 배열
+=======
 def testQuery2(request):  # 각 구별 월세, 보증금 데이터 읽기. 
     # 분석을 위해 pandas DataFrame 구조로 변환까지 완료
 
@@ -409,6 +416,7 @@ def testQuery2(request):  # 각 구별 월세, 보증금 데이터 읽기.
             'deposit': depositList}
 
     df = pandas.DataFrame(data, index=guList)
+>>>>>>> 815dd2dfe8994d37ef275fdcad9e88f193f5e672
 
     for i in df:
         print(df)
@@ -535,17 +543,44 @@ def getCCTVsInSi(request, si, gu=None):
 
 ######################### Login ####################################
 
-def login(request):
+def kakaoJoin(request):
     accessToken = request.headers["AccessToken"]
     baseUrl = "https://kapi.kakao.com/v2/user/me"
     authorization = "Bearer " + accessToken
     propertyKeys = ["properties.nickname", "kakao_account.age_range", "kakao_account.gender"]
+    print(str(propertyKeys))
 
     http = httplib2.Http()
+<<<<<<< HEAD
+    response, content = http.request(baseUrl, method="POST", headers={"Authorization" : authorization}, body="property_keys=" + str(propertyKeys))
+=======
     response, content = http.request(baseUrl, method="POST", headers={"Authorization": authorization},
                                      body={"property_keys": propertyKeys})
+>>>>>>> 815dd2dfe8994d37ef275fdcad9e88f193f5e672
     content = content.decode("utf-8")
     jsonData = json.loads(content)
     print(jsonData)
 
+<<<<<<< HEAD
+    id = jsonData["id"]
+    if Member.objects.filter(id=id).count == 0:
+        password = ""
+        name = jsonData["properties"]["nickname"]
+        member = Member(id=id, password=password, name=name)
+        member.save()
+
+        memberInfo = MemberInfo(member=member, gender=None, age_range=None, money=None)
+        if (jsonData["kakao_account"]["age_range_needs_agreement"] == "False" and jsonData["kakao_account"]["has_age_range"] == "True"):
+            age_range = jsonData["kakao_account"]["age_range"]
+            setattr(memberInfo, "age_range", age_range)
+
+        if (jsonData["kakao_account"]["gender_needs_agreement"] == "False" and jsonData["kakao_account"]["has_gender"] == "True"):
+            gender = jsonData["kakao_account"]["gender"]
+            setattr(memberInfo, "gender", gender)
+
+        memberInfo.save()
+
     return HttpResponse(jsonData)
+=======
+    return HttpResponse(jsonData)
+>>>>>>> 815dd2dfe8994d37ef275fdcad9e88f193f5e672

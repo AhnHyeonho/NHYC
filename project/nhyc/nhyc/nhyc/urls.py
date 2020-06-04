@@ -24,10 +24,11 @@ from STCService import views as stcViews  ### 현호추가
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('admin/addresses', dpviews.getAddress, name='getAddress'),
-    path('admin/houseinfos', dpviews.getHouseInfo, name='getHouseInfo'),
+    path('admin/houseinfos/<int:num>', dpviews.getHouseInfo, name='getHouseInfo'),
     path('admin/cctvs', dpviews.getCCTV, name='getCCTV'),
     path('admin/securitylights', dpviews.getSecurityLight, name='getSecurityLight'),
     path('admin/policeoffices', dpviews.getPoliceOffice, name='getPoliceOffice'),
+    path('kakaojoin', stcViews.kakaoJoin, name='kakaoJoin'),
   
     ## 현호추가 -->
     path('houseInfos/<int:areaCode>/', stcViews.houseInfos),

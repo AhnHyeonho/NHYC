@@ -3,10 +3,9 @@ import './App.css';
 import Header from './Page/Header';
 import Footer from './Page/Footer';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
-import { About, MapInfo, Recommand } from './Page';
+import { About, MapInfo, Recommand, Login } from './Page';
 
 function App() {
-
 
   return (
     <Router>
@@ -22,6 +21,7 @@ function App() {
         <Route exact path='/about' component={About} />
         <Route path='/map' component={MapInfo} />
         <Route path='/recommand' component={Recommand} />
+        <Route path='/login' component={Login} />
       </div>
 
       {/* footer */}

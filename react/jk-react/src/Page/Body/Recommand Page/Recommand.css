@@ -1,29 +1,25 @@
 /* 전체 페이지 틀 */
-.recommand-page.container {
+.recommand-page-container {
     position: relative;
-    margin: 100px 70px 100px 70px;
-    width: 100vw;
-    height: auto;
+    width: 100%;
+    height: 100%;
+    padding: 0px;
+    padding-left: 100px;
+    padding-right: 100px;
 }
+
+
 
 /* title section */
-.recommand-page.section.title {
-    /* div 내부 vertical-align 주는 방법 - display, align-items 동시에 주기 */
+.recommand-page-section-title {
     position: relative;
-
+    /* div 내부 vertical-align 주는 방법 - display, align-items 동시에 주기 */
     display: flex;
     align-items: center;
+    margin-top: 80px;
+    margin-bottom: 20px;
 }
 
-.recommand-page.section.map{    
-
-    position: relative;
-    display: inline-block;
-    margin-top: 10px;
-    width: 70%;
-    width: 100%;
-
-}
 
 /* 상단 타이틀 오렌지색 바 */
 .decorate-bar {
@@ -40,7 +36,6 @@
 
 .recommand-databoard {
     display: inline-block;
-    width: 100%;
     height: fit-content;
 }
 

@@ -10,8 +10,8 @@ import Paper from '@material-ui/core/Paper';
 
 const StyledTableCell = withStyles((theme) => ({
     head: {
-      backgroundColor: theme.palette.common.black,
-      color: theme.palette.common.white,
+      backgroundColor: theme.palette.common.white,
+      color: theme.palette.common.black,
     },
     body: {
       fontSize: 14,
@@ -32,17 +32,17 @@ function createData(rank1, name1, rank2, name2) {
 // 
 const rows = [
     createData(1, '서울특별시 성북구 성북동', 2, '서울특별시 노원구 방학동'),
-    createData(1, '서울특별시 성북구 성북동', 2, '서울특별시 노원구 방학동'),
-    createData(1, '서울특별시 성북구 성북동', 2, '서울특별시 노원구 방학동'),
-    createData(1, '서울특별시 성북구 성북동', 2, '서울특별시 노원구 방학동'),
+    createData(3, '서울특별시 성북구 성북동', 4, '서울특별시 노원구 방학동'),
+    createData(4, '서울특별시 성북구 성북동', 5, '서울특별시 노원구 방학동'),
+    createData(6, '서울특별시 성북구 성북동', 2, '서울특별시 노원구 방학동'),
 ];
 
 // Header colums
 const columns = [
-    { id: 'rank1', align: 'left', label: '순위', minWidth: 40 },
-    { id: 'name1', align: 'left', label: '지역명', minWidth: 80 },
-    { id: 'rank2', align: 'left', label: '순위', minWidth: 40 },
-    { id: 'name2', align: 'left', label: '지역명', minWidth: 80 }
+    { id: 'rank1', align: 'left', label: '순위', minWidth: 20 },
+    { id: 'name1', align: 'left', label: '지역명', minWidth: 100 },
+    { id: 'rank2', align: 'left', label: '순위', minWidth: 20 },
+    { id: 'name2', align: 'left', label: '지역명', minWidth: 100 }
 ];
 
 const useStyles = makeStyles({
@@ -73,7 +73,6 @@ export default function RecommandTable() {
     return (
 
         <TableContainer component={Paper}>
-
             <Table className={classes.table} size="small" aria-label="customized table">
 
                 {/* 테이블 헤더 */}
@@ -98,21 +97,15 @@ export default function RecommandTable() {
 
                     {rows.map((row) => (
                         <StyledTableRow 
-                            key={row.name} 
-                            StyledTableRow={StyledTableRow} 
-                            StyledTableCell={StyledTableCell}
+// x                            key={row.ran} 
                         >
-                            <StyledTableCell align="right">{row.name1}</StyledTableCell>
                             <StyledTableCell align="right">{row.rank1}</StyledTableCell>
+                            <StyledTableCell align="right">{row.name1}</StyledTableCell>
                             <StyledTableCell align="right">{row.rank2}</StyledTableCell>
                             <StyledTableCell align="right">{row.name2}</StyledTableCell>
-
                         </StyledTableRow>
                     ))}
-                    
                 </TableBody>
-
-
             </Table>
         </TableContainer>
     );

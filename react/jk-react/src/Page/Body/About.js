@@ -8,6 +8,7 @@ import Carousel from 'react-bootstrap/Carousel'
 import LineGraph from './Component/LineGraph'
 
 
+
 import './About.css';
 
 class About extends React.Component{
@@ -19,7 +20,7 @@ class About extends React.Component{
                 <div className="app-body-about">
 
                     <div className ="logo-image-wrapper-wrapper">
-                        <div className = "logo-image-wrapper"><LineGraph/><img className="logo1" src={logo}/><div className="middle-bar" /></div>
+                        <div className = "logo-image-wrapper"><img className="logo1" src={logo}/><div className="middle-bar" /></div>
                     </div>
 
                     <div className ="middle-bar-image-wrapper-wrapper">
@@ -52,7 +53,7 @@ class About extends React.Component{
                     {/* 여기에 carousel 넣어야함*/}
 
                     <div className ="content-wrapper">
-                        <div className ="cotent">대학생들을 위한 월세 실거래가 추이 제공 및 거주 지역 및 매물 추천</div>
+                        <div className ="cotent">구/동별 월세/보증금 실거래가 평균, 월세 가격 순위 및 추이 조회</div>
                     </div>
                     
                     <div className ="button1-image-wrapper-wrapper">
@@ -68,9 +69,6 @@ class About extends React.Component{
 
                 <Carousel.Item style={{'height':"90vh"}}>  
                 <div className="app-body-about">
-
-
-                    
                     <img className ="background-image" src={backImg}/>
                 </div> 
                 <Carousel.Caption>  
@@ -78,19 +76,15 @@ class About extends React.Component{
                 </Carousel.Caption>  
                 </Carousel.Item  >   
 
-            </Carousel>  
-   
-  
-
-
-
-
-
-
-            
-     
+            </Carousel> 
         )
     }
+
 }
       
 export default About;
+
+
+
+// 구/동별 월세/보증금 실거래가 평균, 월세 가격 순위 및 추이 조회
+// 추천지역 리스트 제공

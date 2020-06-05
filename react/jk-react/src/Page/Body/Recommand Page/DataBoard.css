@@ -1,0 +1,30 @@
+.recommand-databoard {
+    display: inline-block;
+    position: relative;
+    width: 40%;
+    height: 70vh;
+    background-color: orangered;
+}
+
+
+.recommand-databoard-title {
+    width: 100%;
+    height: fit-content;
+    background-color: orchid;
+    position: relative;
+    display: block;
+}
+
+.recommand-databoard-item-title {
+    width: 100%;
+    background-color: palegreen;
+    height: fit-content;
+    position: relative;
+}
+
+.recommand-databoard-item {
+    width: 100%;
+    background-color: skyblue;
+    height: fit-content;
+    position: relative;
+}

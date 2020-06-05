@@ -1,19 +1,23 @@
 .recommand-databoard {
     display: inline-block;
     position: relative;
-    width: 40%;
+    width: 35%;
     height: 70vh;
     background-color: orangered;
+    overflow: scroll;
 }
 
 
 .recommand-databoard-title {
     width: 100%;
-    height: fit-content;
+    height: 6%;
     background-color: orchid;
     position: relative;
     display: block;
+    left: inherit;
+    top: inherit;
 }
+
 
 .recommand-databoard-item-title {
     width: 100%;
@@ -21,6 +25,7 @@
     height: fit-content;
     position: relative;
 }
+
 
 .recommand-databoard-item {
     width: 100%;

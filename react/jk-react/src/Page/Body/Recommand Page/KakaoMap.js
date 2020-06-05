@@ -32,7 +32,7 @@ class KakaoMap extends React.Component {
     render() {
 
         return (
-            <div id='recommand-map' style={{width: "60%", height: "70vh", position: "relative", display:"inline-block"}}></div>
+            <div id='recommand-map' style={{width: "65%", height: "70vh", position: "relative", display:"inline-block"}}></div>
         )
     }
 }

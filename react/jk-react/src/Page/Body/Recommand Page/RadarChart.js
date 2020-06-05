@@ -3,11 +3,11 @@ import {Radar} from "react-chartjs-2"
 
 const radarData = {
 
-    labels: ['HP', 'Attack', 'Defense', 'Sp. Attack', 'Sp. Def', 'Speed'],
+    labels: ['보안', '월세', '보증금', '시설', 'Sp. Def', 'Speed'],
 
     datasets: [
       {
-        label: 'Charmander',
+        label: 'a',
         backgroundColor: 'rgba(255, 255, 153, 0.2)',
         borderColor:  'rgba(255, 255, 153, 1)',
         pointBorderColor: 'rgba(255, 255, 153, 1)',
@@ -16,7 +16,7 @@ const radarData = {
         data: [39, 52, 43, 60, 50, 65]
       },
       {
-        label: 'Charmeleon',
+        label: 'b',
         backgroundColor: 'rgba(255, 153, 51, 0.2)',
         borderColor: 'rgba(255, 153, 51, 1)',
         pointBorderColor: 'rgba(255, 153, 51, 1)',
@@ -25,7 +25,7 @@ const radarData = {
         data: [58, 64, 58, 80, 65, 80]
       },
       {
-        label: 'Charizard',
+        label: 'c',
         backgroundColor: 'rgba(255, 0, 0, 0.2)',
         borderColor: 'rgba(255, 0, 0, 1)',
         pointBorderColor: 'rgba(255, 0, 0, 1)',

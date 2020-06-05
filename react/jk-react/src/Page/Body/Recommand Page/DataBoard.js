@@ -27,9 +27,23 @@ class DataBoard extends React.Component {
 
                 {/* 2. 추천 지표 그래프  */}
                 <div className="recommand-databoard-item">
-                    <div className="recommand-databoard-item-title"> 추천 지표 </div>
+                    <div className="recommand-databoard-item-title"> 지역별 월세/보증금 및 시설 현황 </div>  
+                    {/* 타이틀 옆에 아이콘 추가해서 마우스 오버시 팝업으로 설명 확인할 수 있도록 하기 */}
                     <RadarChart width={500} height={500}/>
                 </div>
+
+                {/* 3. 추천 지표 그래프  */}
+                <div className="recommand-databoard-item">
+                    <div className="recommand-databoard-item-title"> 사용자 선호 </div>
+                    <RadarChart width={500} height={500}/>
+                </div>
+
+                {/* 4. 대중 교통 추천 섹션   */}
+                <div className="recommand-databoard-item">
+                    <div className="recommand-databoard-item-title"> 추천지역 접근성 비교 </div>
+                </div>
+
+            
 
             </div >
         )

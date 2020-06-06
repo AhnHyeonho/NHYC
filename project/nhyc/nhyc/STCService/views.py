@@ -30,6 +30,7 @@ from dataProcess.models import Address
 from .serializers import AddressSerializer
 from dataProcess.models import CostRecord
 from .serializers import CostRecordSerializer
+from .models import Average, Result_GuCnt, Result_GuDongCnt
 from .models import Average, Result_GuCnt, Result_GuDongCnt, TrendChartData
 
 # 서울시 행정구
@@ -646,10 +647,14 @@ def kakaoJoin(request):
     print(str(propertyKeys))
 
     http = httplib2.Http()
+<<<<<<< HEAD
+    response, content = http.request(baseUrl, method="POST", headers={"Authorization" : authorization}, body="property_keys=" + str(propertyKeys))
+=======
     response, content = http.request(baseUrl, method="POST", headers={"Authorization": authorization},
                                      body="property_keys=" + str(propertyKeys))
     response, content = http.request(baseUrl, method="POST", headers={"Authorization": authorization},
                                      body={"property_keys": propertyKeys})
+>>>>>>> 09d41fa902c7a61cdf18790b53e5a60a8a7abe75
     content = content.decode("utf-8")
     jsonData = json.loads(content)
     print(jsonData)

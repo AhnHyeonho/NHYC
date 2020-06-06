@@ -113,7 +113,7 @@ def getCCTV(request):
 
     for fileName in fileList:
         csv = pandas.read_csv(os.path.join(cctvPath, fileName), encoding="CP949")
-        
+
         for i in csv.index:
             gu = ""
             dong = ""
@@ -226,8 +226,9 @@ def getSecurityLight(request):
                     latitude = geocode["addresses"][0]["y"]
                     longitude = geocode["addresses"][0]["x"]
                     addressSplit = geocode["addresses"][0]["jibunAddress"].split()
-                    gu = addressSplit[1]
-                    dong = addressSplit[2]
+                    if len(addressSplit) > 2:
+                        gu = addressSplit[1]
+                        dong = addressSplit[2]
             if Address.objects.filter(gu=gu, dong=dong).count == 1:
                 areaCode = Address.objects.get(gu=gu, dong=dong)
                 if SecurityLight.objects.filter(areaCode = areaCode.areaCode):

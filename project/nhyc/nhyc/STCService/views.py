@@ -31,6 +31,7 @@ from .serializers import AddressSerializer
 from dataProcess.models import CostRecord
 from .serializers import CostRecordSerializer
 from .models import Average, Result_GuCnt, Result_GuDongCnt
+from .models import Average, Result_GuCnt, Result_GuDongCnt, TrendChartData
 
 # 서울시 행정구
 seoulGu = {'중구': '10100',
@@ -66,6 +67,462 @@ seoulGu = {'중구': '10100',
 
 #####
 ########################## ↓↓↓↓↓↓↓↓ ############################
+@csrf_exempt
+def myJsonResponse(data):
+    return HttpResponse(json.dumps(data, ensure_ascii=False))
+
+
+@csrf_exempt
+def getGu(request):
+    # 구 이름만 배열로..
+    returnString = []
+    for i in seoulGu:
+        returnString.append(i)
+        print(i)
+    returnString.sort()  # 구 내용 정렬
+    return myJsonResponse(returnString)
+
+
+@csrf_exempt
+def getDong(request, gu):
+    # 구이름 입력하면 동 리스트 리턴
+    resultString = []
+    querySet = Address.objects.filter(gu=gu).order_by('dong')
+    for i in querySet:
+        resultString.append(i.dong)
+        print(i.dong)
+    return myJsonResponse(resultString)
+
+
+@csrf_exempt
+def getCCTVCnt(request, gu=None):
+    '''
+    :param request: 
+    :param gu: 
+    :return: 서울시 내의 구들의 cctv 갯수를 리턴. (구이름으로 정렬된 데이터)
+             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 cctv 갯수를 리턴 (동이름으로 정렬된 데이터)
+    '''
+
+    resultString = []
+
+    if gu is None:
+        querySet = Result_GuCnt.objects.raw('''
+            select gu, count(cctvId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_cctv B
+            on A.areaCode = B.areaCode_id
+            group by gu
+            order by gu
+            ''')
+        print("querySet ::: ", querySet)
+        for i in querySet:
+            # print(i.gu, i.cnt)
+            resultString.append(i.cnt)
+
+    else:
+        querySet = Result_GuDongCnt.objects.raw('''
+            select gu, dong, count(cctvId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_cctv B
+            on A.areaCode = B.areaCode_id
+            where gu = '%s'
+            group by dong
+            order by dong
+            ''' % gu)
+        print("querySet ::: ", querySet)
+        for i in querySet:
+            # print(i.gu, i.dong, i.cnt)
+            resultString.append(i.cnt)
+
+    print(resultString)
+    return myJsonResponse(resultString)
+
+
+@csrf_exempt
+def getSecurityLightCnt(request, gu=None):
+    '''
+    :param request:
+    :param gu:
+    :return: 서울시 내의 구들의 보안등 갯수를 리턴. (구이름으로 정렬된 데이터)
+             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 보안등 갯수를 리턴 (동이름으로 정렬된 데이터)
+    '''
+
+    resultString = []
+
+    if gu is None:
+        querySet = Result_GuCnt.objects.raw('''
+            select gu, count(lightId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_securitylight B
+            on A.areaCode = B.areaCode_id
+            group by gu
+            order by gu
+            ''')
+        print("querySet ::: ", querySet)
+        for i in querySet:
+            # print(i.gu, i.cnt)
+            resultString.append(i.cnt)
+
+    else:
+        querySet = Result_GuDongCnt.objects.raw('''
+            select gu, dong, count(lightId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_securitylight B
+            on A.areaCode = B.areaCode_id
+            where gu = '%s'
+            group by dong
+            order by dong
+            ''' % gu)
+        print(querySet)
+        for i in querySet:
+            # print(i.gu, i.dong, i.cnt)
+            resultString.append(i.cnt)
+
+    print(resultString)
+    return myJsonResponse(resultString)
+
+
+@csrf_exempt
+def getPoliceOfficeCnt(request, gu=None):
+    '''
+    :param request:
+    :param gu:
+    :return: 서울시 내의 구들의 경찰시설 갯수를 리턴. (구이름으로 정렬된 데이터)
+             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 경찰시설 갯수를 리턴 (동이름으로 정렬된 데이터)
+    '''
+
+    resultString = []
+
+    if gu is None:
+        querySet = Result_GuCnt.objects.raw('''
+            select gu, count(policeId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_policeoffice B
+            on A.areaCode = B.areaCode_id
+            group by gu
+            order by gu
+            ''')
+        print("querySet ::: ", querySet)
+        for i in querySet:
+            # print(i.gu, i.cnt)
+            resultString.append(i.cnt)
+
+    else:
+        querySet = Result_GuDongCnt.objects.raw('''
+            select gu, dong, count(policeId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_policeoffice B
+            on A.areaCode = B.areaCode_id
+            where gu = '%s'
+            group by dong
+            order by dong
+            ''' % gu)
+        print(querySet)
+        for i in querySet:
+            # print(i.gu, i.dong, i.cnt)
+            resultString.append(i.cnt)
+
+    print(resultString)
+    return myJsonResponse(resultString)
+
+
+@csrf_exempt
+def getRankingChartData(request, division, gu=None):
+    '''
+    :param request:
+    :param division: rent면 월세기준, depo면 보증금 기준, rent-depo면 월세*12 + 보증금 기준
+    :param gu: 있으면 해당 구의 차트 데이터 리딩
+    :return: 정렬된 구, 월세, 보증금 리스트를 담은 JSON을 리턴
+    '''
+
+    if gu is None:
+        print("서울시 기준 ::: ")
+        queryString = '''
+        SELECT gu , avg(rentalFee) as rentalFee, avg(deposit) as deposit
+        FROM dataProcess_address A
+        LEFT OUTER JOIN dataProcess_costrecord B
+        ON A.areaCode = left(B.houseNumber_id, 10)
+        GROUP BY gu
+        ORDER BY gu
+        '''
+
+    else:
+        print("%s 기준 ::: " % gu)
+        queryString = '''
+        SELECT dong as gu, avg(rentalFee) as rentalFee, avg(deposit) as deposit
+        FROM dataProcess_address A
+        LEFT OUTER JOIN dataProcess_costrecord B
+        ON A.areaCode = left(B.houseNumber_id, 10)
+        WHERE gu = '%s'
+        GROUP BY dong
+        ORDER BY dong
+        ''' % gu
+
+    querySet = Average.objects.raw(queryString)
+
+    guList = []
+    rentalFeeList = []
+    depositList = []
+
+    for i in querySet:
+        guList.append(i.gu)
+        rentalFeeList.append(i.rentalFee)
+        depositList.append(i.deposit)
+
+    data = {'gu': guList,
+            'rentalFee': rentalFeeList,
+            'deposit': depositList}
+    rentalFeeRank = pandas.DataFrame(data)
+
+    if division == 'rent':
+        # 월세 기준
+        print('월세 기준 >> :::')
+        rentalFeeRank['rank'] = rentalFeeRank['rentalFee'].rank(method='min', ascending=True)  # 낮은 가격순으로 순위 저장
+        rentalFeeRank.sort_values(by=['rentalFee'], axis=0, inplace=True, ascending=True)  # 낮은 순위부터 정렬
+    elif division == 'depo':
+        # 보증금 기준
+        print('보증금 기준 >> :::')
+        rentalFeeRank['rank'] = rentalFeeRank['deposit'].rank(method='min', ascending=True)  # 낮은 가격순으로 순위 저장
+        rentalFeeRank.sort_values(by=['deposit'], axis=0, inplace=True, ascending=True)  # 낮은 순위부터 정렬
+    elif division == 'rent-depo':
+        # 월세 1년치(12개월) + 보증금 기준
+        print('월세 1년치(12개월) + 보증금 기준 >> :::')
+        rentalFeeRank['year-rent'] = rentalFeeRank['rentalFee'] * 12  # 12개월치 월세
+        rentalFeeRank['rent-deposit'] = rentalFeeRank['year-rent'] + rentalFeeRank['deposit']  # 12개월치 월세 + 보증금
+        rentalFeeRank['rank'] = rentalFeeRank['rent-deposit'].rank(method='min', ascending=True)  # 낮은 가격순으로 순위 저장
+        rentalFeeRank.sort_values(by=['deposit'], axis=0, inplace=True, ascending=True)  # 낮은 순위부터 정렬
+    else:
+        return JsonResponse(data.errors, status=400)
+
+    print(rentalFeeRank)
+
+    guList = rentalFeeRank['gu'].tolist()
+    rentalFeeList = rentalFeeRank['rentalFee'].tolist()
+    depositList = rentalFeeRank['deposit'].tolist()
+    rentalFeeList = list(map(str, rentalFeeList))  # Decimal 형태의 index들을 단순 string으로 변환
+    depositList = list(map(str, depositList))  # Decimal 형태의 index들을 단순 string으로 변환
+
+    json_data = OrderedDict()
+    json_data['gu'] = guList
+    json_data['rentalFee'] = rentalFeeList
+    json_data['deposit'] = depositList
+
+    return myJsonResponse(json_data)
+
+
+@csrf_exempt
+def getTrendChartData(request, division, term, gu=None):
+    '''
+    :param request:
+    :param division: rent면 월세, depo면 보증금 추이 차트 리딩
+    :param term: 몇 개월 간의 데이터를 보여줄지 정하는 변수
+    :param gu: 있으면 해당 구의 차트 데이터 리딩
+    :return: 정렬된 구, 월세, 보증금 리스트를 담은 JSON을 리턴
+    '''
+
+    if gu is None:
+        print("서울시 기준 ::: ")
+        queryString = '''
+        SELECT EXTRACT(YEAR_MONTH FROM `day`) as date, avg(rentalFee) as avg_rentalFee, avg(deposit) as avg_deposit
+        FROM dataProcess_costrecord
+        WHERE day >= DATE_ADD(NOW(), INTERVAL -12 MONTH)
+        GROUP BY date
+        ORDER BY date;
+        '''
+    else:
+        print("%s 기준 ::: " % gu)
+        queryString = '''
+        SELECT EXTRACT(YEAR_MONTH FROM `day`) as date, avg(rentalFee) as avg_rentalFee, avg(deposit) as avg_deposit
+        FROM dataProcess_costrecord A
+        LEFT JOIN dataProcess_address B
+        ON LEFT(A.houseNumber_id, 10) = B.areaCode
+        WHERE day >= DATE_ADD(NOW(), INTERVAL -12 MONTH) AND gu = '%s'
+        GROUP BY date
+        ORDER BY date
+        ''' % gu
+    print("querySet ::: ", queryString)
+    querySet = TrendChartData.objects.raw(queryString)
+
+    dataList = []
+    avgRentalFeeList = []
+    avgDepositList = []
+
+    for i in querySet:
+        dataList.append(i.date)
+        avgRentalFeeList.append(i.avg_rentalFee)
+        avgDepositList.append(i.avg_deposit)
+        print(i.date, i.avg_rentalFee, i.avg_deposit)
+
+    avgRentalFeeList = list(map(str, avgRentalFeeList))  # Decimal 형태의 index들을 단순 string으로 변환
+    avgDepositList = list(map(str, avgDepositList))  # Decimal 형태의 index들을 단순 string으로 변환
+
+    json_data = OrderedDict()
+    json_data['dataList'] = dataList[-term:]
+    if division == 'rent':
+        json_data['avgRentalFeeList'] = avgRentalFeeList[-term:]
+    elif division == 'depo':
+        json_data['avgDepositList'] = avgDepositList[-term:]
+
+    return myJsonResponse(json_data)
+
+
+########################## ↑↑↑↑↑↑↑↑ ############################
+
+
+# ########################### ↓↓↓↓테스트 코드↓↓↓↓ ###########################
+@csrf_exempt
+def testQuery(request, division, term, gu=None):
+    '''
+    :param request:
+    :param division: rent면 월세, depo면 보증금 추이 차트 리딩
+    :param term: 몇 개월 간의 데이터를 보여줄지 정하는 변수
+    :param gu: 있으면 해당 구의 차트 데이터 리딩
+    :return: 정렬된 구, 월세, 보증금 리스트를 담은 JSON을 리턴
+    '''
+
+    if gu is None:
+        print("서울시 기준 ::: ")
+        queryString = '''
+        SELECT EXTRACT(YEAR_MONTH FROM `day`) as date, avg(rentalFee) as avg_rentalFee, avg(deposit) as avg_deposit
+        FROM dataProcess_costrecord
+        WHERE day >= DATE_ADD(NOW(), INTERVAL -12 MONTH)
+        GROUP BY date
+        ORDER BY date;
+        '''
+    else:
+        print("%s 기준 ::: " % gu)
+        queryString = '''
+        SELECT EXTRACT(YEAR_MONTH FROM `day`) as date, avg(rentalFee) as avg_rentalFee, avg(deposit) as avg_deposit
+        FROM dataProcess_costrecord A
+        LEFT JOIN dataProcess_address B
+        ON LEFT(A.houseNumber_id, 10) = B.areaCode
+        WHERE day >= DATE_ADD(NOW(), INTERVAL -12 MONTH) AND gu = '%s'
+        GROUP BY date
+        ORDER BY date
+        ''' % gu
+    print("querySet ::: ", queryString)
+    querySet = TrendChartData.objects.raw(queryString)
+
+    dataList = []
+    avgRentalFeeList = []
+    avgDepositList = []
+
+    for i in querySet:
+        dataList.append(i.date)
+        avgRentalFeeList.append(i.avg_rentalFee)
+        avgDepositList.append(i.avg_deposit)
+        print(i.date, i.avg_rentalFee, i.avg_deposit)
+
+    avgRentalFeeList = list(map(str, avgRentalFeeList))  # Decimal 형태의 index들을 단순 string으로 변환
+    avgDepositList = list(map(str, avgDepositList))  # Decimal 형태의 index들을 단순 string으로 변환
+
+    json_data = OrderedDict()
+    json_data['dataList'] = dataList[-term:]
+    if division == 'rent':
+        json_data['avgRentalFeeList'] = avgRentalFeeList[-term:]
+    elif division == 'depo':
+        json_data['avgDepositList'] = avgDepositList[-term:]
+
+    return myJsonResponse(json_data)
+
+
+# def testQuery2(request):  # 각 구별 월세, 보증금 데이터 읽기.
+#     # 분석을 위해 pandas DataFrame 구조로 변환까지 완료
+#
+#     querySet = Average.objects.raw('''
+#     SELECT gu , avg(rentalFee) as rentalFee, avg(deposit) as deposit
+#     FROM dataProcess_address A
+#     LEFT OUTER JOIN dataProcess_costrecord B
+#     ON A.areaCode = left(B.houseNumber_id, 10)
+#     GROUP BY gu
+#     ORDER BY gu
+#     ''')
+#     guList = []
+#     rentalFeeList = []
+#     depositList = []
+#
+#     for i in querySet:
+#         guList.append(i.gu)
+#         rentalFeeList.append(i.rentalFee)
+#         depositList.append(i.deposit)
+#
+#         print(i.gu, i.rentalFee, i.deposit)
+#
+#     data = {'rentalFee': rentalFeeList,
+#             'deposit': depositList}
+#
+#     df = pandas.DataFrame(data, index=guList)
+#
+#     for i in df:
+#         print(df)
+#
+#     return myJsonResponse(querySet)
+
+
+# ########################### ↑↑↑↑테스트 코드↑↑↑↑ ###########################
+
+
+# @csrf_exempt
+# def testQuery(request, gu):  # areaCode입력 안 할 경우 전체 CCTV 검색
+#     if request.method == 'GET':
+#         resultArr = []  # HouseInfo들을 받아내는 최종 결과 배열
+#
+#         areaCodeArr = findGuAreaCodes(gu)
+#
+#         TOT = queryResult = HouseInfo.objects.filter(
+#             areaCode=areaCodeArr[0])
+#         for i in TOT:
+#             resultArr.append(i)  # 그 결과값들을 resultArr에 붙여서 저장한다.
+#
+#         for currentAreaCode in areaCodeArr[1:]:
+#             queryResult = HouseInfo.objects.filter(
+#                 areaCode=currentAreaCode)  # 해당 areaCode로 검색된 결과(HouseInfo)를 testInfos에 저장
+#             for i in queryResult:
+#                 resultArr.append(i)  # 그 결과값들을 resultArr에 붙여서 저장한다.
+#             TOT = TOT | queryResult
+#
+#     serializer = HouseInfoSerializer(TOT, many=True)
+#
+#     # print("TEST>>>>>>>>>>>>>>>>>>>>>>>>>>")
+#     # print(finalResult.get(gu).length)
+#     # print("TEST>>>>>>>>>>>>>>>>>>>>>>>>>>")
+#     finalResult = JsonResponse({gu: serializer.data}, safe=False)  # <class 'django.http.response.JsonResponse'>
+#
+#     return finalResult
+
+
+# @csrf_exempt
+# def houseInfos(request, areaCode=None):  # 거래된 주택 정보 리딩 메소드
+#     if request.method == 'GET':
+#         if areaCode is not None:
+#             query_set = HouseInfo.objects.filter(areaCode=areaCode)
+#             # print(areaCode.__class__)
+#         else:
+#             query_set = HouseInfo.objects.all()  # <class 'django.db.models.query.QuerySet'>
+#
+#         serializer = HouseInfoSerializer(query_set, many=True)  # <class 'rest_framework.serializers.ListSerializer'>
+#
+#         iterator = serializer.data
+#         number = 0
+#         for i in iterator:  # i 자체가 OrderedDict형
+#             number = number + 1
+#             print("%d // " % number)
+#             print(i)
+#
+#         print("serializer.data TYPE :: ")
+#         print(iterator.__class__)
+#         return JsonResponse(serializer.data, safe=False)  # << 이부분을 입맛에 따라 변경. 현재는 Json List 형식으로 리턴.
+#
+#     elif request.method == 'POST':
+#         data = JSONParser().parse(request)
+#         serializer = HouseInfoSerializer(data=data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return JsonResponse(serializer.data, status=201)
+#         return JsonResponse(serializer.errors, status=400)
+
+
+##################### ↓↓↓↓ 당장에 안쓰는 메소드 ↓↓↓↓ #####################
 def findGuAreaCodes(gu):
     """
     :param gu: 검색을 원하는 구 이름
@@ -178,365 +635,7 @@ def getPoliceOfficeInfosByGu(gu=None):  # 입력한 gu에 있는 경찰시설 �
     return finalResult
 
 
-@csrf_exempt
-def myJsonResponse(data):
-    return HttpResponse(json.dumps(data, ensure_ascii=False))
-
-
-@csrf_exempt
-def getGu(request):
-    # 구 이름만 배열로..
-    returnString = []
-    for i in seoulGu:
-        returnString.append(i)
-        print(i)
-    returnString.sort()  # 구 내용 정렬
-    return myJsonResponse(returnString)
-
-
-@csrf_exempt
-def getDong(request, gu):
-    # 구이름 입력하면 동 리스트 리턴
-    resultString = []
-    querySet = Address.objects.filter(gu=gu).order_by('dong')
-    for i in querySet:
-        resultString.append(i.dong)
-        print(i.dong)
-    return myJsonResponse(resultString)
-
-
-@csrf_exempt
-def getCCTVCnt(request, gu=None):
-    '''
-    :param request: 
-    :param gu: 
-    :return: 서울시 내의 구들의 cctv 갯수를 리턴. (구이름으로 정렬된 데이터)
-             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 cctv 갯수를 리턴 (동이름으로 정렬된 데이터)
-    '''
-
-    resultString = []
-
-    if gu is None:
-        querySet = Result_GuCnt.objects.raw('''
-            select gu, count(cctvId) as cnt
-            from dataprocess_address A
-            left outer join dataprocess_cctv B
-            on A.areaCode = B.areaCode_id
-            group by gu
-            order by gu
-            ''')
-        print("querySet ::: ", querySet)
-        for i in querySet:
-            #print(i.gu, i.cnt)
-            resultString.append(i.cnt)
-
-    else:
-        querySet = Result_GuDongCnt.objects.raw('''
-            select gu, dong, count(cctvId) as cnt
-            from dataprocess_address A
-            left outer join dataprocess_cctv B
-            on A.areaCode = B.areaCode_id
-            where gu = '%s'
-            group by dong
-            order by dong
-            ''' % gu)
-        print(querySet)
-        for i in querySet:
-            #print(i.gu, i.dong, i.cnt)
-            resultString.append(i.cnt)
-
-    print(resultString)
-    return myJsonResponse(resultString)
-
-
-@csrf_exempt
-def getSecurityLightCnt(request, gu=None):
-    '''
-    :param request:
-    :param gu:
-    :return: 서울시 내의 구들의 보안등 갯수를 리턴. (구이름으로 정렬된 데이터)
-             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 보안등 갯수를 리턴 (동이름으로 정렬된 데이터)
-    '''
-
-    resultString = []
-
-    if gu is None:
-        querySet = Result_GuCnt.objects.raw('''
-            select gu, count(lightId) as cnt
-            from dataprocess_address A
-            left outer join dataprocess_securitylight B
-            on A.areaCode = B.areaCode_id
-            group by gu
-            order by gu
-            ''')
-        print("querySet ::: ", querySet)
-        for i in querySet:
-            #print(i.gu, i.cnt)
-            resultString.append(i.cnt)
-
-    else:
-        querySet = Result_GuDongCnt.objects.raw('''
-            select gu, dong, count(lightId) as cnt
-            from dataprocess_address A
-            left outer join dataprocess_securitylight B
-            on A.areaCode = B.areaCode_id
-            where gu = '%s'
-            group by dong
-            order by dong
-            ''' % gu)
-        print(querySet)
-        for i in querySet:
-            #print(i.gu, i.dong, i.cnt)
-            resultString.append(i.cnt)
-
-    print(resultString)
-    return myJsonResponse(resultString)
-
-
-@csrf_exempt
-def getPoliceOfficeCnt(request, gu=None):
-    '''
-    :param request:
-    :param gu:
-    :return: 서울시 내의 구들의 경찰시설 갯수를 리턴. (구이름으로 정렬된 데이터)
-             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 경찰시설 갯수를 리턴 (동이름으로 정렬된 데이터)
-    '''
-
-    resultString = []
-
-    if gu is None:
-        querySet = Result_GuCnt.objects.raw('''
-            select gu, count(policeId) as cnt
-            from dataprocess_address A
-            left outer join dataprocess_policeoffice B
-            on A.areaCode = B.areaCode_id
-            group by gu
-            order by gu
-            ''')
-        print("querySet ::: ", querySet)
-        for i in querySet:
-            #print(i.gu, i.cnt)
-            resultString.append(i.cnt)
-
-    else:
-        querySet = Result_GuDongCnt.objects.raw('''
-            select gu, dong, count(policeId) as cnt
-            from dataprocess_address A
-            left outer join dataprocess_policeoffice B
-            on A.areaCode = B.areaCode_id
-            where gu = '%s'
-            group by dong
-            order by dong
-            ''' % gu)
-        print(querySet)
-        for i in querySet:
-            #print(i.gu, i.dong, i.cnt)
-            resultString.append(i.cnt)
-
-    print(resultString)
-    return myJsonResponse(resultString)
-
-########################## ↑↑↑↑↑↑↑↑ ############################
-
-
-# ########################### ↓↓↓↓테스트 코드↓↓↓↓ ###########################
-@csrf_exempt
-def testQuery(request, gu=None):
-    '''
-    :param request:
-    :param gu:
-    :return: 서울시 내의 구들의 보안등 갯수를 리턴. (구이름으로 정렬된 데이터)
-             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 보안등 갯수를 리턴 (동이름으로 정렬된 데이터)
-    '''
-
-    resultString = []
-
-    if gu is None:
-        querySet = Result_GuCnt.objects.raw('''
-            select gu, count(lightId) as cnt
-            from dataprocess_address A
-            left outer join dataprocess_securitylight B
-            on A.areaCode = B.areaCode_id
-            group by gu
-            order by gu
-            ''')
-        print("querySet ::: ", querySet)
-        for i in querySet:
-            # print(i.gu, i.cnt)
-            resultString.append(i.cnt)
-
-    else:
-        querySet = Result_GuDongCnt.objects.raw('''
-            select gu, dong, count(lightId) as cnt
-            from dataprocess_address A
-            left outer join dataprocess_securitylight B
-            on A.areaCode = B.areaCode_id
-            where gu = '%s'
-            group by dong
-            order by dong
-            ''' % gu)
-        print(querySet)
-        for i in querySet:
-            print(i.gu, i.dong, i.cnt)
-            resultString.append(i.cnt)
-
-    print(resultString)
-    return myJsonResponse(resultString)
-
-
-@csrf_exempt
-def testQuery(request, gu):  # areaCode입력 안 할 경우 전체 CCTV 검색
-    if request.method == 'GET':
-        resultArr = []  # HouseInfo들을 받아내는 최종 결과 배열
-
-def testQuery2(request):  # 각 구별 월세, 보증금 데이터 읽기. 
-    # 분석을 위해 pandas DataFrame 구조로 변환까지 완료
-
-    querySet = Average.objects.raw('''
-    SELECT gu , avg(rentalFee) as rentalFee, avg(deposit) as deposit 
-    FROM dataprocess_address A 
-    LEFT OUTER JOIN dataprocess_costrecord B 
-    ON A.areaCode = left(B.houseNumber_id, 10) 
-    GROUP BY gu
-    ORDER BY gu
-    ''')
-    guList = []
-    rentalFeeList = []
-    depositList = []
-
-    for i in querySet:
-        guList.append(i.gu)
-        rentalFeeList.append(i.rentalFee)
-        depositList.append(i.deposit)
-
-        print(i.gu, i.rentalFee, i.deposit)
-
-    data = {'rentalFee': rentalFeeList,
-            'deposit': depositList}
-
-    df = pandas.DataFrame(data, index=guList)
-
-    for i in df:
-        print(df)
-
-    return myJsonResponse(querySet)
-
-
-# ########################### ↑↑↑↑테스트 코드↑↑↑↑ ###########################
-
-
-# @csrf_exempt
-# def testQuery(request, gu):  # areaCode입력 안 할 경우 전체 CCTV 검색
-#     if request.method == 'GET':
-#         resultArr = []  # HouseInfo들을 받아내는 최종 결과 배열
-#
-#         areaCodeArr = findGuAreaCodes(gu)
-#
-#         TOT = queryResult = HouseInfo.objects.filter(
-#             areaCode=areaCodeArr[0])
-#         for i in TOT:
-#             resultArr.append(i)  # 그 결과값들을 resultArr에 붙여서 저장한다.
-#
-#         for currentAreaCode in areaCodeArr[1:]:
-#             queryResult = HouseInfo.objects.filter(
-#                 areaCode=currentAreaCode)  # 해당 areaCode로 검색된 결과(HouseInfo)를 testInfos에 저장
-#             for i in queryResult:
-#                 resultArr.append(i)  # 그 결과값들을 resultArr에 붙여서 저장한다.
-#             TOT = TOT | queryResult
-#
-#     serializer = HouseInfoSerializer(TOT, many=True)
-#
-#     # print("TEST>>>>>>>>>>>>>>>>>>>>>>>>>>")
-#     # print(finalResult.get(gu).length)
-#     # print("TEST>>>>>>>>>>>>>>>>>>>>>>>>>>")
-#     finalResult = JsonResponse({gu: serializer.data}, safe=False)  # <class 'django.http.response.JsonResponse'>
-#
-#     return finalResult
-
-
-@csrf_exempt
-def houseInfos(request, areaCode=None):  # 거래된 주택 정보 리딩 메소드
-    if request.method == 'GET':
-        if areaCode is not None:
-            query_set = HouseInfo.objects.filter(areaCode=areaCode)
-            # print(areaCode.__class__)
-        else:
-            query_set = HouseInfo.objects.all()  # <class 'django.db.models.query.QuerySet'>
-
-        serializer = HouseInfoSerializer(query_set, many=True)  # <class 'rest_framework.serializers.ListSerializer'>
-
-        iterator = serializer.data
-        number = 0
-        for i in iterator:  # i 자체가 OrderedDict형
-            number = number + 1
-            print("%d // " % number)
-            print(i)
-
-        print("serializer.data TYPE :: ")
-        print(iterator.__class__)
-        return JsonResponse(serializer.data, safe=False)  # << 이부분을 입맛에 따라 변경. 현재는 Json List 형식으로 리턴.
-
-    elif request.method == 'POST':
-        data = JSONParser().parse(request)
-        serializer = HouseInfoSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
-
-
-@csrf_exempt
-def getCCTVs(request, areaCode_id=None):  # areaCode입력 안 할 경우 전체 CCTV 검색
-    if request.method == 'GET':
-        if areaCode_id is not None:
-            query_set = CCTV.objects.filter(areaCode_id=areaCode_id)
-        else:
-            query_set = CCTV.objects.all()
-        serializer = CCTVSerializer(query_set, many=True)
-        return serializer.data  # 해당 조건 쿼리셋으로 받아온 CCTV 데이터 (JSON형식) -> tuple
-
-
-@csrf_exempt
-def getSecurityLights(request, areaCode_id=None):  # areaCode입력 안 할 경우 전체 보안등 검색
-    if request.method == 'GET':
-        if areaCode_id is not None:
-            query_set = SecurityLight.objects.filter(areaCode_id=areaCode_id)
-        else:
-            query_set = SecurityLight.objects.all()
-        serializer = SecurityLightSerializer(query_set, many=True)
-        return serializer.data  # 해당 조건 쿼리셋으로 받아온 보안등 데이터 (JSON형식) -> tuple
-
-
-@csrf_exempt
-def getPoliceOffices(request, areaCode_id=None):  # areaCode입력 안 할 경우 경찰시설 검색
-    if request.method == 'GET':
-        if areaCode_id is not None:
-            query_set = PoliceOffice.objects.filter(areaCode_id=areaCode_id)
-        else:
-            query_set = PoliceOffice.objects.all()
-        serializer = PoliceOfficeSerializer(query_set, many=True)
-        return serializer.data  # 해당 조건 쿼리셋으로 받아온 경찰시설 데이터 (JSON형식) -> tuple
-
-
-@csrf_exempt
-def getCCTVsInSi(request, si, gu=None):
-    '''
-    :param request: Request object
-    :param si: Specific si
-    :param gu: Specific gu
-    :return:
-    '''
-
-    if gu is None:
-        # gu가 없으면 서울시 전체 구의 cctv현황을 리턴
-        gu
-    else:
-        # gu가 있는 경우이므로 해당 구 내의 전체 동의 cctv 현황을 동 이름과 함께 리턴
-        gu
-    resultCCTVArr = []
-
-    for currentGu in seoulGu:  # 종로구 areaCode전체 하나하나 돌면서
-        getCCTVInfosByGu
+##################### ↑↑↑↑ 당장에 안쓰는 메소드 ↑↑↑↑ #####################
 
 
 ######################### Login ####################################
@@ -549,7 +648,14 @@ def kakaoJoin(request):
     print(str(propertyKeys))
 
     http = httplib2.Http()
+<<<<<<< HEAD
     response, content = http.request(baseUrl, method="POST", headers={"Authorization" : authorization}, body="property_keys=" + str(propertyKeys))
+=======
+    response, content = http.request(baseUrl, method="POST", headers={"Authorization": authorization},
+                                     body="property_keys=" + str(propertyKeys))
+    response, content = http.request(baseUrl, method="POST", headers={"Authorization": authorization},
+                                     body={"property_keys": propertyKeys})
+>>>>>>> 09d41fa902c7a61cdf18790b53e5a60a8a7abe75
     content = content.decode("utf-8")
     jsonData = json.loads(content)
     print(jsonData)
@@ -562,11 +668,13 @@ def kakaoJoin(request):
         member.save()
 
         memberInfo = MemberInfo(member=member, gender=None, age_range=None, money=None)
-        if (jsonData["kakao_account"]["age_range_needs_agreement"] == "False" and jsonData["kakao_account"]["has_age_range"] == "True"):
+        if (jsonData["kakao_account"]["age_range_needs_agreement"] == "False" and jsonData["kakao_account"][
+            "has_age_range"] == "True"):
             age_range = jsonData["kakao_account"]["age_range"]
             setattr(memberInfo, "age_range", age_range)
 
-        if (jsonData["kakao_account"]["gender_needs_agreement"] == "False" and jsonData["kakao_account"]["has_gender"] == "True"):
+        if (jsonData["kakao_account"]["gender_needs_agreement"] == "False" and jsonData["kakao_account"][
+            "has_gender"] == "True"):
             gender = jsonData["kakao_account"]["gender"]
             setattr(memberInfo, "gender", gender)
 

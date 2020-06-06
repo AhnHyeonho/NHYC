@@ -113,7 +113,7 @@ def getCCTV(request):
 
     for fileName in fileList:
         csv = pandas.read_csv(os.path.join(cctvPath, fileName), encoding="CP949")
-
+        
         for i in csv.index:
             gu = ""
             dong = ""
@@ -133,7 +133,6 @@ def getCCTV(request):
                     content = content.decode("utf-8")
 
                     addressData = json.loads(content)
-                    print(addressData)
 
                     if addressData["status"]["name"] == "ok":
                         region = addressData["results"][0]["region"]

@@ -647,14 +647,9 @@ def kakaoJoin(request):
     print(str(propertyKeys))
 
     http = httplib2.Http()
-<<<<<<< HEAD
+
     response, content = http.request(baseUrl, method="POST", headers={"Authorization" : authorization}, body="property_keys=" + str(propertyKeys))
-=======
-    response, content = http.request(baseUrl, method="POST", headers={"Authorization": authorization},
-                                     body="property_keys=" + str(propertyKeys))
-    response, content = http.request(baseUrl, method="POST", headers={"Authorization": authorization},
-                                     body={"property_keys": propertyKeys})
->>>>>>> 09d41fa902c7a61cdf18790b53e5a60a8a7abe75
+
     content = content.decode("utf-8")
     jsonData = json.loads(content)
     print(jsonData)

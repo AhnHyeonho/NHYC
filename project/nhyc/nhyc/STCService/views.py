@@ -181,7 +181,6 @@ def getSecurityLightCnt(request, gu=None):
     return myJsonResponse(resultString)
 
 
-@csrf_exempt
 def getPoliceOfficeCnt(request, gu=None):
     '''
     :param request:

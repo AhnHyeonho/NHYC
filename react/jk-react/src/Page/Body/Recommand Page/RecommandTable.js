@@ -42,21 +42,32 @@ const StyledTableCell = withStyles((theme) => ({
 
 
 // response 값 Object화 
-function createData(rank1, name1, rank2, name2) {
+// function createData(rank1, name1, rank2, name2) {
 
-    // Object return 
-    return { rank1, name1, rank2, name2 };
+//     // Object return 
+//     return { rank1, name1, rank2, name2 };
+// }
+
+function createData(index, address, latitude, longtitude){
+
+    let url = "https://new.land.naver.com/complexes?ms="+ latitude + "," + longtitude + ",16&a=APT:ABYG:JGC&e=RETAIL";
+
+    return { index, address, url };
 }
 
 
 
-
 const rows = [
-    createData(1, '서울특별시 성북구 성북동', 6, '서울특별시 노원구 방학동'),
-    createData(2, '서울특별시 성북구 성북동', 7, '서울특별시 노원구 방학동'),
-    createData(3, '서울특별시 성북구 성북동', 8, '서울특별시 노원구 방학동'),
-    createData(4, '서울특별시 성북구 성북동', 9, '서울특별시 노원구 방학동'),
-    createData(5, '서울특별시 성북구 성북동', 10, '서울특별시 노원구 방학동'),
+    createData(1, '서울특별시 성북구 성북동', 37.5969, 126.9922),
+    createData(2, '서울특별시 성북구 성북동', 37.5969, 126.9922),
+    createData(3, '서울특별시 성북구 성북동', 37.5969, 126.9922),
+    createData(4, '서울특별시 성북구 성북동', 37.5969, 126.9922),
+    createData(5, '서울특별시 성북구 성북동', 37.5969, 126.9922),
+    createData(6, '서울특별시 성북구 성북동', 37.5969, 126.9922),
+    createData(7, '서울특별시 성북구 성북동', 37.5969, 126.9922),
+    createData(8, '서울특별시 성북구 성북동', 37.5969, 126.9922),
+    createData(9, '서울특별시 성북구 성북동', 37.5969, 126.9922),
+    createData(10, '서울특별시 성북구 성북동', 37.5969, 126.9922),
 ];
 
 // Header colums
@@ -101,6 +112,14 @@ export default function RecommandTable() {
         setPage(0);
     };
 
+
+    const handleClick=(event, url)=> {
+        console.log(url);
+        //  window.location = url;
+    }
+
+    
+
     // useEffect(
     //     () => {
     //         fetch('https://jsonplaceholder.typicode.com/posts')
@@ -117,6 +136,7 @@ export default function RecommandTable() {
 
     // API Test ===============
     useEffect(() => {
+
         const fetchUsers = async () => {
             try {
 
@@ -139,12 +159,16 @@ export default function RecommandTable() {
             setLoading(false);
         };
 
+
         fetchUsers();
     }, []);
 
     // ========================
 
+    
 
+
+    
     if (loading) return <div>로딩중..</div>;
     if (error) return <div>에러가 발생했습니다</div>;
     if (!users) return null;
@@ -174,50 +198,23 @@ export default function RecommandTable() {
                 {/* 테이블 바디 */}
                 <TableBody>
 
-                    {users.map(user => (
+                    {rows.map((user, index) => (
 
+                        <StyledTableRow key={index} >
+                            
+                            <StyledTableCell align="left">{user.index}</StyledTableCell>
+                            <StyledTableCell align="left">{user.address}</StyledTableCell>
+                                <StyledTableCell align="left" ><a href={user.url}><LinkIcon style={{ fill: "#1976d2" }} /></a></StyledTableCell>
+                            
 
-                        <StyledTableRow
-                        // x                            key={row.ran} 
-                        >
-                            <StyledTableCell align="left">{user.id}</StyledTableCell>
-                            <StyledTableCell align="left">{user.address.street}</StyledTableCell>
-                            <StyledTableCell align="left"><LinkIcon style={{ fill: "#1976d2" }} /></StyledTableCell>
-
-
-                            <StyledTableCell align="left">{user.id}</StyledTableCell>
-                            <StyledTableCell align="left">{user.username}</StyledTableCell>
+                            <StyledTableCell align="left">{user.index}</StyledTableCell>
+                            <StyledTableCell align="left">{user.address}</StyledTableCell>
                             <StyledTableCell align="left"><LinkIcon style={{ fill: "#1976d2" }} /></StyledTableCell>
 
 
                         </StyledTableRow>
-
-
-
-                        // <li key={user.id}>
-                        //     {user.username} ({user.name})
-                        // </li>
                     ))}
 
-
-
-
-                    {/* {rows.map((row) => (
-                        <StyledTableRow
-                        // x                            key={row.ran} 
-                        >
-                            <StyledTableCell align="left">{row.rank1}</StyledTableCell>
-                            <StyledTableCell align="left">{row.name1}</StyledTableCell>
-                            <StyledTableCell align="left"><LinkIcon style={{ fill: "#1976d2" }} /></StyledTableCell>
-
-
-                            <StyledTableCell align="left">{row.rank2}</StyledTableCell>
-                            <StyledTableCell align="left">{row.name2}</StyledTableCell>
-                            <StyledTableCell align="left"><LinkIcon style={{ fill: "#1976d2" }} /></StyledTableCell>
-
-
-                        </StyledTableRow>
-                    ))} */}
                 </TableBody>
             </Table>
         </TableContainer>

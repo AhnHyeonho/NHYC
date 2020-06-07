@@ -167,7 +167,7 @@ def getCCTV(request):
 
             if Address.objects.filter(gu=gu, dong=dong).count() == 1:
                 areaCode = Address.objects.get(gu=gu, dong=dong)
-                if CCTV.objects.filter(areaCode=areaCode.areaCode).count() == 0:
+                if CCTV.objects.filter(latitude=latitude, longitude=longitude).count() == 0:
                     cctv = CCTV(latitude=latitude, longitude=longitude, areaCode=areaCode)
                     cctv.save()
 
@@ -230,7 +230,7 @@ def getSecurityLight(request):
                             dong = addressSplit[2]
             if Address.objects.filter(gu=gu, dong=dong).count() == 1:
                 areaCode = Address.objects.get(gu=gu, dong=dong)
-                if SecurityLight.objects.filter(areaCode = areaCode.areaCode).count() == 0:
+                if SecurityLight.objects.filter(latitude=latitude, longitude=longitude).count() == 0:
                     securityLight = SecurityLight(latitude=latitude, longitude=longitude, areaCode=areaCode)
                     securityLight.save()
 

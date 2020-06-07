@@ -143,27 +143,27 @@ def getCCTV(request):
             else:
                 if pandas.notnull(csv.at[i, "소재지도로명주소"]):
                     address = csv.at[i, "소재지도로명주소"]
-                else:
+                elif pandas.notnull(csv.at[i, "소재지지번주소"]):
                     address = csv.at[i, "소재지지번주소"]
 
                 print(address)
+                if pandas.notnull(address):
+                    naverURL = naverGeocodeURL + "?query=" + quote(address)
+                    https = urllib.request.Request(naverURL)
+                    https.add_header("X-NCP-APIGW-API-KEY-ID", naverClientId)
+                    https.add_header("X-NCP-APIGW-API-KEY", naverClientPasswd)
+                    response = urllib.request.urlopen(https)
+                    content = response.read()
+                    content = content.decode("utf-8")
 
-                naverURL = naverGeocodeURL + "?query=" + quote(address)
-                https = urllib.request.Request(naverURL)
-                https.add_header("X-NCP-APIGW-API-KEY-ID", naverClientId)
-                https.add_header("X-NCP-APIGW-API-KEY", naverClientPasswd)
-                response = urllib.request.urlopen(https)
-                content = response.read()
-                content = content.decode("utf-8")
-
-                geocode = json.loads(content)
-                if geocode["meta"]["count"] != 0:
-                    latitude = geocode["addresses"][0]["y"]
-                    longitude = geocode["addresses"][0]["x"]
-                    addressSplit = geocode["addresses"][0]["jibunAddress"].split()
-                    if len(addressSplit) > 2:
-                        gu = addressSplit[1]
-                        dong = addressSplit[2]
+                    geocode = json.loads(content)
+                    if geocode["meta"]["count"] != 0:
+                        latitude = geocode["addresses"][0]["y"]
+                        longitude = geocode["addresses"][0]["x"]
+                        addressSplit = geocode["addresses"][0]["jibunAddress"].split()
+                        if len(addressSplit) > 2:
+                            gu = addressSplit[1]
+                            dong = addressSplit[2]
 
             if Address.objects.filter(gu=gu, dong=dong).count() == 1:
                 areaCode = Address.objects.get(gu=gu, dong=dong)
@@ -197,7 +197,6 @@ def getSecurityLight(request):
                     content = content.decode("utf-8")
 
                     addressData = json.loads(content)
-                    print(addressData)
 
                     if addressData["status"]["name"] == "ok":
                         region = addressData["results"][0]["region"]
@@ -208,27 +207,27 @@ def getSecurityLight(request):
             else:
                 if pandas.notnull(csv.at[i, "소재지도로명주소"]):
                     address = csv.at[i, "소재지도로명주소"]
-                else:
+                elif pandas.notnull(csv.at[i, "소재지지번주소"]):
                     address = csv.at[i, "소재지지번주소"]
 
                 print(address)
+                if pandas.notnull(address):
+                    naverURL = naverGeocodeURL + "?query=" + quote(address)
+                    https = urllib.request.Request(naverURL)
+                    https.add_header("X-NCP-APIGW-API-KEY-ID", naverClientId)
+                    https.add_header("X-NCP-APIGW-API-KEY", naverClientPasswd)
+                    response = urllib.request.urlopen(https)
+                    content = response.read()
+                    content = content.decode("utf-8")
 
-                naverURL = naverGeocodeURL + "?query=" + quote(address)
-                https = urllib.request.Request(naverURL)
-                https.add_header("X-NCP-APIGW-API-KEY-ID", naverClientId)
-                https.add_header("X-NCP-APIGW-API-KEY", naverClientPasswd)
-                response = urllib.request.urlopen(https)
-                content = response.read()
-                content = content.decode("utf-8")
-
-                geocode = json.loads(content)
-                if geocode["meta"]["count"] != 0:
-                    latitude = geocode["addresses"][0]["y"]
-                    longitude = geocode["addresses"][0]["x"]
-                    addressSplit = geocode["addresses"][0]["jibunAddress"].split()
-                    if len(addressSplit) > 2:
-                        gu = addressSplit[1]
-                        dong = addressSplit[2]
+                    geocode = json.loads(content)
+                    if geocode["meta"]["count"] != 0:
+                        latitude = geocode["addresses"][0]["y"]
+                        longitude = geocode["addresses"][0]["x"]
+                        addressSplit = geocode["addresses"][0]["jibunAddress"].split()
+                        if len(addressSplit) > 2:
+                            gu = addressSplit[1]
+                            dong = addressSplit[2]
             if Address.objects.filter(gu=gu, dong=dong).count() == 1:
                 areaCode = Address.objects.get(gu=gu, dong=dong)
                 if SecurityLight.objects.filter(areaCode = areaCode.areaCode).count() == 0:

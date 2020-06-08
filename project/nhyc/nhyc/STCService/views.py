@@ -420,64 +420,126 @@ def getTrendChartData(request, division, term, gu=None):
     return myJsonResponse(json_data)
 
 
+def getPharmacyCnt(request, gu=None, dong=None):
+    '''
+    :param request:
+    :param gu:
+    :return: 서울시 내의 구들의 약국 갯수를 리턴. (구이름으로 정렬된 데이터)
+             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 약국 갯수를 리턴 (동이름으로 정렬된 데이터)
+             만약 dong값까지 입력되었다면 해당 동의 약국 갯수를 리턴 (값 1개)
+    '''
+    resultString = []
+
+    if gu is None:
+        querySet = Result_GuCnt.objects.raw('''
+            select gu, count(pharmacyId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_pharmacy B
+            on A.areaCode = B.areaCode_id
+            group by gu
+            order by gu
+            ''')
+        print("querySet ::: ", querySet)
+        for i in querySet:
+            # print(i.gu, i.cnt)
+            resultString.append(i.cnt)
+
+    else:
+        if dong is None:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(pharmacyId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_pharmacy B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s'
+                group by dong
+                order by dong
+                ''' % gu)
+            print(querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
+        else:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(pharmacyId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_pharmacy B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s' AND dong='%s'
+                group by dong
+                order by dong
+                ''' % (gu, dong))
+            print("querySet ::: ", querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
+
+    print(resultString)
+    return myJsonResponse(resultString)
+
+
 ########################## ↑↑↑↑↑↑↑↑ ############################
 
 
 # ########################### ↓↓↓↓테스트 코드↓↓↓↓ ###########################
 @csrf_exempt
-def testQuery(request, division, term, gu=None):
+def testQuery(request, gu=None, dong=None):
     '''
     :param request:
-    :param division: rent면 월세, depo면 보증금 추이 차트 리딩
-    :param term: 몇 개월 간의 데이터를 보여줄지 정하는 변수
-    :param gu: 있으면 해당 구의 차트 데이터 리딩
-    :return: 정렬된 구, 월세, 보증금 리스트를 담은 JSON을 리턴
+    :param gu:
+    :return: 서울시 내의 구들의 약국 갯수를 리턴. (구이름으로 정렬된 데이터)
+             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 약국 갯수를 리턴 (동이름으로 정렬된 데이터)
+             만약 dong값까지 입력되었다면 해당 동의 약국 갯수를 리턴 (값 1개)
     '''
+    # getPharmacyCnt
+    resultString = []
 
     if gu is None:
-        print("서울시 기준 ::: ")
-        queryString = '''
-        SELECT EXTRACT(YEAR_MONTH FROM `day`) as date, avg(rentalFee) as avg_rentalFee, avg(deposit) as avg_deposit
-        FROM dataProcess_costrecord
-        WHERE day >= DATE_ADD(NOW(), INTERVAL -12 MONTH)
-        GROUP BY date
-        ORDER BY date;
-        '''
+        querySet = Result_GuCnt.objects.raw('''
+            select gu, count(pharmacyId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_pharmacy B
+            on A.areaCode = B.areaCode_id
+            group by gu
+            order by gu
+            ''')
+        print("querySet ::: ", querySet)
+        for i in querySet:
+            # print(i.gu, i.cnt)
+            resultString.append(i.cnt)
+
     else:
-        print("%s 기준 ::: " % gu)
-        queryString = '''
-        SELECT EXTRACT(YEAR_MONTH FROM `day`) as date, avg(rentalFee) as avg_rentalFee, avg(deposit) as avg_deposit
-        FROM dataProcess_costrecord A
-        LEFT JOIN dataProcess_address B
-        ON LEFT(A.houseNumber_id, 10) = B.areaCode
-        WHERE day >= DATE_ADD(NOW(), INTERVAL -12 MONTH) AND gu = '%s'
-        GROUP BY date
-        ORDER BY date
-        ''' % gu
-    print("querySet ::: ", queryString)
-    querySet = TrendChartData.objects.raw(queryString)
+        if dong is None:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(pharmacyId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_pharmacy B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s'
+                group by dong
+                order by dong
+                ''' % gu)
+            print(querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
+        else:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(pharmacyId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_pharmacy B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s' AND dong='%s'
+                group by dong
+                order by dong
+                ''' % (gu, dong))
+            print("querySet ::: ", querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
 
-    dataList = []
-    avgRentalFeeList = []
-    avgDepositList = []
-
-    for i in querySet:
-        dataList.append(i.date)
-        avgRentalFeeList.append(i.avg_rentalFee)
-        avgDepositList.append(i.avg_deposit)
-        print(i.date, i.avg_rentalFee, i.avg_deposit)
-
-    avgRentalFeeList = list(map(str, avgRentalFeeList))  # Decimal 형태의 index들을 단순 string으로 변환
-    avgDepositList = list(map(str, avgDepositList))  # Decimal 형태의 index들을 단순 string으로 변환
-
-    json_data = OrderedDict()
-    json_data['dataList'] = dataList[-term:]
-    if division == 'rent':
-        json_data['avgRentalFeeList'] = avgRentalFeeList[-term:]
-    elif division == 'depo':
-        json_data['avgDepositList'] = avgDepositList[-term:]
-
-    return myJsonResponse(json_data)
+    print(resultString)
+    return myJsonResponse(resultString)
 
 
 # def testQuery2(request):  # 각 구별 월세, 보증금 데이터 읽기.

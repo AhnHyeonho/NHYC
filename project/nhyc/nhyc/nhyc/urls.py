@@ -32,6 +32,9 @@ urlpatterns = [
     path('admin/markets', dpviews.getMarket, name='getMarket'),
     path('admin/pharmacys', dpviews.getPharmacy, name='getPharmacy'),
     path('admin/culturalfacilities', dpviews.getCulturalFacility, name='getCulturalFacility'),
+    path('admin/libraries', dpviews.getLibrary, name='getLibrary'),
+    path('admin/concerthalls', dpviews.getConcertHall, name='getConcertHall'),
+    path('admin/gyms', dpviews.getGym, name='getGym'),
     path('kakaojoin', stcViews.kakaoJoin, name='kakaoJoin'),
 
     ## 현호추가 -->

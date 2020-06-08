@@ -95,12 +95,13 @@ def getDong(request, gu):
 
 
 @csrf_exempt
-def getCCTVCnt(request, gu=None):
+def getCCTVCnt(request, gu=None, dong=None):
     '''
     :param request: 
     :param gu: 
     :return: 서울시 내의 구들의 cctv 갯수를 리턴. (구이름으로 정렬된 데이터)
              만약 gu값이 입려 되어있다면 해당 구 내의 동들의 cctv 갯수를 리턴 (동이름으로 정렬된 데이터)
+             만약 dong값까지 입력되었다면 해당 동의 cctv 갯수를 리턴 (값 1개)
     '''
 
     resultString = []
@@ -120,31 +121,47 @@ def getCCTVCnt(request, gu=None):
             resultString.append(i.cnt)
 
     else:
-        querySet = Result_GuDongCnt.objects.raw('''
-            select gu, dong, count(cctvId) as cnt
-            from dataProcess_address A
-            left outer join dataProcess_cctv B
-            on A.areaCode = B.areaCode_id
-            where gu = '%s'
-            group by dong
-            order by dong
-            ''' % gu)
-        print("querySet ::: ", querySet)
-        for i in querySet:
-            # print(i.gu, i.dong, i.cnt)
-            resultString.append(i.cnt)
+        if dong is None:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(cctvId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_cctv B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s'
+                group by dong
+                order by dong
+                ''' % gu)
+            print("querySet ::: ", querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
+        else:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(cctvId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_cctv B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s' AND dong='%s'
+                group by dong
+                order by dong
+                ''' % (gu, dong))
+            print("querySet ::: ", querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
 
     print(resultString)
     return myJsonResponse(resultString)
 
 
 @csrf_exempt
-def getSecurityLightCnt(request, gu=None):
+def getSecurityLightCnt(request, gu=None, dong=None):
     '''
     :param request:
     :param gu:
     :return: 서울시 내의 구들의 보안등 갯수를 리턴. (구이름으로 정렬된 데이터)
              만약 gu값이 입려 되어있다면 해당 구 내의 동들의 보안등 갯수를 리턴 (동이름으로 정렬된 데이터)
+             만약 dong값까지 입력되었다면 해당 동의 보안등 갯수를 리턴 (값 1개)
     '''
 
     resultString = []
@@ -164,30 +181,46 @@ def getSecurityLightCnt(request, gu=None):
             resultString.append(i.cnt)
 
     else:
-        querySet = Result_GuDongCnt.objects.raw('''
-            select gu, dong, count(lightId) as cnt
-            from dataProcess_address A
-            left outer join dataProcess_securitylight B
-            on A.areaCode = B.areaCode_id
-            where gu = '%s'
-            group by dong
-            order by dong
-            ''' % gu)
-        print(querySet)
-        for i in querySet:
-            # print(i.gu, i.dong, i.cnt)
-            resultString.append(i.cnt)
+        if dong is None:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(lightId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_securitylight B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s'
+                group by dong
+                order by dong
+                ''' % gu)
+            print(querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
+        else:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(lightId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_securitylight B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s' AND dong='%s'
+                group by dong
+                order by dong
+                ''' % (gu, dong))
+            print("querySet ::: ", querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
 
     print(resultString)
     return myJsonResponse(resultString)
 
 
-def getPoliceOfficeCnt(request, gu=None):
+def getPoliceOfficeCnt(request, gu=None, dong=None):
     '''
     :param request:
     :param gu:
     :return: 서울시 내의 구들의 경찰시설 갯수를 리턴. (구이름으로 정렬된 데이터)
              만약 gu값이 입려 되어있다면 해당 구 내의 동들의 경찰시설 갯수를 리턴 (동이름으로 정렬된 데이터)
+             만약 dong값까지 입력되었다면 해당 동의 경찰시설 갯수를 리턴 (값 1개)
     '''
 
     resultString = []
@@ -207,19 +240,34 @@ def getPoliceOfficeCnt(request, gu=None):
             resultString.append(i.cnt)
 
     else:
-        querySet = Result_GuDongCnt.objects.raw('''
-            select gu, dong, count(policeId) as cnt
-            from dataProcess_address A
-            left outer join dataProcess_policeoffice B
-            on A.areaCode = B.areaCode_id
-            where gu = '%s'
-            group by dong
-            order by dong
-            ''' % gu)
-        print(querySet)
-        for i in querySet:
-            # print(i.gu, i.dong, i.cnt)
-            resultString.append(i.cnt)
+        if dong is None:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(policeId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_policeoffice B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s'
+                group by dong
+                order by dong
+                ''' % gu)
+            print(querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
+        else:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(policeId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_policeoffice B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s' AND dong='%s'
+                group by dong
+                order by dong
+                ''' % (gu, dong))
+            print("querySet ::: ", querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
 
     print(resultString)
     return myJsonResponse(resultString)
@@ -648,7 +696,8 @@ def kakaoJoin(request):
 
     http = httplib2.Http()
 
-    response, content = http.request(baseUrl, method="POST", headers={"Authorization" : authorization}, body="property_keys=" + str(propertyKeys))
+    response, content = http.request(baseUrl, method="POST", headers={"Authorization": authorization},
+                                     body="property_keys=" + str(propertyKeys))
 
     content = content.decode("utf-8")
     jsonData = json.loads(content)

@@ -390,21 +390,28 @@ def getTrendChartData(request, division, term, gu=None):
     print("querySet ::: ", queryString)
     querySet = TrendChartData.objects.raw(queryString)
 
-    dataList = []
+    dateList = []
     avgRentalFeeList = []
     avgDepositList = []
 
     for i in querySet:
-        dataList.append(i.date)
+        # dateList.append(i.date)
+        dateShifter = str(i.date)
+        dateShifter = dateShifter[0:4] + "." + dateShifter[4:6]
+        dateList.append(dateShifter)
         avgRentalFeeList.append(i.avg_rentalFee)
         avgDepositList.append(i.avg_deposit)
         print(i.date, i.avg_rentalFee, i.avg_deposit)
-
+    dateList = list(map(str, dateList))
     avgRentalFeeList = list(map(str, avgRentalFeeList))  # Decimal 형태의 index들을 단순 string으로 변환
     avgDepositList = list(map(str, avgDepositList))  # Decimal 형태의 index들을 단순 string으로 변환
 
+    print('dateList::>>', dateList)
+    print('avgRentalFeeList::>>', avgRentalFeeList)
+    print('avgDepositList::>>', avgDepositList)
+
     json_data = OrderedDict()
-    json_data['dataList'] = dataList[-term:]
+    json_data['dateList'] = dateList[-term:]
     if division == 'rent':
         json_data['avgRentalFeeList'] = avgRentalFeeList[-term:]
     elif division == 'depo':

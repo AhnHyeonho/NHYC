@@ -420,6 +420,7 @@ def getTrendChartData(request, division, term, gu=None):
     return myJsonResponse(json_data)
 
 
+@csrf_exempt
 def getPharmacyCnt(request, gu=None, dong=None):
     '''
     :param request:
@@ -464,6 +465,360 @@ def getPharmacyCnt(request, gu=None, dong=None):
                 select gu, dong, count(pharmacyId) as cnt
                 from dataProcess_address A
                 left outer join dataProcess_pharmacy B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s' AND dong='%s'
+                group by dong
+                order by dong
+                ''' % (gu, dong))
+            print("querySet ::: ", querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
+
+    print(resultString)
+    return myJsonResponse(resultString)
+
+
+@csrf_exempt
+def getMarketCnt(request, gu=None, dong=None):
+    '''
+    :param request:
+    :param gu:
+    :return: 서울시 내의 구들의 전통시장 갯수를 리턴. (구이름으로 정렬된 데이터)
+             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 전통시장 갯수를 리턴 (동이름으로 정렬된 데이터)
+             만약 dong값까지 입력되었다면 해당 동의 전통시장 갯수를 리턴 (값 1개)
+    '''
+    resultString = []
+
+    if gu is None:
+        querySet = Result_GuCnt.objects.raw('''
+            select gu, count(marketId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_market B
+            on A.areaCode = B.areaCode_id
+            group by gu
+            order by gu
+            ''')
+        print("querySet ::: ", querySet)
+        for i in querySet:
+            # print(i.gu, i.cnt)
+            resultString.append(i.cnt)
+
+    else:
+        if dong is None:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(marketId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_market B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s'
+                group by dong
+                order by dong
+                ''' % gu)
+            print(querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
+        else:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(marketId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_market B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s' AND dong='%s'
+                group by dong
+                order by dong
+                ''' % (gu, dong))
+            print("querySet ::: ", querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
+
+    print(resultString)
+    return myJsonResponse(resultString)
+
+
+@csrf_exempt
+def getParkCnt(request, gu=None, dong=None):
+    '''
+    :param request:
+    :param gu:
+    :return: 서울시 내의 구들의 공원 갯수를 리턴. (구이름으로 정렬된 데이터)
+             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 공원 갯수를 리턴 (동이름으로 정렬된 데이터)
+             만약 dong값까지 입력되었다면 해당 동의 공원 갯수를 리턴 (값 1개)
+    '''
+    resultString = []
+
+    if gu is None:
+        querySet = Result_GuCnt.objects.raw('''
+            select gu, count(parkId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_park B
+            on A.areaCode = B.areaCode_id
+            group by gu
+            order by gu
+            ''')
+        print("querySet ::: ", querySet)
+        for i in querySet:
+            # print(i.gu, i.cnt)
+            resultString.append(i.cnt)
+
+    else:
+        if dong is None:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(parkId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_park B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s'
+                group by dong
+                order by dong
+                ''' % gu)
+            print(querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
+        else:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(parkId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_park B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s' AND dong='%s'
+                group by dong
+                order by dong
+                ''' % (gu, dong))
+            print("querySet ::: ", querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
+
+    print(resultString)
+    return myJsonResponse(resultString)
+
+
+@csrf_exempt
+def getGymCnt(request, gu=None, dong=None):
+    '''
+    :param request:
+    :param gu:
+    :return: 서울시 내의 구들의 공공체육시설 갯수를 리턴. (구이름으로 정렬된 데이터)
+             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 공공체육시설 갯수를 리턴 (동이름으로 정렬된 데이터)
+             만약 dong값까지 입력되었다면 해당 동의 공공체육시설 갯수를 리턴 (값 1개)
+    '''
+    resultString = []
+
+    if gu is None:
+        querySet = Result_GuCnt.objects.raw('''
+            select gu, count(gymId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_gym B
+            on A.areaCode = B.areaCode_id
+            group by gu
+            order by gu
+            ''')
+        print("querySet ::: ", querySet)
+        for i in querySet:
+            # print(i.gu, i.cnt)
+            resultString.append(i.cnt)
+
+    else:
+        if dong is None:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(gymId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_gym B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s'
+                group by dong
+                order by dong
+                ''' % gu)
+            print(querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
+        else:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(gymId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_gym B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s' AND dong='%s'
+                group by dong
+                order by dong
+                ''' % (gu, dong))
+            print("querySet ::: ", querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
+
+    print(resultString)
+    return myJsonResponse(resultString)
+
+
+@csrf_exempt
+def getConcertHallCnt(request, gu=None, dong=None):
+    '''
+    :param request:
+    :param gu:
+    :return: 서울시 내의 구들의 공연장 갯수를 리턴. (구이름으로 정렬된 데이터)
+             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 공연장 갯수를 리턴 (동이름으로 정렬된 데이터)
+             만약 dong값까지 입력되었다면 해당 동의 공연장 갯수를 리턴 (값 1개)
+    '''
+    resultString = []
+
+    if gu is None:
+        querySet = Result_GuCnt.objects.raw('''
+            select gu, count(concertHallId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_concerthall B
+            on A.areaCode = B.areaCode_id
+            group by gu
+            order by gu
+            ''')
+        print("querySet ::: ", querySet)
+        for i in querySet:
+            # print(i.gu, i.cnt)
+            resultString.append(i.cnt)
+
+    else:
+        if dong is None:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(concertHallId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_concerthall B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s'
+                group by dong
+                order by dong
+                ''' % gu)
+            print(querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
+        else:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(concertHallId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_concerthall B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s' AND dong='%s'
+                group by dong
+                order by dong
+                ''' % (gu, dong))
+            print("querySet ::: ", querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
+
+    print(resultString)
+    return myJsonResponse(resultString)
+
+
+@csrf_exempt
+def getLibraryCnt(request, gu=None, dong=None):
+    '''
+    :param request:
+    :param gu:
+    :return: 서울시 내의 구들의 도서관 갯수를 리턴. (구이름으로 정렬된 데이터)
+             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 도서관 갯수를 리턴 (동이름으로 정렬된 데이터)
+             만약 dong값까지 입력되었다면 해당 동의 도서관 갯수를 리턴 (값 1개)
+    '''
+    resultString = []
+
+    if gu is None:
+        querySet = Result_GuCnt.objects.raw('''
+            select gu, count(libraryId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_library B
+            on A.areaCode = B.areaCode_id
+            group by gu
+            order by gu
+            ''')
+        print("querySet ::: ", querySet)
+        for i in querySet:
+            # print(i.gu, i.cnt)
+            resultString.append(i.cnt)
+
+    else:
+        if dong is None:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(libraryId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_library B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s'
+                group by dong
+                order by dong
+                ''' % gu)
+            print(querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
+        else:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(libraryId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_library B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s' AND dong='%s'
+                group by dong
+                order by dong
+                ''' % (gu, dong))
+            print("querySet ::: ", querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
+
+    print(resultString)
+    return myJsonResponse(resultString)
+
+
+@csrf_exempt
+def getCulturalFacilityCnt(request, gu=None, dong=None):
+    '''
+    :param request:
+    :param gu:
+    :return: 서울시 내의 구들의 박물관/미술관 갯수를 리턴. (구이름으로 정렬된 데이터)
+             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 박물관/미술관 갯수를 리턴 (동이름으로 정렬된 데이터)
+             만약 dong값까지 입력되었다면 해당 동의 박물관/미술관 갯수를 리턴 (값 1개)
+    '''
+    resultString = []
+
+    if gu is None:
+        querySet = Result_GuCnt.objects.raw('''
+            select gu, count(culturalFacilityId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_culturalfacility B
+            on A.areaCode = B.areaCode_id
+            group by gu
+            order by gu
+            ''')
+        print("querySet ::: ", querySet)
+        for i in querySet:
+            # print(i.gu, i.cnt)
+            resultString.append(i.cnt)
+
+    else:
+        if dong is None:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(culturalFacilityId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_culturalfacility B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s'
+                group by dong
+                order by dong
+                ''' % gu)
+            print(querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
+        else:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(culturalFacilityId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_culturalfacility B
                 on A.areaCode = B.areaCode_id
                 where gu = '%s' AND dong='%s'
                 group by dong

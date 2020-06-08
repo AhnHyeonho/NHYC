@@ -28,6 +28,10 @@ urlpatterns = [
     path('admin/cctvs', dpviews.getCCTV, name='getCCTV'),
     path('admin/securitylights', dpviews.getSecurityLight, name='getSecurityLight'),
     path('admin/policeoffices', dpviews.getPoliceOffice, name='getPoliceOffice'),
+    path('admin/parks', dpviews.getPark, name='getPark'),
+    path('admin/markets', dpviews.getMarket, name='getMarket'),
+    path('admin/pharmacys', dpviews.getPharmacy, name='getPharmacy'),
+    path('admin/culturalfacilities', dpviews.getCulturalFacility, name='getCulturalFacility'),
     path('kakaojoin', stcViews.kakaoJoin, name='kakaoJoin'),
 
     ## 현호추가 -->
@@ -40,7 +44,7 @@ urlpatterns = [
     path('getSecurityLightCnt/', stcViews.getSecurityLightCnt),
     path('getSecurityLightCnt/<str:gu>/', stcViews.getSecurityLightCnt),
     path('getPoliceOfficeCnt/', stcViews.getPoliceOfficeCnt),
-    path('getPoliceOfficeCnt/<str:gfiu>/', stcViews.getPoliceOfficeCnt),
+    path('getPoliceOfficeCnt/<str:gu>/', stcViews.getPoliceOfficeCnt),
     path('getRankingChartData/<str:division>/', stcViews.getRankingChartData),
     path('getRankingChartData/<str:division>/<str:gu>', stcViews.getRankingChartData),
     path('getTrendChartData/<str:division>/<int:term>/', stcViews.getTrendChartData),

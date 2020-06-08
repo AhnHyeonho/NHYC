@@ -97,3 +97,77 @@ class PoliceOffice(models.Model):
 
     def __str__(self):
         return self.policeOfficeName
+<<<<<<< HEAD
+=======
+
+class Park(models.Model):
+    parkId = models.AutoField(primary_key=True)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    parkName = models.CharField(max_length=50)
+    areaCode = models.ForeignKey('Address', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.parkName
+
+
+class Market(models.Model):
+    marketId = models.AutoField(primary_key=True)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    marketName = models.CharField(max_length=50)
+    areaCode = models.ForeignKey('Address', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.marketName
+
+class Pharmacy(models.Model):
+    pharmacyId = models.AutoField(primary_key=True)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    pharmacyName = models.CharField(max_length=50)
+    areaCode = models.ForeignKey('Address', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.pharmacyName
+
+class CulturalFacility(models.Model):
+    culturalFacilityId = models.AutoField(primary_key=True)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    culturalFacilityName = models.CharField(max_length=50)
+    areaCode = models.ForeignKey('Address', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.culturalFacilityName
+
+class Library(models.Model):
+    libraryId = models.AutoField(primary_key=True)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    libraryName = models.CharField(max_length=50)
+    areaCode = models.ForeignKey('Address', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.libraryName
+
+class ConcertHall(models.Model):
+    concertHallId = models.AutoField(primary_key=True)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    concertHallName = models.CharField(max_length=50)
+    areaCode = models.ForeignKey('Address', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.concertHallName
+
+class Gym(models.Model):
+    gymId = models.AutoField(primary_key=True)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    gymName = models.CharField(max_length=50)
+    areaCode = models.ForeignKey('Address', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.gymName
+>>>>>>> d418490b22ff8ea48db5248f832b7a229da8caed

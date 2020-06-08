@@ -97,8 +97,6 @@ class PoliceOffice(models.Model):
 
     def __str__(self):
         return self.policeOfficeName
-<<<<<<< HEAD
-=======
 
 class Park(models.Model):
     parkId = models.AutoField(primary_key=True)
@@ -170,4 +168,3 @@ class Gym(models.Model):
 
     def __str__(self):
         return self.gymName
->>>>>>> d418490b22ff8ea48db5248f832b7a229da8caed

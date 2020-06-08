@@ -59,8 +59,8 @@ urlpatterns = [
     ## 테스트 url
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('test/', stcViews.testQuery),
-    path('test/<str:division>/<int:term>/', stcViews.testQuery),
-    path('test/<str:division>/<int:term>/<str:gu>', stcViews.testQuery),
+    path('test/<str:gu>/', stcViews.testQuery),
+    path('test/<str:gu>/<str:dong>/', stcViews.testQuery),
     path('getRankingChartData/<str:division>/', stcViews.getRankingChartData),
     # path('test2/', stcViews.testQuery2),
 

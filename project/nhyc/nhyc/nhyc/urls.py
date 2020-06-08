@@ -47,10 +47,7 @@ urlpatterns = [
     path('getSecurityLightCnt/<str:gu>/<str:dong>/', stcViews.getSecurityLightCnt),
     path('getPoliceOfficeCnt/', stcViews.getPoliceOfficeCnt),
     path('getPoliceOfficeCnt/<str:gu>/', stcViews.getPoliceOfficeCnt),
-<<<<<<< HEAD
-=======
     path('getPoliceOfficeCnt/<str:gu>/<str:dong>/', stcViews.getPoliceOfficeCnt),
->>>>>>> d418490b22ff8ea48db5248f832b7a229da8caed
     path('getRankingChartData/<str:division>/', stcViews.getRankingChartData),
     path('getRankingChartData/<str:division>/<str:gu>', stcViews.getRankingChartData),
     path('getTrendChartData/<str:division>/<int:term>/', stcViews.getTrendChartData),

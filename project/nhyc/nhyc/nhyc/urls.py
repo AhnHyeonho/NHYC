@@ -40,7 +40,7 @@ urlpatterns = [
     path('getSecurityLightCnt/', stcViews.getSecurityLightCnt),
     path('getSecurityLightCnt/<str:gu>/', stcViews.getSecurityLightCnt),
     path('getPoliceOfficeCnt/', stcViews.getPoliceOfficeCnt),
-    path('getPoliceOfficeCnt/<str:gfiu>/', stcViews.getPoliceOfficeCnt),
+    path('getPoliceOfficeCnt/<str:gu>/', stcViews.getPoliceOfficeCnt),
     path('getRankingChartData/<str:division>/', stcViews.getRankingChartData),
     path('getRankingChartData/<str:division>/<str:gu>', stcViews.getRankingChartData),
     path('getTrendChartData/<str:division>/<int:term>/', stcViews.getTrendChartData),

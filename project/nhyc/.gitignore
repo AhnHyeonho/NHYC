@@ -139,4 +139,5 @@ sketch
 **/dataProcess/migrations/
 **/STCService/migrations/
 **/.idea/dbnavigator.xml
+**/nhyc/__pycache__/
 # End of https://www.gitignore.io/api/react,django

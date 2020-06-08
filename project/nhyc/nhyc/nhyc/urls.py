@@ -37,9 +37,9 @@ urlpatterns = [
     path('admin/gyms', dpviews.getGym, name='getGym'),
     path('kakaojoin', stcViews.kakaoJoin, name='kakaoJoin'),
 
-    ## 현호추가 -->
+    # 현호추가 -->
 
-    ## 확정 url
+    # 확정 url
     path('getGu/', stcViews.getGu),
     path('getDong/<str:gu>/', stcViews.getDong),
     path('getCCTVCnt/', stcViews.getCCTVCnt),
@@ -85,8 +85,10 @@ urlpatterns = [
     path('test/<str:gu>/', stcViews.testQuery),
     path('test/<str:gu>/<str:dong>/', stcViews.testQuery),
     path('getRankingChartData/<str:division>/', stcViews.getRankingChartData),
-    # path('test2/', stcViews.testQuery2),
 
-    ## <-- 현호추가
+    # dummy data => 추후 삭제
+    path('dummyData/', stcViews.getDummyDataForDH),
+    # dummy data => 추후 삭제
+    # <-- 현호추가
 
 ]

@@ -3,7 +3,7 @@
     position: relative;
     width: 35%;
     height: 70vh;
-    background-color: orangered;
+    background-color: white;
     overflow: scroll;
 }
 
@@ -11,25 +11,41 @@
 .recommand-databoard-title {
     width: 100%;
     height: 6%;
-    background-color: orchid;
+    background-color: orangered;
+    
     position: relative;
     display: block;
     left: inherit;
     top: inherit;
+    display: block;
+    line-height: 42px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 500;
+    color: white;
 }
 
 
 .recommand-databoard-item-title {
     width: 100%;
-    background-color: palegreen;
+    background-color: white;
     height: fit-content;
     position: relative;
+    display: inline-block;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    text-align: center;
+    background-color: orangered;
+    background-clip: content-box;
+    color: white;
+    font-weight: 500;
 }
 
 
 .recommand-databoard-item {
     width: 100%;
-    background-color: skyblue;
+    background-color: white;
     height: fit-content;
     position: relative;
 }
+

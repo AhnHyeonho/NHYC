@@ -1,4 +1,5 @@
 
+/* global kakao */
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableContainer from '@material-ui/core/TableContainer';
@@ -7,10 +8,14 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+
 import LinkIcon from '@material-ui/icons/Link';
+import RoomIcon from '@material-ui/icons/Room';
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+
+import './RecommandTable.css'
 
 // Custom table row 
 const StyledTableRow = withStyles((theme) => ({
@@ -30,57 +35,65 @@ const StyledTableCell = withStyles((theme) => ({
     head: {
         backgroundColor: theme.palette.common.white,
         color: theme.palette.common.black,
-        padding: "6px 10px 6px 10px"
+        padding: "5px 2px 8px 2px"
+
     },
 
     body: {
         fontSize: 14,
-        padding: "6px 10px 6px 10px",
+        padding: "7px 5px 7px 5px",
     },
 }))(TableCell);
 
 
+function moveCenterPoint() { 
+    console.log("Click!!!!")
+}
 
-// response 값 Object화 
-// function createData(rank1, name1, rank2, name2) {
 
-//     // Object return 
-//     return { rank1, name1, rank2, name2 };
-// }
 
-function createData(index, address, latitude, longtitude){
+function createData(index, address, latitude, longtitude) {
 
-    let url = "https://new.land.naver.com/complexes?ms="+ latitude + "," + longtitude + ",16&a=APT:ABYG:JGC&e=RETAIL";
+    // 네이버 부동산 이동 링크 (각 동의 중심 좌표로 이동)
+    let url = "https://new.land.naver.com/complexes?ms=" + latitude + "," + longtitude + ",16&a=APT:ABYG:JGC&e=RETAIL";
 
-    return { index, address, url };
+    return { index, address, latitude, longtitude, url };
 }
 
 
 
 const rows = [
+
     createData(1, '서울특별시 성북구 성북동', 37.5969, 126.9922),
-    createData(2, '서울특별시 성북구 성북동', 37.5969, 126.9922),
-    createData(3, '서울특별시 성북구 성북동', 37.5969, 126.9922),
-    createData(4, '서울특별시 성북구 성북동', 37.5969, 126.9922),
-    createData(5, '서울특별시 성북구 성북동', 37.5969, 126.9922),
-    createData(6, '서울특별시 성북구 성북동', 37.5969, 126.9922),
-    createData(7, '서울특별시 성북구 성북동', 37.5969, 126.9922),
-    createData(8, '서울특별시 성북구 성북동', 37.5969, 126.9922),
-    createData(9, '서울특별시 성북구 성북동', 37.5969, 126.9922),
-    createData(10, '서울특별시 성북구 성북동', 37.5969, 126.9922),
+    createData(2, '서울특별시 성북구 성북동', 37.5969, 126),
+    createData(3, '서울특별시 성북구 성북동', 37.5969, 126.822),
+    createData(4, '서울특별시 성북구 성북동', 37.5969, 126.4),
+    createData(5, '서울특별시 성북구 성북동', 37.5969, 126.6),
+    createData(6, '서울특별시 성북구 성북동', 37.5969, 126.7),
+    createData(7, '서울특별시 성북구 성북동', 37.5969, 126.3),
+    createData(8, '서울특별시 성북구 성북동', 37.5969, 126.55),
+    createData(9, '서울특별시 성북구 성북동', 37.5969, 126.88),
+    createData(10, '서울특별시 성북구 성북동', 37.5969, 126.666),
+
 ];
 
-// Header colums
+// *** 테이블 헤더 ***
+
 const columns = [
-    { id: 'rank1', align: 'left', label: '순위', minWidth: 20 },
-    { id: 'name1', align: 'left', label: '지역명', minWidth: 100 },
-    { id: 'btn1', align: 'left', label: '', minWidth: 10 },
 
-    { id: 'rank2', align: 'left', label: '순위', minWidth: 20 },
-    { id: 'name2', align: 'left', label: '지역명', minWidth: 100 },
-    { id: 'btn2', align: 'left', label: '', minWidth: 10 },
+    { id: 'rank1', align: 'center', label: '순위', minWidth: 20 },
+    { id: 'name1', align: 'center', label: '지역명', minWidth: 100 },
+    { id: 'map-btn1', align: 'center', label: '', minWidth: 5 },
+    { id: 'naver-btn1', align: 'center', label: '', minWidth: 5 },
+
+    { id: 'rank2', align: 'center', label: '순위', minWidth: 20 },
+    { id: 'name2', align: 'center', label: '지역명', minWidth: 100 },
+    { id: 'map-btn2', align: 'center', label: '', minWidth: 5 },
+    { id: 'naver-btn2', align: 'center', label: '', minWidth: 5 },
 
 ];
+
+// *************
 
 const useStyles = makeStyles({
     table: {
@@ -93,46 +106,17 @@ const useStyles = makeStyles({
 export default function RecommandTable() {
 
     // API Test ======
+    // 테이블 row에 들어갈 
+    const [address, setAddress] = useState(null);
+    const [latitude, setLatitude] = useState(null);
+    const [longtitude, setLongtitude] = useState(null);
+
     const [users, setUsers] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     // ===============
 
     const classes = useStyles();
-
-    const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(10);
-
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-    };
-
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(+event.target.value);
-        setPage(0);
-    };
-
-
-    const handleClick=(event, url)=> {
-        console.log(url);
-        //  window.location = url;
-    }
-
-    
-
-    // useEffect(
-    //     () => {
-    //         fetch('https://jsonplaceholder.typicode.com/posts')
-    //             .then(res => {
-    //                 console.log(res.json()[0]['userId']);
-    //             })
-    //         // .then(data => title = data["0"]["title"])
-    //         // .then(data => console.log(data))
-    //         // .then(data => options["title"]["text"] = title)
-    //         // .then()
-    //     },
-    // );
-
 
     // API Test ===============
     useEffect(() => {
@@ -144,16 +128,30 @@ export default function RecommandTable() {
                 setError(null);
                 setUsers(null);
 
-                // loading 상태를 true 로 바꿉니다.
+                // loading 상태를 true 로 바꿈
                 setLoading(true);
                 const response = await axios.get(
-                    'https://jsonplaceholder.typicode.com/users'
+                    'http://ec2-52-78-44-165.ap-northeast-2.compute.amazonaws.com:8000/dummyData/'
                 );
 
-                setUsers(response.data); // 데이터는 response.data 안에 들어있습니다.
+                console.log(response);
+                // const resAddresList = response.data.map(resData => resData.address)
+                // const resLatList = response.data.map(resData => resData.latitude)
+                // const resLonList = response.data.map(resData => resData.longtitude)
+
+
+                // console.log(resLeftCol);
+                // console.log(resRightCol);
+            
+
+                // setAddress(resAddresList);
+                // setLatitude(resLatList);
+                // setLongtitude(resLonList);
+
 
             } catch (e) {
                 setError(e);
+                console.log(e);
             }
 
             setLoading(false);
@@ -163,15 +161,15 @@ export default function RecommandTable() {
         fetchUsers();
     }, []);
 
-    // ========================
 
     
 
-
-    
     if (loading) return <div>로딩중..</div>;
     if (error) return <div>에러가 발생했습니다</div>;
-    if (!users) return null;
+    // if (!users) return null;
+
+
+   
 
     return (
 
@@ -198,18 +196,21 @@ export default function RecommandTable() {
                 {/* 테이블 바디 */}
                 <TableBody>
 
-                    {rows.map((user, index) => (
+                    {rows.map((row, index) => (
 
                         <StyledTableRow key={index} >
-                            
-                            <StyledTableCell align="left">{user.index}</StyledTableCell>
-                            <StyledTableCell align="left">{user.address}</StyledTableCell>
-                                <StyledTableCell align="left" ><a href={user.url}><LinkIcon style={{ fill: "#1976d2" }} /></a></StyledTableCell>
-                            
 
-                            <StyledTableCell align="left">{user.index}</StyledTableCell>
-                            <StyledTableCell align="left">{user.address}</StyledTableCell>
-                            <StyledTableCell align="left"><LinkIcon style={{ fill: "#1976d2" }} /></StyledTableCell>
+
+                            <StyledTableCell align="center" > {row.index} </StyledTableCell>
+                            <StyledTableCell align="center"> {row.address} </StyledTableCell>
+                            <StyledTableCell align="center" ><button className="map-btn" onClick={moveCenterPoint} ><RoomIcon style={{ fill: "#1976d2" }} /></button></StyledTableCell>
+                            <StyledTableCell align="center" ><a href={row.url}><LinkIcon style={{ fill: "#1976d2" }} /></a></StyledTableCell>
+
+
+                            <StyledTableCell align="center">{row.index}</StyledTableCell>
+                            <StyledTableCell align="center">{row.address}</StyledTableCell>
+                            <StyledTableCell align="center" ><button className="map-btn" ><RoomIcon style={{ fill: "#1976d2" }} /></button></StyledTableCell>
+                            <StyledTableCell align="center" ><a href={row.url}><LinkIcon style={{ fill: "#1976d2" }} /></a></StyledTableCell>
 
 
                         </StyledTableRow>

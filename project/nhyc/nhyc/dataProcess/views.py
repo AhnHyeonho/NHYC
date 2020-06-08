@@ -20,6 +20,13 @@ from .models import Member
 from .models import MemberInfo
 from .models import PoliceOffice
 from .models import SecurityLight
+from .models import Park
+from .models import Market
+from .models import Pharmacy
+from .models import CulturalFacility
+from .models import Library
+from .models import ConcertHall
+from .models import Gym
 
 naverClientId = "tw8yh1kfp6"
 naverClientPasswd = "Djx3jNQ1bbXODDxgZM9GS8XL391dPXB2VyxsbO2E"
@@ -266,5 +273,230 @@ def getPoliceOffice(request):
                 policeOfficeName = csv.get_value(i, "지구대파출소")
                 policeOffice = PoliceOffice(latitude=latitude, longitude=longitude, policeOfficeName=policeOfficeName, areaCode=areaCode)
                 policeOffice.save()
+
+    return HttpResponse(csv)
+
+def getPark(request):
+    csv = pandas.read_csv(os.path.join(settings.BASE_DIR, "dataProcess/1전국도시공원정보표준데이터.csv"), encoding="CP949")
+    csv = csv[csv["소재지도로명주소"].str.contains("서울") & csv["소재지지번주소"].str.contains("서울")]
+
+    for i in csv.index:
+        gu = ""
+        dong = ""
+        if pandas.notnull(csv.at[i, "위도"]) and pandas.notnull(csv.at[i, "경도"]):
+            latitude = csv.at[i, "위도"]
+            longitude = csv.at[i, "경도"]
+            parkName = csv.at[i, "공원명"]
+
+            if (Park.objects.filter(latitude=latitude, longitude=longitude).count() == 0):
+                naverURL = naverReverseGeocodeURL + "?coords=" + str(longitude) + "," + str(
+                    latitude) + "&orders=legalcode&output=json"
+                https = urllib.request.Request(naverURL)
+                https.add_header("X-NCP-APIGW-API-KEY-ID", naverClientId)
+                https.add_header("X-NCP-APIGW-API-KEY", naverClientPasswd)
+                response = urllib.request.urlopen(https)
+                content = response.read()
+                content = content.decode("utf-8")
+
+                addressData = json.loads(content)
+
+                if addressData["status"]["name"] == "ok":
+                    region = addressData["results"][0]["region"]
+                    gu = region["area2"]["name"]
+                    dong = region["area3"]["name"]
+                    print(gu + " " + dong)
+
+        else:
+            if pandas.notnull(csv.at[i, "소재지도로명주소"]):
+                address = csv.at[i, "소재지도로명주소"]
+            elif pandas.notnull(csv.at[i, "소재지지번주소"]):
+                address = csv.at[i, "소재지지번주소"]
+
+            print(address)
+            if pandas.notnull(address):
+                naverURL = naverGeocodeURL + "?query=" + quote(address)
+                https = urllib.request.Request(naverURL)
+                https.add_header("X-NCP-APIGW-API-KEY-ID", naverClientId)
+                https.add_header("X-NCP-APIGW-API-KEY", naverClientPasswd)
+                response = urllib.request.urlopen(https)
+                content = response.read()
+                content = content.decode("utf-8")
+
+                geocode = json.loads(content)
+                if geocode["meta"]["count"] != 0:
+                    latitude = geocode["addresses"][0]["y"]
+                    longitude = geocode["addresses"][0]["x"]
+                    addressSplit = geocode["addresses"][0]["jibunAddress"].split()
+                    if len(addressSplit) > 2:
+                        gu = addressSplit[1]
+                        dong = addressSplit[2]
+        if Address.objects.filter(gu=gu, dong=dong).count() == 1:
+            areaCode = Address.objects.get(gu=gu, dong=dong)
+            if Park.objects.filter(latitude=latitude, longitude=longitude).count() == 0:
+                park = Park(latitude=latitude, longitude=longitude, parkName=parkName, areaCode=areaCode)
+                park.save()
+
+    return HttpResponse(csv)
+
+def getMarket(request):
+    csv = pandas.read_csv(os.path.join(settings.BASE_DIR, "dataProcess/2전국전통시장표준데이터.csv"), encoding="CP949")
+    csv = csv[csv["소재지도로명주소"].str.contains("서울") & csv["소재지지번주소"].str.contains("서울")]
+
+    for i in csv.index:
+        gu = ""
+        dong = ""
+        if pandas.notnull(csv.at[i, "위도"]) and pandas.notnull(csv.at[i, "경도"]):
+            latitude = csv.at[i, "위도"]
+            longitude = csv.at[i, "경도"]
+            marketName = csv.at[i, "시장명"]
+
+            if (Market.objects.filter(latitude=latitude, longitude=longitude).count() == 0):
+                naverURL = naverReverseGeocodeURL + "?coords=" + str(longitude) + "," + str(
+                    latitude) + "&orders=legalcode&output=json"
+                https = urllib.request.Request(naverURL)
+                https.add_header("X-NCP-APIGW-API-KEY-ID", naverClientId)
+                https.add_header("X-NCP-APIGW-API-KEY", naverClientPasswd)
+                response = urllib.request.urlopen(https)
+                content = response.read()
+                content = content.decode("utf-8")
+
+                addressData = json.loads(content)
+
+                if addressData["status"]["name"] == "ok":
+                    region = addressData["results"][0]["region"]
+                    gu = region["area2"]["name"]
+                    dong = region["area3"]["name"]
+                    print(gu + " " + dong)
+
+        else:
+            if pandas.notnull(csv.at[i, "소재지도로명주소"]):
+                address = csv.at[i, "소재지도로명주소"]
+            elif pandas.notnull(csv.at[i, "소재지지번주소"]):
+                address = csv.at[i, "소재지지번주소"]
+
+            print(address)
+            if pandas.notnull(address):
+                naverURL = naverGeocodeURL + "?query=" + quote(address)
+                https = urllib.request.Request(naverURL)
+                https.add_header("X-NCP-APIGW-API-KEY-ID", naverClientId)
+                https.add_header("X-NCP-APIGW-API-KEY", naverClientPasswd)
+                response = urllib.request.urlopen(https)
+                content = response.read()
+                content = content.decode("utf-8")
+
+                geocode = json.loads(content)
+                if geocode["meta"]["count"] != 0:
+                    latitude = geocode["addresses"][0]["y"]
+                    longitude = geocode["addresses"][0]["x"]
+                    addressSplit = geocode["addresses"][0]["jibunAddress"].split()
+                    if len(addressSplit) > 2:
+                        gu = addressSplit[1]
+                        dong = addressSplit[2]
+        if Address.objects.filter(gu=gu, dong=dong).count() == 1:
+            areaCode = Address.objects.get(gu=gu, dong=dong)
+            if Market.objects.filter(latitude=latitude, longitude=longitude).count() == 0:
+                market = Market(latitude=latitude, longitude=longitude, marketName=marketName, areaCode=areaCode)
+                market.save()
+
+    return HttpResponse(csv)
+
+def getPharmacy(request):
+    csv = pandas.read_csv(os.path.join(settings.BASE_DIR, "dataProcess/3서울특별시 약국정보.csv"), encoding="CP949")
+    csv = csv[csv["소재지전체주소"].str.contains("서울") & csv["도로명전체주소"].str.contains("서울")]
+
+    for i in csv.index:
+        gu = ""
+        dong = ""
+        pharmacyName = csv.at[i, "사업장명"]
+        if pandas.notnull(csv.at[i, "소재지전체주소"]):
+            address = csv.at[i, "소재지전체주소"]
+        elif pandas.notnull(csv.at[i, "도로명전체주소"]):
+            address = csv.at[i, "도로명전체주소"]
+
+        print(address)
+        if pandas.notnull(address):
+            naverURL = naverGeocodeURL + "?query=" + quote(address)
+            https = urllib.request.Request(naverURL)
+            https.add_header("X-NCP-APIGW-API-KEY-ID", naverClientId)
+            https.add_header("X-NCP-APIGW-API-KEY", naverClientPasswd)
+            response = urllib.request.urlopen(https)
+            content = response.read()
+            content = content.decode("utf-8")
+
+            geocode = json.loads(content)
+            if geocode["meta"]["count"] != 0:
+                latitude = geocode["addresses"][0]["y"]
+                longitude = geocode["addresses"][0]["x"]
+                addressSplit = geocode["addresses"][0]["jibunAddress"].split()
+                if len(addressSplit) > 2:
+                    gu = addressSplit[1]
+                    dong = addressSplit[2]
+        if Address.objects.filter(gu=gu, dong=dong).count() == 1:
+            areaCode = Address.objects.get(gu=gu, dong=dong)
+            if Pharmacy.objects.filter(latitude=latitude, longitude=longitude).count() == 0:
+                pharmacy = Pharmacy(latitude=latitude, longitude=longitude, pharmacyName=pharmacyName, areaCode=areaCode)
+                pharmacy.save()
+
+    return HttpResponse(csv)
+
+def getCulturalFacility(request):
+    csv = pandas.read_csv(os.path.join(settings.BASE_DIR, "dataProcess/4전국박물관미술관정보표준데이터.csv"), encoding="CP949")
+    csv = csv[csv["소재지도로명주소"].str.contains("서울") & csv["소재지지번주소"].str.contains("서울")]
+
+    for i in csv.index:
+        gu = ""
+        dong = ""
+        if pandas.notnull(csv.at[i, "위도"]) and pandas.notnull(csv.at[i, "경도"]):
+            latitude = csv.at[i, "위도"]
+            longitude = csv.at[i, "경도"]
+            culturalFacilityName = csv.at[i, "시설명"]
+
+            if (CulturalFacility.objects.filter(latitude=latitude, longitude=longitude).count() == 0):
+                naverURL = naverReverseGeocodeURL + "?coords=" + str(longitude) + "," + str(
+                    latitude) + "&orders=legalcode&output=json"
+                https = urllib.request.Request(naverURL)
+                https.add_header("X-NCP-APIGW-API-KEY-ID", naverClientId)
+                https.add_header("X-NCP-APIGW-API-KEY", naverClientPasswd)
+                response = urllib.request.urlopen(https)
+                content = response.read()
+                content = content.decode("utf-8")
+
+                addressData = json.loads(content)
+
+                if addressData["status"]["name"] == "ok":
+                    region = addressData["results"][0]["region"]
+                    gu = region["area2"]["name"]
+                    dong = region["area3"]["name"]
+                    print(gu + " " + dong)
+
+        else:
+            if pandas.notnull(csv.at[i, "소재지도로명주소"]):
+                address = csv.at[i, "소재지도로명주소"]
+            elif pandas.notnull(csv.at[i, "소재지지번주소"]):
+                address = csv.at[i, "소재지지번주소"]
+
+            print(address)
+            if pandas.notnull(address):
+                naverURL = naverGeocodeURL + "?query=" + quote(address)
+                https = urllib.request.Request(naverURL)
+                https.add_header("X-NCP-APIGW-API-KEY-ID", naverClientId)
+                https.add_header("X-NCP-APIGW-API-KEY", naverClientPasswd)
+                response = urllib.request.urlopen(https)
+                content = response.read()
+                content = content.decode("utf-8")
+
+                geocode = json.loads(content)
+                if geocode["meta"]["count"] != 0:
+                    latitude = geocode["addresses"][0]["y"]
+                    longitude = geocode["addresses"][0]["x"]
+                    addressSplit = geocode["addresses"][0]["jibunAddress"].split()
+                    if len(addressSplit) > 2:
+                        gu = addressSplit[1]
+                        dong = addressSplit[2]
+        if Address.objects.filter(gu=gu, dong=dong).count() == 1:
+            areaCode = Address.objects.get(gu=gu, dong=dong)
+            if CulturalFacility.objects.filter(latitude=latitude, longitude=longitude).count() == 0:
+                culturalFacility = CulturalFacility(latitude=latitude, longitude=longitude, culturalFacilityName=culturalFacilityName, areaCode=areaCode)
+                culturalFacility.save()
 
     return HttpResponse(csv)

@@ -1,7 +1,7 @@
 appdirs==1.4.3
 asgiref==3.2.7
 distlib==0.3.0
-Django==3.0.6
+Django==3.0.7
 django-cors-headers==3.3.0
 django-filter==2.2.0
 djangorestframework==3.11.0

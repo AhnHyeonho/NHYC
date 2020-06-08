@@ -136,5 +136,5 @@ sketch
 
 ###private ignore###
 **/.idea/workspace.xml
-
+**/dataProcess/migrations/
 # End of https://www.gitignore.io/api/react,django

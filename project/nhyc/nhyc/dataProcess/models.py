@@ -193,6 +193,7 @@ class AddressInfo(models.Model):
     dong = models.CharField(max_length=50)
     avgRentalFee = models.FloatField(null=True)
     avgDeposit = models.FloatField(null=True)
+    itemCnt = models.IntegerField(null=True)
     totCCTV = models.IntegerField(null=True)
     totPolice = models.IntegerField(null=True)
     totLight = models.IntegerField(null=True)

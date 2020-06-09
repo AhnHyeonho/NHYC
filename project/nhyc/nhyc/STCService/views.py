@@ -358,6 +358,7 @@ def getRankingChartData(request, division, gu=None):
     return myJsonResponse(json_data)
 
 
+
 @csrf_exempt
 def getTrendChartData(request, division, term, gu=None):
     '''

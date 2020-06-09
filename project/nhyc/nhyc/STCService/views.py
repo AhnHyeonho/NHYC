@@ -837,58 +837,70 @@ def getCulturalFacilityCnt(request, gu=None, dong=None):
 @csrf_exempt
 def getDummyDataForDH(request):
     dummyData = '''
+            {
+      "": [
         {
-  "1": {
-    "address": "서울시 강북구 번동",
-    "latitude": "37.641421",
-    "longitude": "127.030254"
-  },
-  "2": {
-    "address": "서울특별시 송파구 잠실본동",
-    "latitude": "37.507262",
-    "longitude": "127.083390"
-  },
-  "3": {
-    "address": "서울 종로구 종로5길",
-    "latitude": "37.590827",
-    "longitude": "126.978347"
-  },
-  "4": {
-    "address": "서울 성북구 보문로34길",
-    "latitude": "37.507262",
-    "longitude": "127.015587"
-  },
-  "5": {
-    "address": "서울 강남구 삼성로104길 23 성지빌딩",
-    "latitude": "37.511320",
-    "longitude": "127.054379"
-  },
-  "6": {
-    "address": "서울 광진구 아차산로33길 21-5",
-    "latitude": "37.541336",
-    "longitude": "127.067650"
-  },
-  "7": {
-    "address": "서울 강북구 월계로7나길 50",
-    "latitude": "37.613160",
-    "longitude": "127.029252"
-  },
-  "8": {
-    "address": "서울 광진구 동일로18길 52",
-    "latitude": "37.539101",
-    "longitude": "127.065628"
-  },
-  "9": {
-    "address": "서울 종로구 북촌로4길 19 1층",
-    "latitude": "37.579424",
-    "longitude": "126.984057"
-  },
-  "10": {
-    "address": "서울 성동구 서울숲2길 40-7 1층 엘더버거",
-    "latitude": "37.546264",
-    "longitude": "127.040826"
-  }
-}
+          "rank": 1,
+          "address": "서울시 강북구 번동",
+          "latitude": 37.641421,
+          "longitude": 127.030254
+        },
+        {
+          "rank": 2,
+          "address": "서울특별시 송파구 잠실본동",
+          "latitude": 37.507262,
+          "longitude": 127.08339
+        },
+        {
+          "rank": 3,
+          "address": "서울 종로구 종로5길",
+          "latitude": 37.590827,
+          "longitude": 126.978347
+        },
+        {
+          "rank": 4,
+          "address": "서울 광진구 아차산로33길 21-5",
+          "latitude": 37.541336,
+          "longitude": 127.06765
+        },
+        {
+          "rank": 5,
+          "address": "서울 성북구 보문로34길",
+          "latitude": 37.507262,
+          "longitude": 127.015587
+        },
+        {
+          "rank": 6,
+          "address": "서울 강남구 삼성로104길 23 성지빌딩",
+          "latitude": 37.51132,
+          "longitude": 127.054379
+        },
+        {
+          "rank": 7,
+          "address": "서울 강북구 월계로7나길 50",
+          "latitude": 37.61316,
+          "longitude": 127.029252
+        },
+        {
+          "rank": 8,
+          "address": "서울 광진구 동일로18길 52",
+          "latitude": 37.539101,
+          "longitude": 127.065628
+        },
+        {
+          "rank": 9,
+          "address": "서울 종로구 북촌로4길 19 1층",
+          "latitude": 37.579424,
+          "longitude": 126.984057
+        },
+        {
+          "rank": 10,
+          "address": "서울 성동구 서울숲2길 40-7 1층 엘더버거",
+          "latitude": 37.546264,
+          "longitude": 127.040826
+        }
+      ]
+    }
     '''
 
     return HttpResponse(dummyData)

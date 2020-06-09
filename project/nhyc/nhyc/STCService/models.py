@@ -5,6 +5,7 @@ from django.db import models
 
 class Average(models.Model):
     gu = models.CharField(max_length=50, primary_key=True)
+    dong = models.CharField(max_length=50)
     rentalFee = models.IntegerField()
     deposit = models.IntegerField()
 

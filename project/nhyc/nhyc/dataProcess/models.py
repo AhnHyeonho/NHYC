@@ -187,19 +187,22 @@ class Gym(models.Model):
 
 
 class AddressInfo(models.Model):
-    address = models.OneToOneField('Address', on_delete=models.CASCADE, default=None)
-    avgRentalFee = models.FloatField()
-    avgDeposit = models.FloatField()
-    totCCTV = models.IntegerField()
-    totPolice = models.IntegerField()
-    totLight = models.IntegerField()
-    totPharmacy = models.IntegerField()
-    totMarket = models.IntegerField()
-    totPark = models.IntegerField()
-    totGym = models.IntegerField()
-    totConcertHall = models.IntegerField()
-    totLibrary = models.IntegerField()
-    totCulturalFacility = models.IntegerField()
+    areaCode = models.CharField(max_length=10, primary_key=True)
+    si = models.CharField(max_length=50)
+    gu = models.CharField(max_length=50)
+    dong = models.CharField(max_length=50)
+    avgRentalFee = models.FloatField(null=True)
+    avgDeposit = models.FloatField(null=True)
+    totCCTV = models.IntegerField(null=True)
+    totPolice = models.IntegerField(null=True)
+    totLight = models.IntegerField(null=True)
+    totPharmacy = models.IntegerField(null=True)
+    totMarket = models.IntegerField(null=True)
+    totPark = models.IntegerField(null=True)
+    totGym = models.IntegerField(null=True)
+    totConcertHall = models.IntegerField(null=True)
+    totLibrary = models.IntegerField(null=True)
+    totCulturalFacility = models.IntegerField(null=True)
 
     def __str__(self):
-        return self.id
+        return self.areaCode

@@ -1,3 +1,4 @@
+import inspect
 from collections import OrderedDict
 
 from django.db.models.query import QuerySet, RawQuerySet
@@ -30,7 +31,7 @@ from dataProcess.models import Address
 from .serializers import AddressSerializer
 from dataProcess.models import CostRecord
 from .serializers import CostRecordSerializer
-from .models import Average, Result_GuCnt, Result_GuDongCnt
+from dataProcess.models import AddressInfo
 from .models import Average, Result_GuCnt, Result_GuDongCnt, TrendChartData
 
 # 서울시 행정구
@@ -355,6 +356,7 @@ def getRankingChartData(request, division, gu=None):
     json_data['deposit'] = depositList
 
     return myJsonResponse(json_data)
+
 
 
 @csrf_exempt
@@ -833,6 +835,74 @@ def getCulturalFacilityCnt(request, gu=None, dong=None):
     return myJsonResponse(resultString)
 
 
+@csrf_exempt
+def initialAddressInfo(request):
+    '''
+    addressInfo 테이블 초기화 메소드
+    :param request:
+    :return:
+    '''
+
+    queryString = '''
+        SELECT * 
+        FROM dataProcess_address
+        ORDER BY gu, dong
+    '''
+
+    querySet = Address.objects.all().order_by('gu', 'dong')
+    print('querySet:>> ', querySet)
+
+    for i in querySet:
+        addressInfo, created = AddressInfo.objects.get_or_create(areaCode=i.areaCode)
+        if created:
+            print(i.gu, '데이터 존재 X!! 새로운 데이터 생성::>>')
+            addressInfo.si = i.si
+            addressInfo.gu = i.gu
+            addressInfo.dong = i.dong
+            addressInfo.save()
+            print(addressInfo)
+        else:
+            print(i.gu, '데이터 존재!! 기존 데이터 수정::>>')
+            addressInfo.si = i.si
+            addressInfo.gu = i.gu
+            addressInfo.dong = i.dong
+            addressInfo.save()
+            print(addressInfo)
+
+    print('initialAddressInfo done')
+    return HttpResponse('initialAddressInfo done')
+
+
+@csrf_exempt
+def updateAvgAddressInfo(request):
+    '''
+    addressInfo 테이블에 평균 월세, 보증금업데이트
+    :param request:
+    :return:
+    '''
+    queryString = '''
+        SELECT gu, dong, avg(rentalFee) as rentalFee, avg(deposit) as deposit
+        FROM dataProcess_address A
+        LEFT OUTER JOIN dataProcess_costrecord B
+        ON A.areaCode = left(B.houseNumber_id, 10)
+        GROUP BY dong
+        ORDER BY dong
+    '''
+    querySet = Average.objects.raw(queryString)  # 각 동별 평균 월세, 보증금 계산
+
+    print('querySet:>> ', querySet)
+
+    for i in querySet:
+        addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
+        addressInfo.avgDeposit = i.deposit
+        addressInfo.avgRentalFee = i.rentalFee
+        addressInfo.save()
+        print(addressInfo)
+
+    print('updateAvgAddressInfo done')
+    return HttpResponse('updateAvgAddressInfo done')
+
+
 # dummyData ↓↓↓
 @csrf_exempt
 def getDummyDataForDH(request):
@@ -913,63 +983,28 @@ def getDummyDataForDH(request):
 
 # ########################### ↓↓↓↓테스트 코드↓↓↓↓ ###########################
 @csrf_exempt
-def testQuery(request, gu=None, dong=None):
+def testQuery(request):
+    queryString = '''
+        SELECT gu, dong, avg(rentalFee) as rentalFee, avg(deposit) as deposit
+        FROM dataProcess_address A
+        LEFT OUTER JOIN dataProcess_costrecord B
+        ON A.areaCode = left(B.houseNumber_id, 10)
+        GROUP BY dong
+        ORDER BY dong
     '''
-    :param request:
-    :param gu:
-    :return: 서울시 내의 구들의 약국 갯수를 리턴. (구이름으로 정렬된 데이터)
-             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 약국 갯수를 리턴 (동이름으로 정렬된 데이터)
-             만약 dong값까지 입력되었다면 해당 동의 약국 갯수를 리턴 (값 1개)
-    '''
-    # getPharmacyCnt
-    resultString = []
+    querySet = Average.objects.raw(queryString)  # 각 동별 평균 월세, 보증금 계산
 
-    if gu is None:
-        querySet = Result_GuCnt.objects.raw('''
-            select gu, count(pharmacyId) as cnt
-            from dataProcess_address A
-            left outer join dataProcess_pharmacy B
-            on A.areaCode = B.areaCode_id
-            group by gu
-            order by gu
-            ''')
-        print("querySet ::: ", querySet)
-        for i in querySet:
-            # print(i.gu, i.cnt)
-            resultString.append(i.cnt)
+    print('querySet:>> ', querySet)
 
-    else:
-        if dong is None:
-            querySet = Result_GuDongCnt.objects.raw('''
-                select gu, dong, count(pharmacyId) as cnt
-                from dataProcess_address A
-                left outer join dataProcess_pharmacy B
-                on A.areaCode = B.areaCode_id
-                where gu = '%s'
-                group by dong
-                order by dong
-                ''' % gu)
-            print(querySet)
-            for i in querySet:
-                # print(i.gu, i.dong, i.cnt)
-                resultString.append(i.cnt)
-        else:
-            querySet = Result_GuDongCnt.objects.raw('''
-                select gu, dong, count(pharmacyId) as cnt
-                from dataProcess_address A
-                left outer join dataProcess_pharmacy B
-                on A.areaCode = B.areaCode_id
-                where gu = '%s' AND dong='%s'
-                group by dong
-                order by dong
-                ''' % (gu, dong))
-            print("querySet ::: ", querySet)
-            for i in querySet:
-                # print(i.gu, i.dong, i.cnt)
-                resultString.append(i.cnt)
+    for i in querySet:
+        addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
+        addressInfo.avgDeposit = i.deposit
+        addressInfo.avgRentalFee = i.rentalFee
+        addressInfo.save()
+        print(addressInfo)
 
-    print(resultString)
-    return myJsonResponse(resultString)
+    print('addingAvgAddressInfo done')
+    return HttpResponse('addingAvgAddressInfo done')
 
 
 # def testQuery2(request):  # 각 구별 월세, 보증금 데이터 읽기.

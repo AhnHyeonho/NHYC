@@ -40,6 +40,8 @@ urlpatterns = [
     # 현호추가 -->
 
     # 확정 url
+    path('admin/initialAddressInfo', stcViews.initialAddressInfo),
+    path('admin/updateAvgAddressInfo', stcViews.updateAvgAddressInfo),
     path('getGu/', stcViews.getGu),
     path('getDong/<str:gu>/', stcViews.getDong),
     path('getCCTVCnt/', stcViews.getCCTVCnt),
@@ -82,9 +84,10 @@ urlpatterns = [
     ## 테스트 url
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('test/', stcViews.testQuery),
-    path('test/<str:gu>/', stcViews.testQuery),
-    path('test/<str:gu>/<str:dong>/', stcViews.testQuery),
-    path('getRankingChartData/<str:division>/', stcViews.getRankingChartData),
+    # path('test/<str:division>/', stcViews.testQuery),
+    # path('test/<str:division>/<str:gu>', stcViews.testQuery),
+
+
 
     # dummy data => 추후 삭제
     path('dummyData/', stcViews.getDummyDataForDH),

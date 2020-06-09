@@ -16,6 +16,10 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import './RecommandTable.css'
+import { create } from 'domain';
+
+
+
 
 // Custom table row 
 const StyledTableRow = withStyles((theme) => ({
@@ -25,6 +29,7 @@ const StyledTableRow = withStyles((theme) => ({
         },
     },
 }))(TableRow);
+
 
 
 
@@ -46,36 +51,43 @@ const StyledTableCell = withStyles((theme) => ({
 }))(TableCell);
 
 
-function moveCenterPoint() { 
-    console.log("Click!!!!")
+
+
+
+
+var mapContainer = document.getElementById('recommand-map'), // 지도를 표시할 div 
+    mapOption = { 
+        center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+        level: 7 // 지도의 확대 레벨
+    };
+
+
+var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+
+
+function panTo() {
+    // 이동할 위도 경도 위치를 생성합니다 
+    var moveLatLon = new kakao.maps.LatLng(33.450580, 126.574942);
+    
+
+    map.panTo(moveLatLon);            
 }
 
 
 
-function createData(index, address, latitude, longtitude) {
+
+function createData(index, address, latitude, longitude, index2, address2, latitude2, longitude2) {
 
     // 네이버 부동산 이동 링크 (각 동의 중심 좌표로 이동)
-    let url = "https://new.land.naver.com/complexes?ms=" + latitude + "," + longtitude + ",16&a=APT:ABYG:JGC&e=RETAIL";
+    let url = "https://new.land.naver.com/complexes?ms=" + latitude + "," + longitude + ",16&a=APT:ABYG:JGC&e=RETAIL";
 
-    return { index, address, latitude, longtitude, url };
+    let url2 = "https://new.land.naver.com/complexes?ms=" + latitude2 + "," + longitude2 + ",16&a=APT:ABYG:JGC&e=RETAIL";
+
+    
+    return { index, address, latitude, longitude, url, index2, address2, latitude2, longitude2, url2 };
 }
 
 
-
-const rows = [
-
-    createData(1, '서울특별시 성북구 성북동', 37.5969, 126.9922),
-    createData(2, '서울특별시 성북구 성북동', 37.5969, 126),
-    createData(3, '서울특별시 성북구 성북동', 37.5969, 126.822),
-    createData(4, '서울특별시 성북구 성북동', 37.5969, 126.4),
-    createData(5, '서울특별시 성북구 성북동', 37.5969, 126.6),
-    createData(6, '서울특별시 성북구 성북동', 37.5969, 126.7),
-    createData(7, '서울특별시 성북구 성북동', 37.5969, 126.3),
-    createData(8, '서울특별시 성북구 성북동', 37.5969, 126.55),
-    createData(9, '서울특별시 성북구 성북동', 37.5969, 126.88),
-    createData(10, '서울특별시 성북구 성북동', 37.5969, 126.666),
-
-];
 
 // *** 테이블 헤더 ***
 
@@ -102,6 +114,7 @@ const useStyles = makeStyles({
 });
 
 
+let rows=[]
 
 export default function RecommandTable() {
 
@@ -131,22 +144,28 @@ export default function RecommandTable() {
                 // loading 상태를 true 로 바꿈
                 setLoading(true);
                 const response = await axios.get(
+                    
                     'http://ec2-52-78-44-165.ap-northeast-2.compute.amazonaws.com:8000/dummyData/'
                 );
 
-                console.log(response);
-                // const resAddresList = response.data.map(resData => resData.address)
-                // const resLatList = response.data.map(resData => resData.latitude)
-                // const resLonList = response.data.map(resData => resData.longtitude)
+                const resData = response.data[""]
+                
+                
+                // 추후에 model로 리팩토링
+                const resRank = resData.map(data => data.rank);
+                const resAddr = resData.map(data => data.address);
+                const resLat = resData.map(data => data.latitude);
+                const resLon= resData.map(data => data.longitude);
 
 
-                // console.log(resLeftCol);
-                // console.log(resRightCol);
-            
+                resData.forEach(function(element, i, array){
+                    if(i < 5) {
+                        rows[i] = createData(resRank[i], resAddr[i], resLat[i], resLon[i], resRank[i+5], resAddr[i+5], resLat[i+5], resLon[i+5]);
+                    }
+    
+                });
 
-                // setAddress(resAddresList);
-                // setLatitude(resLatList);
-                // setLongtitude(resLonList);
+                console.log(rows);
 
 
             } catch (e) {
@@ -203,12 +222,12 @@ export default function RecommandTable() {
 
                             <StyledTableCell align="center" > {row.index} </StyledTableCell>
                             <StyledTableCell align="center"> {row.address} </StyledTableCell>
-                            <StyledTableCell align="center" ><button className="map-btn" onClick={moveCenterPoint} ><RoomIcon style={{ fill: "#1976d2" }} /></button></StyledTableCell>
+                            <StyledTableCell align="center" ><button className="map-btn" onClick={panTo} ><RoomIcon style={{ fill: "#1976d2" }} /></button></StyledTableCell>
                             <StyledTableCell align="center" ><a href={row.url}><LinkIcon style={{ fill: "#1976d2" }} /></a></StyledTableCell>
 
 
-                            <StyledTableCell align="center">{row.index}</StyledTableCell>
-                            <StyledTableCell align="center">{row.address}</StyledTableCell>
+                            <StyledTableCell align="center">{row.index2}</StyledTableCell>
+                            <StyledTableCell align="center">{row.address2}</StyledTableCell>
                             <StyledTableCell align="center" ><button className="map-btn" ><RoomIcon style={{ fill: "#1976d2" }} /></button></StyledTableCell>
                             <StyledTableCell align="center" ><a href={row.url}><LinkIcon style={{ fill: "#1976d2" }} /></a></StyledTableCell>
 

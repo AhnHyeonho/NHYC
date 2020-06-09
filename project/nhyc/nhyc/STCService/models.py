@@ -8,6 +8,7 @@ class Average(models.Model):
     dong = models.CharField(max_length=50)
     rentalFee = models.IntegerField()
     deposit = models.IntegerField()
+    cnt = models.IntegerField()
 
 
 class Result_GuCnt(models.Model):

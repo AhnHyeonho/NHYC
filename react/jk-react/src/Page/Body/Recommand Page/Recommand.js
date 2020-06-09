@@ -5,6 +5,27 @@ import KakaoMap from './KakaoMap';
 import DataBoard from './DataBoard';
 
 class Recommand extends React.Component {
+    
+    constructor(props){
+        super(props);
+
+        this.state = {
+            lati : '',
+            long : '',
+        }
+
+        this.receiveData = this.receiveData.bind(this);
+    }
+    
+    receiveData(lat, lon){
+        console.log("최상위 컴포넌트")
+
+        this.setState({
+            lati:lat,
+            long:lon
+        })
+    }
+
     render() {
         return (
 
@@ -19,9 +40,9 @@ class Recommand extends React.Component {
 
 
                 {/* 카카오 맵 */}
-                <KakaoMap className="kakao" latitude={37.652560} logitude={127.075252} zoom={'7'} />
+                <KakaoMap className="kakao" latitude={this.state.lati} longitude={this.state.long} zoom={'7'} />
 
-                <DataBoard />
+                <DataBoard onChange={this.receiveData} sival="zz"/>
 
             </div>
         )

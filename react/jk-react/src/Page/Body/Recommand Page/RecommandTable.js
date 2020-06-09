@@ -45,33 +45,13 @@ const StyledTableCell = withStyles((theme) => ({
     },
 
     body: {
-        fontSize: 14,
+        fontSize: 13,
         padding: "7px 5px 7px 5px",
     },
 }))(TableCell);
 
 
 
-
-
-
-var mapContainer = document.getElementById('recommand-map'), // 지도를 표시할 div 
-    mapOption = { 
-        center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
-        level: 7 // 지도의 확대 레벨
-    };
-
-
-var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
-
-
-function panTo() {
-    // 이동할 위도 경도 위치를 생성합니다 
-    var moveLatLon = new kakao.maps.LatLng(33.450580, 126.574942);
-    
-
-    map.panTo(moveLatLon);            
-}
 
 
 
@@ -83,7 +63,7 @@ function createData(index, address, latitude, longitude, index2, address2, latit
 
     let url2 = "https://new.land.naver.com/complexes?ms=" + latitude2 + "," + longitude2 + ",16&a=APT:ABYG:JGC&e=RETAIL";
 
-    
+
     return { index, address, latitude, longitude, url, index2, address2, latitude2, longitude2, url2 };
 }
 
@@ -93,13 +73,13 @@ function createData(index, address, latitude, longitude, index2, address2, latit
 
 const columns = [
 
-    { id: 'rank1', align: 'center', label: '순위', minWidth: 20 },
-    { id: 'name1', align: 'center', label: '지역명', minWidth: 100 },
+    { id: 'rank1', align: 'center', label: '순위', minWidth: 45 },
+    { id: 'name1', align: 'center', label: '지역명', minWidth: 120 },
     { id: 'map-btn1', align: 'center', label: '', minWidth: 5 },
     { id: 'naver-btn1', align: 'center', label: '', minWidth: 5 },
 
-    { id: 'rank2', align: 'center', label: '순위', minWidth: 20 },
-    { id: 'name2', align: 'center', label: '지역명', minWidth: 100 },
+    { id: 'rank2', align: 'center', label: '순위', minWidth: 45 },
+    { id: 'name2', align: 'center', label: '지역명', minWidth: 120 },
     { id: 'map-btn2', align: 'center', label: '', minWidth: 5 },
     { id: 'naver-btn2', align: 'center', label: '', minWidth: 5 },
 
@@ -113,10 +93,13 @@ const useStyles = makeStyles({
     },
 });
 
+const rows =[
+    createData(1, "서울시 강북구 5동", )
 
-let rows=[]
+]
+// let rows = []
 
-export default function RecommandTable() {
+export default function RecommandTable(props) {
 
     // API Test ======
     // 테이블 row에 들어갈 
@@ -131,6 +114,13 @@ export default function RecommandTable() {
 
     const classes = useStyles();
 
+
+    function changeMap(lat, lon){
+       
+        props.changeMap(lat, lon);
+    }
+    
+
     // API Test ===============
     useEffect(() => {
 
@@ -144,25 +134,25 @@ export default function RecommandTable() {
                 // loading 상태를 true 로 바꿈
                 setLoading(true);
                 const response = await axios.get(
-                    
+
                     'http://ec2-52-78-44-165.ap-northeast-2.compute.amazonaws.com:8000/dummyData/'
                 );
 
                 const resData = response.data[""]
-                
-                
+
+
                 // 추후에 model로 리팩토링
                 const resRank = resData.map(data => data.rank);
                 const resAddr = resData.map(data => data.address);
                 const resLat = resData.map(data => data.latitude);
-                const resLon= resData.map(data => data.longitude);
+                const resLon = resData.map(data => data.longitude);
 
 
-                resData.forEach(function(element, i, array){
-                    if(i < 5) {
-                        rows[i] = createData(resRank[i], resAddr[i], resLat[i], resLon[i], resRank[i+5], resAddr[i+5], resLat[i+5], resLon[i+5]);
+                resData.forEach(function (element, i, array) {
+                    if (i < 5) {
+                        rows[i] = createData(resRank[i], resAddr[i], resLat[i], resLon[i], resRank[i + 5], resAddr[i + 5], resLat[i + 5], resLon[i + 5]);
                     }
-    
+
                 });
 
                 console.log(rows);
@@ -181,14 +171,15 @@ export default function RecommandTable() {
     }, []);
 
 
-    
+
 
     if (loading) return <div>로딩중..</div>;
     if (error) return <div>에러가 발생했습니다</div>;
     // if (!users) return null;
 
 
-   
+
+    console.log(rows);
 
     return (
 
@@ -216,19 +207,18 @@ export default function RecommandTable() {
                 <TableBody>
 
                     {rows.map((row, index) => (
-
                         <StyledTableRow key={index} >
 
 
                             <StyledTableCell align="center" > {row.index} </StyledTableCell>
                             <StyledTableCell align="center"> {row.address} </StyledTableCell>
-                            <StyledTableCell align="center" ><button className="map-btn" onClick={panTo} ><RoomIcon style={{ fill: "#1976d2" }} /></button></StyledTableCell>
+                            <StyledTableCell align="center" ><button className="map-btn" onClick={()=>changeMap(row.latitude,row.longitude)}><RoomIcon style={{ fill: "#1976d2" }} /></button></StyledTableCell>
                             <StyledTableCell align="center" ><a href={row.url}><LinkIcon style={{ fill: "#1976d2" }} /></a></StyledTableCell>
 
 
                             <StyledTableCell align="center">{row.index2}</StyledTableCell>
                             <StyledTableCell align="center">{row.address2}</StyledTableCell>
-                            <StyledTableCell align="center" ><button className="map-btn" ><RoomIcon style={{ fill: "#1976d2" }} /></button></StyledTableCell>
+                            <StyledTableCell align="center" ><button className="map-btn"  onClick={()=>changeMap(row.latitude2,row.longitude2)}><RoomIcon style={{ fill: "#1976d2" }} /></button></StyledTableCell>
                             <StyledTableCell align="center" ><a href={row.url}><LinkIcon style={{ fill: "#1976d2" }} /></a></StyledTableCell>
 
 

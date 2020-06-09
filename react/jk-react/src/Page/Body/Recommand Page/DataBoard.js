@@ -6,17 +6,20 @@ import RadarChart from './RadarChart';
 import './DataBoard.css';
 
 
+
 class DataBoard extends React.Component {
 
+    
     constructor(props){
-        super(props);
-
-        this.state = {
-            usersPrefer: '',
-        }
-
+        super(props)
+        
+        this.changeMap = this.changeMap.bind(this)
     }
 
+ 
+    changeMap(lat, lon) {
+            this.props.onChange(lat, lon)
+    }
 
 
     render() {
@@ -34,7 +37,7 @@ class DataBoard extends React.Component {
                 {/* 1. 추천지역 리스트  */}
                 <div className="recommand-databoard-item">
                     <div className="recommand-databoard-item-title"> 추천지역 리스트 </div>
-                    <RecommandTable id="1" name="hi" id2="2" name2="hello" />
+                    <RecommandTable changeMap={this.changeMap} />
                 </div>
 
                 {/* 2. 추천 지표 그래프  */}
@@ -54,8 +57,6 @@ class DataBoard extends React.Component {
                 <div className="recommand-databoard-item">
                     <div className="recommand-databoard-item-title"> 추천지역 접근성 비교 </div>
                 </div>
-
-
 
             </div >
         )

@@ -358,7 +358,6 @@ def getRankingChartData(request, division, gu=None):
     return myJsonResponse(json_data)
 
 
-
 @csrf_exempt
 def getTrendChartData(request, division, term, gu=None):
     '''
@@ -881,12 +880,12 @@ def updateAvgAddressInfo(request):
     :return:
     '''
     queryString = '''
-        SELECT gu, dong, avg(rentalFee) as rentalFee, avg(deposit) as deposit
+        SELECT gu, dong, avg(rentalFee) as rentalFee, avg(deposit) as deposit, count(houseNumber_id) as cnt
         FROM dataProcess_address A
         LEFT OUTER JOIN dataProcess_costrecord B
         ON A.areaCode = left(B.houseNumber_id, 10)
         GROUP BY dong
-        ORDER BY dong
+        ORDER BY gu, dong
     '''
     querySet = Average.objects.raw(queryString)  # 각 동별 평균 월세, 보증금 계산
 
@@ -896,6 +895,7 @@ def updateAvgAddressInfo(request):
         addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
         addressInfo.avgDeposit = i.deposit
         addressInfo.avgRentalFee = i.rentalFee
+        addressInfo.itemCnt = i.cnt
         addressInfo.save()
         print(addressInfo)
 

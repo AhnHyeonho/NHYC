@@ -53,7 +53,7 @@ class DataBoard extends React.Component {
                     <RadarChart width={500} height={500} name="prefer"/>
                 </div>
 
-                {/* 4. 대중 교통 추천 섹션   */}
+                {/* 4. 대중 교통 추천 섹션 */}
                 <div className="recommand-databoard-item">
                     <div className="recommand-databoard-item-title"> 추천지역 접근성 비교 </div>
                 </div>

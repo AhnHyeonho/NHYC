@@ -29,27 +29,30 @@ function Copyright() {
     );
 }
 
-const styles = theme => ({
+const useStyles = makeStyles((theme) => ({
     paper: {
-        // marginTop: theme.spacing(8),
+        marginTop: theme.spacing(8),
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
     },
     avatar: {
-        // margin: theme.spacing(1),
-        // backgroundColor: theme.palette.secondary.main,
+        margin: theme.spacing(1),
+        backgroundColor: theme.palette.secondary.main,
     },
     form: {
         width: '100%', // Fix IE 11 issue.
-        // marginTop: theme.spacing(1),
+        marginTop: theme.spacing(1),
     },
     submit: {
-        // margin: theme.spacing(3, 0, 2),
+        margin: theme.spacing(3, 0, 2),
     },
-});
+}));
 
-function Login({ authenticated, login, location }) {
+
+export default function Login({ authenticated, login, location }) {
+
+    const classes = useStyles();
 
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
@@ -72,13 +75,13 @@ function Login({ authenticated, login, location }) {
     const { from } = location.state || { from: { pathname: "/recommand" } }
     if (authenticated) return <Redirect to={from} />
 
-    const classes = styles();
+    
 
     return (
-        <Container component="main" maxWidth="xs" style={{ "margin-top": "50px" }}>
+        <Container component="main" maxWidth="xs" >
             <CssBaseline />
-            <div className={classes.paper} style={{ 'text-align': "center" }}>
-                <Avatar className={classes.avatar} style={{ 'text-align': "center", 'display': "inline-flex" }}>
+            <div className={classes.paper} >
+                <Avatar className={classes.avatar} >
                     <LockOutlinedIcon />
                 </Avatar>
                 <Typography component="h1" variant="h5">
@@ -118,7 +121,6 @@ function Login({ authenticated, login, location }) {
                             label="Remember me"
                         /> */}
 
-                    <div style={{ 'height': "20px" }}></div>
 
                     <Button
                         type="submit"
@@ -138,7 +140,7 @@ function Login({ authenticated, login, location }) {
               </Link> */}
                         </Grid>
                         <Grid item style={{ "margin-top": "10px" }}>
-                            <Link href="#" variant="body2">
+                            <Link href="/signup" variant="body2">
                                 {"Don't have an account? Sign Up"}
                             </Link>
                         </Grid>
@@ -152,5 +154,3 @@ function Login({ authenticated, login, location }) {
     );
 }
 
-
-export default Login;

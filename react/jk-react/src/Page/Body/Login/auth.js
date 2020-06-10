@@ -10,9 +10,6 @@ export function signIn({ email, password }) {
         (user) => user.email === email && user.password === password
     )
     if (user === undefined) {
-        console.log("로그인 안된다")
-
-
         throw new Error()
     }
 

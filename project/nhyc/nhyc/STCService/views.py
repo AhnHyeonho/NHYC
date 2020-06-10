@@ -877,10 +877,12 @@ def updateAvgAddressInfo(request):
     :return:
     '''
     queryString = '''
-        SELECT gu, dong, avg(rentalFee) as rentalFee, avg(deposit) as deposit, count(houseNumber_id) as cnt
-        FROM dataProcess_costrecord A
-        LEFT OUTER JOIN dataProcess_address B
-        ON left(A.houseNumber_id, 10) = B.areaCode
+        select  gu, dong, avg(rentalFee) as rentalFee, avg(deposit) as deposit, count(houseNumber_id) as cnt
+        from dataprocess_costrecord A
+        left join dataprocess_houseinfo B
+        on A.houseNumber_id = B.houseNumber
+        left join dataprocess_address C
+        on B.areaCode_id = C.areaCode
         GROUP BY gu, dong
         ORDER BY gu, dong
     '''

@@ -48,6 +48,8 @@ urlpatterns = [
     path('admin/initialAddressInfo', stcViews.initialAddressInfo),
     path('admin/updateAvgAddressInfo', stcViews.updateAvgAddressInfo),
     path('admin/updateBubbleChartData', stcViews.updateBubbleChartData),
+    path('admin/updateTotsAddressInfo', stcViews.updateTotsAddressInfo),
+
     path('getGu/', stcViews.getGu),
     path('getDong/<str:gu>/', stcViews.getDong),
     path('getCCTVCnt/', stcViews.getCCTVCnt),

@@ -416,6 +416,24 @@ def getTrendChartData(request, division, term, gu=None):
 
 
 @csrf_exempt
+def getBubbleChartData(request, gu=None):
+    resultList = []
+    if gu is None:
+        # 시 단위 데이터
+        querySet = BubbleChartData.objects.filter(division='si')
+
+    else:
+        # 구 단위 데이터
+        querySet = BubbleChartData.objects.filter(division=gu)
+
+    for i in querySet:
+        if i.r != 0:
+            resultList.append([i.x, i.y, i.r])
+
+    return myJsonResponse(resultList)
+
+
+@csrf_exempt
 def getPharmacyCnt(request, gu=None, dong=None):
     '''
     :param request:
@@ -995,21 +1013,162 @@ def updateBubbleChartData(request):
 
 
 @csrf_exempt
-def getBubbleChartData(request, gu=None):
-    resultList = []
-    if gu is None:
-        # 시 단위 데이터
-        querySet = BubbleChartData.objects.filter(division='si')
+def updateTotsAddressInfo(request):
+    '''
+    update CCTV, PoliceOffice, SercurityLight, Pharmacy, Market, Park, Gym, ConcertHall, Library, CulturalFacility
+    '''
 
-    else:
-        # 구 단위 데이터
-        querySet = BubbleChartData.objects.filter(division=gu)
-
+    # CCTV
+    querySet = Result_GuDongCnt.objects.raw('''
+        select gu, dong, count(cctvId) as cnt
+        from dataProcess_address A
+        left outer join dataProcess_cctv B
+        on A.areaCode = B.areaCode_id
+        group by gu, dong
+        order by gu, dong
+        ''')
+    print("CCTV querySet ::: ", querySet)
     for i in querySet:
-        if i.r != 0:
-            resultList.append([i.x, i.y, i.r])
+        addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
+        addressInfo.totCCTV = i.cnt
+        addressInfo.save()
 
-    return myJsonResponse(resultList)
+    # PoliceOffice
+    querySet = Result_GuDongCnt.objects.raw('''
+            select gu, dong, count(policeId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_policeoffice B
+            on A.areaCode = B.areaCode_id
+            group by gu, dong
+            order by gu, dong
+            ''')
+    print("PoliceOffice querySet ::: ", querySet)
+    for i in querySet:
+        addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
+        addressInfo.totPolice = i.cnt
+        addressInfo.save()
+
+    # SercurityLight
+    querySet = Result_GuDongCnt.objects.raw('''
+            select gu, dong, count(lightId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_securitylight B
+            on A.areaCode = B.areaCode_id
+            group by gu, dong
+            order by gu, dong
+            ''')
+    print("SercurityLight querySet ::: ", querySet)
+    for i in querySet:
+        addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
+        addressInfo.totLight = i.cnt
+        addressInfo.save()
+
+    # Pharmacy
+    querySet = Result_GuDongCnt.objects.raw('''
+            select gu, dong, count(pharmacyId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_pharmacy B
+            on A.areaCode = B.areaCode_id
+            group by gu, dong
+            order by gu, dong
+            ''')
+    print("Pharmacy querySet ::: ", querySet)
+    for i in querySet:
+        addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
+        addressInfo.totPharmacy = i.cnt
+        addressInfo.save()
+
+    # Market
+    querySet = Result_GuDongCnt.objects.raw('''
+            select gu, dong, count(marketId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_market B
+            on A.areaCode = B.areaCode_id
+            group by gu, dong
+            order by gu, dong
+            ''')
+    print("Market querySet ::: ", querySet)
+    for i in querySet:
+        addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
+        addressInfo.totMarket = i.cnt
+        addressInfo.save()
+
+    # Park
+    querySet = Result_GuDongCnt.objects.raw('''
+            select gu, dong, count(parkId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_park B
+            on A.areaCode = B.areaCode_id
+            group by gu, dong
+            order by gu, dong
+            ''')
+    print("Park querySet ::: ", querySet)
+    for i in querySet:
+        addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
+        addressInfo.totPark = i.cnt
+        addressInfo.save()
+
+    # Gym
+    querySet = Result_GuDongCnt.objects.raw('''
+            select gu, dong, count(gymId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_gym B
+            on A.areaCode = B.areaCode_id
+            group by gu, dong
+            order by gu, dong
+            ''')
+    print("Gym querySet ::: ", querySet)
+    for i in querySet:
+        addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
+        addressInfo.totGym = i.cnt
+        addressInfo.save()
+
+    # ConcertHall
+    querySet = Result_GuDongCnt.objects.raw('''
+            select gu, dong, count(concertHallId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_concerthall B
+            on A.areaCode = B.areaCode_id
+            group by gu, dong
+            order by gu, dong
+            ''')
+    print("ConcertHall querySet ::: ", querySet)
+    for i in querySet:
+        addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
+        addressInfo.totConcertHall = i.cnt
+        addressInfo.save()
+
+    # Library
+    querySet = Result_GuDongCnt.objects.raw('''
+            select gu, dong, count(libraryId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_library B
+            on A.areaCode = B.areaCode_id
+            group by gu, dong
+            order by gu, dong
+            ''')
+    print("Library querySet ::: ", querySet)
+    for i in querySet:
+        addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
+        addressInfo.totLibrary = i.cnt
+        addressInfo.save()
+
+    # CulturalFacility
+    querySet = Result_GuDongCnt.objects.raw('''
+            select gu, dong, count(culturalFacilityId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_culturalfacility B
+            on A.areaCode = B.areaCode_id
+            group by gu, dong
+            order by gu, dong
+            ''')
+    print("CulturalFacilsity querySet ::: ", querySet)
+    for i in querySet:
+        addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
+        addressInfo.totCulturalFacility = i.cnt
+        addressInfo.save()
+
+    return HttpResponse("updateTotsAddressInfo done")
 
 
 # dummyData ↓↓↓
@@ -1233,19 +1392,8 @@ def testQuery(request):
     '''
     update CCTV, PoliceOffice, SercurityLight, Pharmacy, Market, Park, Gym, ConcertHall, Library, CulturalFacility
     '''
-    updateList = {
-        'dataProcess_cctv': 'cctvId',
-        'dataProcess_policeoffice': 'cctvId',
-        'dataProcess_cctv': 'cctvId',
-        'dataProcess_cctv': 'cctvId',
-        'dataProcess_cctv': 'cctvId',
-        'dataProcess_cctv': 'cctvId',
-        'dataProcess_cctv': 'cctvId',
-        'dataProcess_cctv': 'cctvId',
-        'dataProcess_cctv': 'cctvId',
-        'dataProcess_cctv': 'cctvId',
 
-    }
+    # CCTV
     querySet = Result_GuDongCnt.objects.raw('''
         select gu, dong, count(cctvId) as cnt
         from dataProcess_address A
@@ -1254,14 +1402,148 @@ def testQuery(request):
         group by gu, dong
         order by gu, dong
         ''')
-    print("querySet ::: ", querySet)
+    print("CCTV querySet ::: ", querySet)
     for i in querySet:
         addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
         addressInfo.totCCTV = i.cnt
         addressInfo.save()
-        print(addressInfo)
 
-    return HttpResponse("updateCCTV done")
+    # PoliceOffice
+    querySet = Result_GuDongCnt.objects.raw('''
+            select gu, dong, count(policeId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_policeoffice B
+            on A.areaCode = B.areaCode_id
+            group by gu, dong
+            order by gu, dong
+            ''')
+    print("PoliceOffice querySet ::: ", querySet)
+    for i in querySet:
+        addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
+        addressInfo.totPolice = i.cnt
+        addressInfo.save()
+
+    # SercurityLight
+    querySet = Result_GuDongCnt.objects.raw('''
+            select gu, dong, count(lightId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_securitylight B
+            on A.areaCode = B.areaCode_id
+            group by gu, dong
+            order by gu, dong
+            ''')
+    print("SercurityLight querySet ::: ", querySet)
+    for i in querySet:
+        addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
+        addressInfo.totLight = i.cnt
+        addressInfo.save()
+
+    # Pharmacy
+    querySet = Result_GuDongCnt.objects.raw('''
+            select gu, dong, count(pharmacyId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_pharmacy B
+            on A.areaCode = B.areaCode_id
+            group by gu, dong
+            order by gu, dong
+            ''')
+    print("Pharmacy querySet ::: ", querySet)
+    for i in querySet:
+        addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
+        addressInfo.totPharmacy = i.cnt
+        addressInfo.save()
+
+    # Market
+    querySet = Result_GuDongCnt.objects.raw('''
+            select gu, dong, count(marketId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_market B
+            on A.areaCode = B.areaCode_id
+            group by gu, dong
+            order by gu, dong
+            ''')
+    print("Market querySet ::: ", querySet)
+    for i in querySet:
+        addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
+        addressInfo.totMarket = i.cnt
+        addressInfo.save()
+
+    # Park
+    querySet = Result_GuDongCnt.objects.raw('''
+            select gu, dong, count(parkId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_park B
+            on A.areaCode = B.areaCode_id
+            group by gu, dong
+            order by gu, dong
+            ''')
+    print("Park querySet ::: ", querySet)
+    for i in querySet:
+        addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
+        addressInfo.totPark = i.cnt
+        addressInfo.save()
+
+    # Gym
+    querySet = Result_GuDongCnt.objects.raw('''
+            select gu, dong, count(gymId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_gym B
+            on A.areaCode = B.areaCode_id
+            group by gu, dong
+            order by gu, dong
+            ''')
+    print("Gym querySet ::: ", querySet)
+    for i in querySet:
+        addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
+        addressInfo.totGym = i.cnt
+        addressInfo.save()
+
+    # ConcertHall
+    querySet = Result_GuDongCnt.objects.raw('''
+            select gu, dong, count(concertHallId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_concerthall B
+            on A.areaCode = B.areaCode_id
+            group by gu, dong
+            order by gu, dong
+            ''')
+    print("ConcertHall querySet ::: ", querySet)
+    for i in querySet:
+        addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
+        addressInfo.totConcertHall = i.cnt
+        addressInfo.save()
+
+    # Library
+    querySet = Result_GuDongCnt.objects.raw('''
+            select gu, dong, count(libraryId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_library B
+            on A.areaCode = B.areaCode_id
+            group by gu, dong
+            order by gu, dong
+            ''')
+    print("Library querySet ::: ", querySet)
+    for i in querySet:
+        addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
+        addressInfo.totLibrary = i.cnt
+        addressInfo.save()
+
+    # CulturalFacility
+    querySet = Result_GuDongCnt.objects.raw('''
+            select gu, dong, count(culturalFacilityId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_culturalfacility B
+            on A.areaCode = B.areaCode_id
+            group by gu, dong
+            order by gu, dong
+            ''')
+    print("CulturalFacilsity querySet ::: ", querySet)
+    for i in querySet:
+        addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
+        addressInfo.totCulturalFacility = i.cnt
+        addressInfo.save()
+
+    return HttpResponse("update tots done")
 
 
 # def testQuery2(request):  # 각 구별 월세, 보증금 데이터 읽기.

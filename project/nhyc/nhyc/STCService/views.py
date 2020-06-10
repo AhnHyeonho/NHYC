@@ -32,7 +32,7 @@ from .serializers import AddressSerializer
 from dataProcess.models import CostRecord
 from .serializers import CostRecordSerializer
 from dataProcess.models import AddressInfo
-from .models import Average, Result_GuCnt, Result_GuDongCnt, TrendChartData
+from .models import Average, Result_GuCnt, Result_GuDongCnt, TrendChartData, BubbleChartData
 from dataProcess.models import MemberTrend
 from dataProcess.models import TrendBySession
 
@@ -217,6 +217,7 @@ def getSecurityLightCnt(request, gu=None, dong=None):
     return myJsonResponse(resultString)
 
 
+@csrf_exempt
 def getPoliceOfficeCnt(request, gu=None, dong=None):
     '''
     :param request:
@@ -904,6 +905,113 @@ def updateAvgAddressInfo(request):
     return HttpResponse('updateAvgAddressInfo done')
 
 
+@csrf_exempt
+def updateBubbleChartData(request):
+    # 월세를 10만원 단위로 나눠보자
+    print('{} bubbleChartData Update...'.format('서울시'))
+    BubbleChartData.objects.filter(division='si').delete()  # 업데이트 전 삭제
+    for rent in range(0, 100, 10):
+        minRentalFee = rent
+        maxRentalFee = rent + 9
+        querySet = CostRecord.objects.filter(rentalFee__range=(minRentalFee, maxRentalFee))
+
+        houseNumberList = []
+        rentalFeeList = []
+        depositList = []
+
+        for i in querySet:
+            houseNumberList.append(i.houseNumber)
+            rentalFeeList.append(i.rentalFee)
+            depositList.append(i.deposit)
+            # print(j.houseNumber, j.rentalFee, j.deposit)
+
+        data = {
+            'houseNumber': houseNumberList,
+            'rentalFee': rentalFeeList,
+            'deposit': depositList
+        }
+        rentalFeeRank = pandas.DataFrame(data)  # 해당 월세 범위에 해당하는 매물들로 dataFrame생성.
+
+        # 이제 보증금 단위로 나눠보자.
+        for depo in range(1000, 4000, 500):
+            minDeposit = depo
+            maxDeposit = depo + 500
+            temp = rentalFeeRank[(rentalFeeRank["deposit"] >= minDeposit) & (rentalFeeRank["deposit"] < maxDeposit)]
+            # print("{}이상 {}미만 : {}".format(start, end, temp.size))
+
+            print("x:{} y:{} r:{}".format(rent, depo, temp.size))
+            # 시단위
+            bubbleChartData = BubbleChartData.objects.create(x=maxRentalFee + 1, y=maxDeposit, r=temp.size,
+                                                             division='si')
+
+            # print(j.costRecordId, j.rentalFee)
+
+    for curGu in seoulGu:
+        # 월세를 10만원 단위로 나눠보자.
+        print('{} bubbleChartData Update...'.format(curGu))
+        BubbleChartData.objects.filter(division=curGu).delete()  # 업데이트 전 삭제
+        for rent in range(0, 100, 10):
+            minRentalFee = rent
+            maxRentalFee = rent + 9
+            queryString = '''
+                select day, rentalFee, deposit, houseNumber_id, costRecordId from dataProcess_costrecord
+                left join dataProcess_houseinfo
+                on dataProcess_costrecord.houseNumber_id = dataProcess_houseinfo.houseNumber
+                left join dataProcess_address
+                on dataProcess_houseinfo.areaCode_id = dataProcess_address.areaCode
+                where gu= '{}' AND rentalFee between {} AND {}
+            '''.format(curGu, minRentalFee, maxRentalFee)  # 여기 최소값 최대값 where조건에 넣어줘야햄
+
+            querySet = CostRecord.objects.raw(queryString)
+
+            houseNumberList = []
+            rentalFeeList = []
+            depositList = []
+
+            for i in querySet:
+                houseNumberList.append(i.houseNumber)
+                rentalFeeList.append(i.rentalFee)
+                depositList.append(i.deposit)
+
+            data = {
+                'houseNumber': houseNumberList,
+                'rentalFee': rentalFeeList,
+                'deposit': depositList
+            }
+            rentalFeeRank = pandas.DataFrame(data)  # 해당 월세 범위에 해당하는 매물들로 dataFrame생성.
+
+            # 이제 보증금 단위로 나눠보자.
+            for depo in range(1000, 4000, 500):
+                minDeposit = depo
+                maxDeposit = depo + 500
+                temp = rentalFeeRank[(rentalFeeRank["deposit"] >= minDeposit) & (rentalFeeRank["deposit"] < maxDeposit)]
+
+                print("gu:{} x:{} y:{} r:{}".format(curGu, rent, depo, temp.size))
+                # 구단위
+                bubbleChartData = BubbleChartData.objects.create(x=maxRentalFee + 1, y=maxDeposit, r=temp.size,
+                                                                 division=curGu)
+
+    return HttpResponse("updateBubbleChartData done")
+
+
+@csrf_exempt
+def getBubbleChartData(request, gu=None):
+    resultList = []
+    if gu is None:
+        # 시 단위 데이터
+        querySet = BubbleChartData.objects.filter(division='si')
+
+    else:
+        # 구 단위 데이터
+        querySet = BubbleChartData.objects.filter(division=gu)
+
+    for i in querySet:
+        if i.r != 0:
+            resultList.append([i.x, i.y, i.r])
+
+    return myJsonResponse(resultList)
+
+
 # dummyData ↓↓↓
 @csrf_exempt
 def getDummyDataForDH(request):
@@ -1122,86 +1230,38 @@ def getDummyDataForDH3(request):
 # ########################### ↓↓↓↓테스트 코드↓↓↓↓ ###########################
 @csrf_exempt
 def testQuery(request):
-    # 월세를 10만원 단위로 나눠보자.
-    for rentalFee in range(0, 100, 10):
-        minRentalFee = rentalFee
-        maxRentalFee = min + 9
-        querySet = CostRecord.objects.filter(rentalFee__range=(minRentalFee, maxRentalFee))
+    '''
+    update CCTV, PoliceOffice, SercurityLight, Pharmacy, Market, Park, Gym, ConcertHall, Library, CulturalFacility
+    '''
+    updateList = {
+        'dataProcess_cctv': 'cctvId',
+        'dataProcess_policeoffice': 'cctvId',
+        'dataProcess_cctv': 'cctvId',
+        'dataProcess_cctv': 'cctvId',
+        'dataProcess_cctv': 'cctvId',
+        'dataProcess_cctv': 'cctvId',
+        'dataProcess_cctv': 'cctvId',
+        'dataProcess_cctv': 'cctvId',
+        'dataProcess_cctv': 'cctvId',
+        'dataProcess_cctv': 'cctvId',
 
-        houseNumberList = []
-        rentalFeeList = []
-        depositList = []
+    }
+    querySet = Result_GuDongCnt.objects.raw('''
+        select gu, dong, count(cctvId) as cnt
+        from dataProcess_address A
+        left outer join dataProcess_cctv B
+        on A.areaCode = B.areaCode_id
+        group by gu, dong
+        order by gu, dong
+        ''')
+    print("querySet ::: ", querySet)
+    for i in querySet:
+        addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
+        addressInfo.totCCTV = i.cnt
+        addressInfo.save()
+        print(addressInfo)
 
-        for i in querySet:
-            houseNumberList.append(i.houseNumber)
-            rentalFeeList.append(i.rentalFee)
-            depositList.append(i.deposit)
-            print(i.houseNumber,
-                  i.rentalFee,
-                  i.deposit)
-
-        data = {
-            'houseNumber': houseNumberList,
-            'rentalFee': rentalFeeList,
-            'deposit': depositList
-        }
-        rentalFeeRank = pandas.DataFrame(data)  # 해당 월세 범위에 해당하는 매물들로 dataFrame생성.
-
-        # 이제 보증금 단위로 나눠보자.
-        for x in range(1000, 4000, 500):
-            start = x
-            end = x + 500
-            temp = rentalFeeRank[(rentalFeeRank["deposit"] >= start) & (rentalFeeRank["deposit"] < end)]
-            print("{}이상 {}미만 : {}".format(start, end, temp.count()))
-
-            # print(j.costRecordId, j.rentalFee)
-
-    return HttpResponse("testQuery")
-
-    # for i in querySet:
-    #     guList.append(i.gu)
-    #     rentalFeeList.append(i.rentalFee)
-    #     depositList.append(i.deposit)
-    #
-    # data = {'gu': guList,
-    #         'rentalFee': rentalFeeList,
-    #         'deposit': depositList}
-    # rentalFeeRank = pandas.DataFrame(data)
-    #
-    # if division == 'rent':
-    #     # 월세 기준
-    #     print('월세 기준 >> :::')
-    #     rentalFeeRank['rank'] = rentalFeeRank['rentalFee'].rank(method='min', ascending=True)  # 낮은 가격순으로 순위 저장
-    #     rentalFeeRank.sort_values(by=['rentalFee'], axis=0, inplace=True, ascending=True)  # 낮은 순위부터 정렬
-    # elif division == 'depo':
-    #     # 보증금 기준
-    #     print('보증금 기준 >> :::')
-    #     rentalFeeRank['rank'] = rentalFeeRank['deposit'].rank(method='min', ascending=True)  # 낮은 가격순으로 순위 저장
-    #     rentalFeeRank.sort_values(by=['deposit'], axis=0, inplace=True, ascending=True)  # 낮은 순위부터 정렬
-    # elif division == 'rent-depo':
-    #     # 월세 1년치(12개월) + 보증금 기준
-    #     print('월세 1년치(12개월) + 보증금 기준 >> :::')
-    #     rentalFeeRank['year-rent'] = rentalFeeRank['rentalFee'] * 12  # 12개월치 월세
-    #     rentalFeeRank['rent-deposit'] = rentalFeeRank['year-rent'] + rentalFeeRank['deposit']  # 12개월치 월세 + 보증금
-    #     rentalFeeRank['rank'] = rentalFeeRank['rent-deposit'].rank(method='min', ascending=True)  # 낮은 가격순으로 순위 저장
-    #     rentalFeeRank.sort_values(by=['deposit'], axis=0, inplace=True, ascending=True)  # 낮은 순위부터 정렬
-    # else:
-    #     return JsonResponse(data.errors, status=400)
-    #
-    # print(rentalFeeRank)
-    #
-    # guList = rentalFeeRank['gu'].tolist()
-    # rentalFeeList = rentalFeeRank['rentalFee'].tolist()
-    # depositList = rentalFeeRank['deposit'].tolist()
-    # rentalFeeList = list(map(str, rentalFeeList))  # Decimal 형태의 index들을 단순 string으로 변환
-    # depositList = list(map(str, depositList))  # Decimal 형태의 index들을 단순 string으로 변환
-    #
-    # json_data = OrderedDict()
-    # json_data['gu'] = guList
-    # json_data['rentalFee'] = rentalFeeList
-    # json_data['deposit'] = depositList
-    #
-    # return myJsonResponse(json_data)
+    return HttpResponse("updateCCTV done")
 
 
 # def testQuery2(request):  # 각 구별 월세, 보증금 데이터 읽기.

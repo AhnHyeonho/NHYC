@@ -47,6 +47,7 @@ urlpatterns = [
     # 확정 url
     path('admin/initialAddressInfo', stcViews.initialAddressInfo),
     path('admin/updateAvgAddressInfo', stcViews.updateAvgAddressInfo),
+    path('admin/updateBubbleChartData', stcViews.updateBubbleChartData),
     path('getGu/', stcViews.getGu),
     path('getDong/<str:gu>/', stcViews.getDong),
     path('getCCTVCnt/', stcViews.getCCTVCnt),
@@ -81,6 +82,8 @@ urlpatterns = [
     path('getCulturalFacilityCnt/<str:gu>/', stcViews.getCulturalFacilityCnt),
     path('getCulturalFacilityCnt/<str:gu>/<str:dong>/', stcViews.getCulturalFacilityCnt),
 
+    path('getBubbleChartData', stcViews.getBubbleChartData),
+    path('getBubbleChartData/<str:gu>', stcViews.getBubbleChartData),
     path('getRankingChartData/<str:division>/', stcViews.getRankingChartData),
     path('getRankingChartData/<str:division>/<str:gu>', stcViews.getRankingChartData),
     path('getTrendChartData/<str:division>/<int:term>/', stcViews.getTrendChartData),
@@ -89,8 +92,7 @@ urlpatterns = [
     ## 테스트 url
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('test', stcViews.testQuery),
-    path('test/<str:division>', stcViews.testQuery),
-    path('test/<str:division>/<str:gu>', stcViews.testQuery),
+    path('test/<str:gu>', stcViews.testQuery),
     # path('test/<str:division>/', stcViews.testQuery),
     # path('test/<str:division>/<str:gu>', stcViews.testQuery),
 

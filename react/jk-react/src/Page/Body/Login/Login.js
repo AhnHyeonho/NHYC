@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -13,6 +13,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import { LoginPage } from '../..';
+import { Redirect } from "react-router-dom"
 
 
 function Copyright() {
@@ -28,7 +29,7 @@ function Copyright() {
     );
 }
 
-const useStyles = theme => ({
+const styles = theme => ({
     paper: {
         // marginTop: theme.spacing(8),
         display: 'flex',
@@ -48,80 +49,108 @@ const useStyles = theme => ({
     },
 });
 
-class Login extends React.Component {
+function Login({ authenticated, login, location }) {
 
-    render() {
-        const classes = useStyles();
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
 
-        return (
-            <Container component="main" maxWidth="xs" style={{"margin-top":"50px"}}>
-                <CssBaseline />
-                <div className={classes.paper}  style={{'text-align':"center"}}>
-                    <Avatar className={classes.avatar} style={{'text-align':"center", 'display':"inline-flex"}}>
-                        <LockOutlinedIcon />
-                    </Avatar>
-                    <Typography component="h1" variant="h5">
-                        Sign in
+    // 로그인 버튼 클릭
+    const handleClick = () => {
+
+        try {
+            login({ email, password })
+
+        } catch (e) {
+            alert("Failed to login")
+            setEmail("")
+            setPassword("")
+        }
+
+    }
+
+
+    const { from } = location.state || { from: { pathname: "/recommand" } }
+    if (authenticated) return <Redirect to={from} />
+
+    const classes = styles();
+
+    return (
+        <Container component="main" maxWidth="xs" style={{ "margin-top": "50px" }}>
+            <CssBaseline />
+            <div className={classes.paper} style={{ 'text-align': "center" }}>
+                <Avatar className={classes.avatar} style={{ 'text-align': "center", 'display': "inline-flex" }}>
+                    <LockOutlinedIcon />
+                </Avatar>
+                <Typography component="h1" variant="h5">
+                    Sign in
         </Typography>
-                    <form className={classes.form} noValidate>
-                        <TextField
-                            variant="outlined"
-                            margin="normal"
-                            required
-                            fullWidth
-                            id="email"
-                            label="Email Address"
-                            name="email"
-                            autoComplete="email"
-                            autoFocus
-                        />
-                        <TextField
-                            variant="outlined"
-                            margin="normal"
-                            required
-                            fullWidth
-                            name="password"
-                            label="Password"
-                            type="password"
-                            id="password"
-                            autoComplete="current-password"
-                        />
-                        {/* <FormControlLabel
+                <form className={classes.form} noValidate>
+                    <TextField
+                        variant="outlined"
+                        margin="normal"
+                        required
+                        fullWidth
+                        id="email"
+                        label="Email Address"
+                        name="email"
+                        autoComplete="email"
+                        autoFocus
+
+                        value={email}
+                        onChange={({ target: { value } }) => setEmail(value)}
+                    />
+                    <TextField
+                        variant="outlined"
+                        margin="normal"
+                        required
+                        fullWidth
+                        name="password"
+                        label="Password"
+                        type="password"
+                        id="password"
+                        autoComplete="current-password"
+
+                        value={password}
+                        onChange={({ target: { value } }) => setPassword(value)}
+                    />
+                    {/* <FormControlLabel
                             control={<Checkbox value="remember" color="primary" />}
                             label="Remember me"
                         /> */}
 
-                        <div  style={{'height':"20px"}}></div>
+                    <div style={{ 'height': "20px" }}></div>
 
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            color="primary"
-                            className={classes.submit}
-                        >
-                            Sign In
-          </Button>
-                        <Grid container>
-                            <Grid item xs>
-                                {/* <Link href="#" variant="body2">
+                    <Button
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                        className={classes.submit}
+                        onClick={handleClick}
+                    >
+                        Sign In
+                        </Button>
+
+                    <Grid container>
+                        <Grid item xs>
+                            {/* <Link href="#" variant="body2">
                                     Forgot password?
               </Link> */}
-                            </Grid>
-                            <Grid item  style={{"margin-top":"10px"}}>
-                                <Link href="#" variant="body2">
-                                    {"Don't have an account? Sign Up"}
-                                </Link>
-                            </Grid>
                         </Grid>
-                    </form>
-                </div>
-                <Box mt={8}>
-                    <Copyright />
-                </Box>
-            </Container>
-        );
-    }
+                        <Grid item style={{ "margin-top": "10px" }}>
+                            <Link href="#" variant="body2">
+                                {"Don't have an account? Sign Up"}
+                            </Link>
+                        </Grid>
+                    </Grid>
+                </form>
+            </div>
+            <Box mt={8}>
+                <Copyright />
+            </Box>
+        </Container>
+    );
 }
+
 
 export default Login;

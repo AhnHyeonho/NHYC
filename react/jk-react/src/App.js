@@ -1,11 +1,25 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import Header from './Page/Header';
 import Footer from './Page/Footer';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import { About, MapInfo, Recommand, Login } from './Page';
 
+import Profile from './Page/Body/AuthTest/Profile';
+import { signIn } from './Page/Body/Login/auth';
+import AuthRoute from './Page/Body/Login/AuthRoute';
+import LoginForm from './Page/Body/Login//LoginForm';
+
+
+
+
 function App() {
+
+  const [user, setUser] = useState(null);
+  const authenticated = user != null;
+
+  const login = ({ email, password }) => setUser(signIn({ email, password }));
+  const logout = () => setUser(null);
 
   return (
     <Router>
@@ -20,8 +34,24 @@ function App() {
         <Route exact path='/' component={About} />
         <Route exact path='/about' component={About} />
         <Route path='/map' component={MapInfo} />
-        <Route path='/recommand' component={Recommand} />
-        <Route path='/login' component={Login} />
+        {/* <Route path='/recommand' component={Recommand} /> */}
+        {/* <Route path='/login' component={Login} /> */}
+        
+        {/* <Route path="/profile" component={Profile} /> */}
+        
+        <Route
+            path="/login"
+            render={props => (
+              <Login authenticated={authenticated} login={login} {...props} />
+            )}
+          />
+
+        <AuthRoute
+            authenticated={authenticated}
+            path="/recommand"
+            render={props => <Recommand user={user} {...props} />}
+        />
+
       </div>
 
       {/* footer */}

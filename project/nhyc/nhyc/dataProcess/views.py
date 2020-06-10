@@ -55,13 +55,13 @@ def getAddress(reqeust):
     return HttpResponse()
 
 
-def getHouseInfo(request, start = 1, end = 1000):
+def getHouseInfo(request, start = 1, end = 4000000):
     url = "http://openapi.seoul.go.kr:8088/545149464a73696c39326f47667644/json/houseRentPriceInfo/"
 
 
-    while (True):
+    while (start != end):
         http = httplib2.Http()
-        finalurl = url + str(start) + "/" + str(end)
+        finalurl = url + str(start) + "/" + str(start + 999)
         response, content = http.request(finalurl, "GET")
         content = content.decode("utf-8")
         jsonData = json.loads(content)
@@ -108,10 +108,9 @@ def getHouseInfo(request, start = 1, end = 1000):
 
         if len(data) != 1000: break;
         print(start)
-        start = end + 1
-        end = start + 999
+        start = start + 1000
         
-    return HttpResponse(jsonData)
+    return HttpResponse("finish")
 
 def getCCTV(request):
     cctvPath = os.path.join(settings.BASE_DIR, "dataProcess", "CCTV")

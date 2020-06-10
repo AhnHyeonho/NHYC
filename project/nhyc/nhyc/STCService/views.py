@@ -1343,7 +1343,7 @@ def kakaoJoin(request):
             member = Member(id=id, email=email, password=password, name=name)
             member.save()
 
-            memberInfo = MemberInfo(member=member, gender=None, age_range=None, money=None)
+            memberInfo = MemberInfo(member=member, gender=None, age_range=None, rentalFee=None, deposit=None)
 
             if (jsonData["kakao_account"]["age_range_needs_agreement"] == "False" and jsonData["kakao_account"][
                 "has_age_range"] == "True"):
@@ -1368,7 +1368,7 @@ def join(request):
         member = Member(id=id, email=email, password=password, name=name)
         member.save()
 
-        memberInfo = MemberInfo(member=member, gender=None, age_range=None, money=None)
+        memberInfo = MemberInfo(member=member, gender=None, age_range=None, rentalFee=None, deposit=None)
         if "gender" in request.headers:
             gender = request.headers["gender"]
             setattr(memberInfo, "gender", gender)
@@ -1377,9 +1377,13 @@ def join(request):
             age_range = request.headers["age_range"]
             setattr(memberInfo, "age_range", age_range)
 
-        if "money" in request.headers:
-            money = request.headers["money"]
-            setattr(memberInfo, "money", money)
+        if "rentalFee" in request.headers:
+            money = request.headers["rentalFee"]
+            setattr(memberInfo, "rentalFee", money)
+
+        if "deposit" in request.headers:
+            money = request.headers["deposit"]
+            setattr(memberInfo, "deposit", money)
 
         memberInfo.save()
 

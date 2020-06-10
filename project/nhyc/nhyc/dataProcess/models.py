@@ -38,7 +38,8 @@ class MemberInfo(models.Model):
     member = models.OneToOneField('Member', on_delete=models.CASCADE, default=None)
     gender = models.CharField(max_length=1, null=True)
     age_range = models.CharField(max_length=10, null=True)
-    money = models.IntegerField(null=True)
+    rentalFee = models.IntegerField(null=True)
+    deposit = models.IntegerField(null=True)
 
     def __str__(self):
         return self.member.id

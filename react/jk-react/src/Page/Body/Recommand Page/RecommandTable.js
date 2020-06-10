@@ -40,7 +40,7 @@ const StyledTableCell = withStyles((theme) => ({
     head: {
         backgroundColor: theme.palette.common.white,
         color: theme.palette.common.black,
-        padding: "5px 2px 8px 2px"
+        padding: "5px 3px 8px 3px"
 
     },
 
@@ -75,13 +75,13 @@ const columns = [
 
     { id: 'rank1', align: 'center', label: '순위', minWidth: 45 },
     { id: 'name1', align: 'center', label: '지역명', minWidth: 120 },
-    { id: 'map-btn1', align: 'center', label: '', minWidth: 5 },
-    { id: 'naver-btn1', align: 'center', label: '', minWidth: 5 },
+    { id: 'map-btn1', align: 'center', label: '지도\n보기', minWidth: 5 },
+    { id: 'naver-btn1', align: 'center', label: '매물보기', minWidth: 5 },
 
     { id: 'rank2', align: 'center', label: '순위', minWidth: 45 },
     { id: 'name2', align: 'center', label: '지역명', minWidth: 120 },
-    { id: 'map-btn2', align: 'center', label: '', minWidth: 5 },
-    { id: 'naver-btn2', align: 'center', label: '', minWidth: 5 },
+    { id: 'map-btn2', align: 'center', label: '지도\n보기', minWidth: 5 },
+    { id: 'naver-btn2', align: 'center', label: '매물보기', minWidth: 5 },
 
 ];
 

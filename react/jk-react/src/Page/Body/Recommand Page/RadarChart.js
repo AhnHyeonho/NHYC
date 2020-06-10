@@ -17,7 +17,7 @@ const radarData = {
       pointBorderColor: 'rgba(255, 255, 153, 1)',
       pointBackgrounColor: 'rgba(255, 255, 153, 1)',
       pointRadius: 1,
-      data: [39, 52, 43, 60, 50, 65]
+      data: [39, 52, 43, 60, 50, 65, 50, 43, 60]
     },
 
     {
@@ -27,7 +27,7 @@ const radarData = {
       pointBorderColor: 'rgba(255, 153, 51, 1)',
       pointBackgrounColor: 'rgba(255, 153, 51, 1)',
       pointRadius: 1,
-      data: [58, 64, 58, 80, 65, 80]
+      data: [58, 64, 58, 80, 65, 80, 30, 45, 29]
     },
 
     {
@@ -37,7 +37,7 @@ const radarData = {
       pointBorderColor: 'rgba(255, 0, 0, 1)',
       pointBackgrounColor: 'rgba(255, 0, 0, 1)',
       pointRadius: 1,
-      data: [78, 84, 78, 109, 85, 100]
+      data: [78, 84, 78, 109, 85, 100, 60, 30, 45]
     }
   ]
 
@@ -82,17 +82,10 @@ export default function RadarChart(props) {
 
         const responseLabels = response.data.map(resData => resData.name);
         const valuelist=response.data.map(resData=>resData.id);
-        
-        // console.log(valuelist);
-
-        // let responseLabels = []
-        // response.data.map((resData, index) => (
-        //   responseLabels[index] = resData.name
-
-        // ))
 
         setLabels(responseLabels);
         setValues(valuelist)
+
         // console.log(url)
         // console.log(response)
 

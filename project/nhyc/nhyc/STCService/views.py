@@ -977,6 +977,143 @@ def getDummyDataForDH(request):
     return HttpResponse(dummyData)
 
 
+@csrf_exempt
+def getDummyDataForDH2(request):
+    dummyData = '''
+                    [
+                    {
+          "labels": [
+            "교통",
+            "월세",
+            "보증금",
+            "문화",
+            "치안"
+          ],
+          "status": [
+            {
+              "rank": 1,
+              "address": "서울시 강북구 번동",
+              "traffic": 35,
+              "monthly": 44,
+              "deposit": 37,
+              "culture": 48,
+              "police": 50
+            },
+            {
+              "rank": 2,
+              "address": "서울특별시 송파구 잠실본동",
+              "traffic": 60,
+              "monthly": 47,
+              "deposit": 34,
+              "culture": 24,
+              "police": 64
+            },
+            {
+              "rank": 3,
+              "address": "서울 종로구 종로5길",
+              "traffic": 34,
+              "monthly": 54,
+              "deposit": 63,
+              "culture": 46,
+              "police": 27
+            },
+            {
+              "rank": 4,
+              "address": "서울 광진구 아차산로33길 21-5",
+              "traffic": 34,
+              "monthly": 64,
+              "deposit": 53,
+              "culture": 23,
+              "police": 54
+            },
+            {
+              "rank": 5,
+              "address": "서울 성북구 보문로34길",
+              "traffic": 24,
+              "monthly": 34,
+              "deposit": 54,
+              "culture": 53,
+              "police": 63
+            },
+            {
+              "rank": 6,
+              "address": "서울 강북구 월계로7나길 50",
+              "traffic": 63,
+              "monthly": 42,
+              "deposit": 83,
+              "culture": 35,
+              "police": 64
+            },
+            {
+              "rank": 7,
+              "address": "서울 광진구 동일로18길 52",
+              "traffic": 26,
+              "monthly": 74,
+              "deposit": 35,
+              "culture": 46,
+              "police": 37
+            },
+            {
+              "rank": 8,
+              "address": "서울 종로구 북촌로4길 19 1층",
+              "traffic": 37,
+              "monthly": 74,
+              "deposit": 63,
+              "culture": 45,
+              "police": 60
+            },
+            {
+              "rank": 9,
+              "address": "서울 성동구 서울숲2길 40-7 1층 엘더버거",
+              "traffic": 45,
+              "monthly": 36,
+              "deposit": 74,
+              "culture": 54,
+              "police": 43
+            },
+            {
+              "rank": 10,
+              "address": "서울시 강북구 번동",
+              "traffic": 54,
+              "monthly": 64,
+              "deposit": 35,
+              "culture": 46,
+              "police": 36
+            }
+          ]
+        }
+        ]
+
+    '''
+
+    return HttpResponse(dummyData)
+
+
+@csrf_exempt
+def getDummyDataForDH3(request):
+    dummyData = '''
+        [
+                    {
+          "labels": [
+            "교통",
+            "월세",
+            "보증금",
+            "문화",
+            "치안"
+          ],
+          "username": "김다현",
+          "traffic": 54,
+          "monthly": 47,
+          "deposit": 34,
+          "culture": 24,
+          "police": 64
+        }
+        ]
+    '''
+
+    return HttpResponse(dummyData)
+
+
 # dummyData ↑↑↑
 
 ########################## ↑↑↑↑↑↑↑↑ ############################
@@ -984,78 +1121,42 @@ def getDummyDataForDH(request):
 
 # ########################### ↓↓↓↓테스트 코드↓↓↓↓ ###########################
 @csrf_exempt
-def testQuery(request, division, gu=None):
-    '''
-    :param request:
-    :param division: rent면 월세기준, depo면 보증금 기준, rent-depo면 월세*12 + 보증금 기준
-    :param gu: 있으면 해당 구의 차트 데이터 리딩
-    :return: 정렬된 구, 월세, 보증금 리스트를 담은 JSON을 리턴
-    '''
+def testQuery(request):
+    # 월세를 10만원 단위로 나눠보자.
+    for rentalFee in range(0, 100, 10):
+        minRentalFee = rentalFee
+        maxRentalFee = min + 9
+        querySet = CostRecord.objects.filter(rentalFee__range=(minRentalFee, maxRentalFee))
 
-    guList = []
-    rentalFeeList = []
-    depositList = []
+        houseNumberList = []
+        rentalFeeList = []
+        depositList = []
 
-    if gu is None:
-        for gu in seoulGu:
-            totDeposit = float(0)
-            totRentalFee = float(0)
-            totCnt = int()
-            guList.append(gu)
-            print(guList)
-            querySet = AddressInfo.objects.filter(gu=gu)
-
-            for i in querySet:
-                totDeposit += float(i.avgDeposit) * int(i.itemCnt)
-                totRentalFee += float(i.avgRentalFee) * int(i.itemCnt)
-                totCnt += i.itemCnt
-            rentalFeeList.append(totRentalFee / totCnt)
-            depositList.append(totDeposit / totCnt)
-
-    else:
-        querySet = AddressInfo.objects.filter(gu=gu)
         for i in querySet:
-            guList.append(i.dong)
-            depositList.append(i.avgDeposit)
-            rentalFeeList.append(i.avgRentalFee)
+            houseNumberList.append(i.houseNumber)
+            rentalFeeList.append(i.rentalFee)
+            depositList.append(i.deposit)
+            print(i.houseNumber,
+                  i.rentalFee,
+                  i.deposit)
 
-    print(guList)
-    print(depositList)
-    print(rentalFeeList)
-    # 받은 데이터를 기준으로 pandas.DataFrame 객체 생성
-    data = {'gu': guList,
+        data = {
+            'houseNumber': houseNumberList,
             'rentalFee': rentalFeeList,
-            'deposit': depositList}
+            'deposit': depositList
+        }
+        rentalFeeRank = pandas.DataFrame(data)  # 해당 월세 범위에 해당하는 매물들로 dataFrame생성.
 
-    rentalFeeRank = pandas.DataFrame(data)
+        # 이제 보증금 단위로 나눠보자.
+        for x in range(1000, 4000, 500):
+            start = x
+            end = x + 500
+            temp = rentalFeeRank[(rentalFeeRank["deposit"] >= start) & (rentalFeeRank["deposit"] < end)]
+            print("{}이상 {}미만 : {}".format(start, end, temp.count()))
 
-    if division == 'rent':
-        print('월세 기준 >> :::')
-        rentalFeeRank['rank'] = rentalFeeRank['rentalFee'].rank(method='min', ascending=True)  # 낮은 가격순으로 순위 저장
-        rentalFeeRank.sort_values(by=['rentalFee'], axis=0, inplace=True, ascending=True)  # 낮은 순위부터 정렬
-    elif division == 'depo':
-        print('보증금 기준 >> :::')
-        rentalFeeRank['rank'] = rentalFeeRank['deposit'].rank(method='min', ascending=True)  # 낮은 가격순으로 순위 저장
-        rentalFeeRank.sort_values(by=['deposit'], axis=0, inplace=True, ascending=True)  # 낮은 순위부터 정렬
-    elif division == 'rent-depo':
-        print('월세 1년치(12개월) + 보증금 기준 >> :::')
-        rentalFeeRank['year-rent'] = rentalFeeRank['rentalFee'] * 12  # 12개월치 월세
-        rentalFeeRank['rent-deposit'] = rentalFeeRank['year-rent'] + rentalFeeRank['deposit']  # 12개월치 월세 + 보증금
-        rentalFeeRank['rank'] = rentalFeeRank['rent-deposit'].rank(method='min', ascending=True)  # 낮은 가격순으로 순위 저장
-        rentalFeeRank.sort_values(by=['deposit'], axis=0, inplace=True, ascending=True)  # 낮은 순위부터 정렬
-    else:
-        return JsonResponse(data.errors, status=400)
+            # print(j.costRecordId, j.rentalFee)
 
-    guList = rentalFeeRank['gu'].tolist()
-    rentalFeeList = list(map(str, rentalFeeRank['rentalFee'].tolist()))
-    depositList = list(map(str, rentalFeeRank['deposit'].tolist()))
-
-    json_data = OrderedDict()
-    json_data['gu'] = guList
-    json_data['rentalFee'] = rentalFeeList
-    json_data['deposit'] = depositList
-
-    return myJsonResponse(json_data)
+    return HttpResponse("testQuery")
 
     # for i in querySet:
     #     guList.append(i.gu)
@@ -1359,6 +1460,7 @@ def kakaoJoin(request):
 
     return HttpResponse(jsonData)
 
+
 def join(request):
     id = request.headers["id"]
     email = request.headers["email"]
@@ -1393,6 +1495,7 @@ def join(request):
         return HttpResponse("join success")
     return HttpResponse("id or email is already exist")
 
+
 def login(request):
     id = request.headers["id"]
     password = request.headers["password"]
@@ -1402,16 +1505,17 @@ def login(request):
     else:
         return HttpResponse("login fail")
 
+
 def count(request, id, category, milliseconds):
     m = 1000
     if 2 * m < milliseconds < 60 * m:
-        if MemberTrend.objects.filter(member_id = id).count() == 1:
-            memberTrend = MemberTrend.objects.get(member_id = id)
+        if MemberTrend.objects.filter(member_id=id).count() == 1:
+            memberTrend = MemberTrend.objects.get(member_id=id)
             setattr(memberTrend, category, getattr(memberTrend, category) + 1)
             memberTrend.save()
         else:
-            if TrendBySession.objects.filter(sessionId = id).count() == 1:
-                trendBySession = TrendBySession.objects.get(sessionId = id)
+            if TrendBySession.objects.filter(sessionId=id).count() == 1:
+                trendBySession = TrendBySession.objects.get(sessionId=id)
             else:
                 trendBySession = TrendBySession(sessionId=id)
 

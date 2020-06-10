@@ -88,15 +88,16 @@ urlpatterns = [
 
     ## 테스트 url
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('test', stcViews.testQuery),
     path('test/<str:division>', stcViews.testQuery),
     path('test/<str:division>/<str:gu>', stcViews.testQuery),
     # path('test/<str:division>/', stcViews.testQuery),
     # path('test/<str:division>/<str:gu>', stcViews.testQuery),
 
-
-
     # dummy data => 추후 삭제
-    path('dummyData/', stcViews.getDummyDataForDH),
+    path('dummyData1/', stcViews.getDummyDataForDH),
+    path('dummyData2/', stcViews.getDummyDataForDH2),
+    path('dummyData3/', stcViews.getDummyDataForDH3),
     # dummy data => 추후 삭제
     # <-- 현호추가
 

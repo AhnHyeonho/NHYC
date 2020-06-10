@@ -878,10 +878,10 @@ def updateAvgAddressInfo(request):
     '''
     queryString = '''
         select  gu, dong, avg(rentalFee) as rentalFee, avg(deposit) as deposit, count(houseNumber_id) as cnt
-        from dataprocess_costrecord A
-        left join dataprocess_houseinfo B
+        from dataProcess_costrecord A
+        left join dataProcess_houseinfo B
         on A.houseNumber_id = B.houseNumber
-        left join dataprocess_address C
+        left join dataProcess_address C
         on B.areaCode_id = C.areaCode
         GROUP BY gu, dong
         ORDER BY gu, dong

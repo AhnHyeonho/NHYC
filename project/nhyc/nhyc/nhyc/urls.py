@@ -83,7 +83,8 @@ urlpatterns = [
 
     ## 테스트 url
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path('test/', stcViews.testQuery),
+    path('test/<str:division>', stcViews.testQuery),
+    path('test/<str:division>/<str:gu>', stcViews.testQuery),
     # path('test/<str:division>/', stcViews.testQuery),
     # path('test/<str:division>/<str:gu>', stcViews.testQuery),
 

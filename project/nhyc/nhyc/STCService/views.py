@@ -33,6 +33,8 @@ from dataProcess.models import CostRecord
 from .serializers import CostRecordSerializer
 from dataProcess.models import AddressInfo
 from .models import Average, Result_GuCnt, Result_GuDongCnt, TrendChartData
+from dataProcess.models import MemberTrend
+from dataProcess.models import TrendBySession
 
 # 서울시 행정구
 seoulGu = {'중구': '10100',
@@ -1268,25 +1270,30 @@ def join(request):
     email = request.headers["email"]
     password = request.headers["password"]
     name = request.headers["name"]
-    member = Member(id=id, email=email, password=password, name=name)
-    member.save()
+    if Member.objects.filter(id=id).count() == 0 and Member.objects.filter(email=email).count() == 0:
+        member = Member(id=id, email=email, password=password, name=name)
+        member.save()
 
-    memberInfo = MemberInfo(member=member, gender=None, age_range=None, money=None)
-    if "gender" in request.headers:
-        gender = request.headers["gender"]
-        setattr(memberInfo, "gender", gender)
+        memberInfo = MemberInfo(member=member, gender=None, age_range=None, money=None)
+        if "gender" in request.headers:
+            gender = request.headers["gender"]
+            setattr(memberInfo, "gender", gender)
 
-    if "age_range" in request.headers:
-        age_range = request.headers["age_range"]
-        setattr(memberInfo, "age_range", age_range)
+        if "age_range" in request.headers:
+            age_range = request.headers["age_range"]
+            setattr(memberInfo, "age_range", age_range)
 
-    if "money" in request.headers:
-        money = request.headers["money"]
-        setattr(memberInfo, "money", money)
+        if "money" in request.headers:
+            money = request.headers["money"]
+            setattr(memberInfo, "money", money)
 
-    memberInfo.save()
+        memberInfo.save()
 
-    return HttpResponse("join")
+        memberTrend = MemberTrend(member=member)
+        memberTrend.save()
+
+        return HttpResponse("join success")
+    return HttpResponse("id or email is already exist")
 
 def login(request):
     id = request.headers["id"]
@@ -1296,3 +1303,22 @@ def login(request):
         return HttpResponse("login success")
     else:
         return HttpResponse("login fail")
+
+def count(request, id, category, milliseconds):
+    m = 1000
+    if 2 * m < milliseconds < 60 * m:
+        if MemberTrend.objects.filter(member_id = id).count() == 1:
+            memberTrend = MemberTrend.objects.get(member_id = id)
+            setattr(memberTrend, category, getattr(memberTrend, category) + 1)
+            memberTrend.save()
+        else:
+            if TrendBySession.objects.filter(sessionId = id).count() == 1:
+                trendBySession = TrendBySession.objects.get(sessionId = id)
+            else:
+                trendBySession = TrendBySession(sessionId=id)
+
+            setattr(trendBySession, category, getattr(trendBySession, category) + 1)
+            trendBySession.save()
+        return HttpResponse("count success")
+
+    return HttpResponse("count failed : " + str(milliseconds) + " milliseconds in " + category + " category")

@@ -41,8 +41,29 @@ class MemberInfo(models.Model):
     money = models.IntegerField(null=True)
 
     def __str__(self):
-        return self.id
+        return self.member.id
 
+class MemberTrend(models.Model):
+    member = models.OneToOneField('Member', on_delete=models.CASCADE, default=None)
+    budget = models.IntegerField(default=0)
+    safety = models.IntegerField(default=0)
+    life = models.IntegerField(default=0)
+    culture = models.IntegerField(default=0)
+    transportation = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.member.id
+
+class TrendBySession(models.Model):
+    sessionId = models.CharField(max_length=255, primary_key=True)
+    budget = models.IntegerField(default=0)
+    safety = models.IntegerField(default=0)
+    life = models.IntegerField(default=0)
+    culture = models.IntegerField(default=0)
+    transportation =models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.member.id
 
 class FrequentPlace(models.Model):
     placeId = models.IntegerField(primary_key=True)

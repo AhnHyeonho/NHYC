@@ -36,6 +36,9 @@ urlpatterns = [
     path('admin/concerthalls', dpviews.getConcertHall, name='getConcertHall'),
     path('admin/gyms', dpviews.getGym, name='getGym'),
     path('kakaojoin', stcViews.kakaoJoin, name='kakaoJoin'),
+    path('count/<str:id>/<str:category>/<int:milliseconds>', stcViews.count, name='count'),
+    path('join', stcViews.join, name='join'),
+    path('login', stcViews.login, name='login'),
 
     # 현호추가 -->
 

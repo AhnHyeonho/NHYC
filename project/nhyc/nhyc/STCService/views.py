@@ -707,20 +707,58 @@ def kakaoJoin(request):
     if Member.objects.filter(id=id).count == 0:
         password = ""
         name = jsonData["properties"]["nickname"]
-        member = Member(id=id, password=password, name=name)
-        member.save()
+        if jsonData["kakao_account"]["email_needs_agreement"] == "False" and jsonData["kakao_account"][
+            "is_email_valid"] == "True":
+            email = jsonData["kakao_account"]["email"]
+            member = Member(id=id, email=email, password=password, name=name)
+            member.save()
 
-        memberInfo = MemberInfo(member=member, gender=None, age_range=None, money=None)
-        if (jsonData["kakao_account"]["age_range_needs_agreement"] == "False" and jsonData["kakao_account"][
-            "has_age_range"] == "True"):
-            age_range = jsonData["kakao_account"]["age_range"]
-            setattr(memberInfo, "age_range", age_range)
+            memberInfo = MemberInfo(member=member, gender=None, age_range=None, money=None)
 
-        if (jsonData["kakao_account"]["gender_needs_agreement"] == "False" and jsonData["kakao_account"][
-            "has_gender"] == "True"):
-            gender = jsonData["kakao_account"]["gender"]
-            setattr(memberInfo, "gender", gender)
+            if (jsonData["kakao_account"]["age_range_needs_agreement"] == "False" and jsonData["kakao_account"][
+                "has_age_range"] == "True"):
+                age_range = jsonData["kakao_account"]["age_range"]
+                setattr(memberInfo, "age_range", age_range)
 
-        memberInfo.save()
+            if (jsonData["kakao_account"]["gender_needs_agreement"] == "False" and jsonData["kakao_account"][
+                "has_gender"] == "True"):
+                gender = jsonData["kakao_account"]["gender"]
+                setattr(memberInfo, "gender", gender)
+
+            memberInfo.save()
 
     return HttpResponse(jsonData)
+
+def join(request):
+    id = request.headers["id"]
+    email = request.headers["email"]
+    password = request.headers["password"]
+    name = request.headers["name"]
+    member = Member(id=id, email=email, password=password, name=name)
+    member.save()
+
+    memberInfo = MemberInfo(member=member, gender=None, age_range=None, money=None)
+    if "gender" in request.headers:
+        gender = request.headers["gender"]
+        setattr(memberInfo, "gender", gender)
+
+    if "age_range" in request.headers:
+        age_range = request.headers["age_range"]
+        setattr(memberInfo, "age_range", age_range)
+
+    if "money" in request.headers:
+        money = request.headers["money"]
+        setattr(memberInfo, "money", money)
+
+    memberInfo.save()
+
+    return HttpResponse("join")
+
+def login(request):
+    id = request.headers["id"]
+    password = request.headers["password"]
+
+    if Member.objects.filter(id=id, password=password):
+        return HttpResponse("login success")
+    else:
+        return HttpResponse("login fail")

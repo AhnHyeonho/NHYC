@@ -24,9 +24,9 @@ from STCService import views as stcViews  ### 현호추가
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('admin/addresses', dpviews.getAddress, name='getAddress'),
-    path('admin/houseinfos/<int:num>', dpviews.getHouseInfo, name='getHouseInfo'),
+    path('admin/houseinfos/<int:start>/<int:end>', dpviews.getHouseInfo, name='getHouseInfo'),
     path('admin/cctvs', dpviews.getCCTV, name='getCCTV'),
-    path('admin/securitylights', dpviews.getSecurityLight, name='getSecurityLight'),
+    path('admin/securitylights/<str:filename>', dpviews.getSecurityLight, name='getSecurityLight'),
     path('admin/policeoffices', dpviews.getPoliceOffice, name='getPoliceOffice'),
     path('admin/parks', dpviews.getPark, name='getPark'),
     path('admin/markets', dpviews.getMarket, name='getMarket'),

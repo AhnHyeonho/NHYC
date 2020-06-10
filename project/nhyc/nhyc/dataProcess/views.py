@@ -55,10 +55,9 @@ def getAddress(reqeust):
     return HttpResponse()
 
 
-def getHouseInfo(request, num):
+def getHouseInfo(request, start = 1, end = 1000):
     url = "http://openapi.seoul.go.kr:8088/545149464a73696c39326f47667644/json/houseRentPriceInfo/"
-    start = num
-    end = num + 999
+
 
     while (True):
         http = httplib2.Http()
@@ -180,9 +179,12 @@ def getCCTV(request):
 
     return HttpResponse(csv)
 
-def getSecurityLight(request):
+def getSecurityLight(request, filename=None):
     cctvPath = os.path.join(settings.BASE_DIR, "dataProcess", "보안등")
-    fileList = os.listdir(cctvPath)
+    if filename == None:
+        fileList = os.listdir(cctvPath)
+    else:
+        fileList = {filename}
 
     for fileName in fileList:
         csv = pandas.read_csv(os.path.join(cctvPath, fileName), encoding="CP949")

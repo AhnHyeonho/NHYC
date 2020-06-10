@@ -37,9 +37,11 @@ urlpatterns = [
     path('admin/gyms', dpviews.getGym, name='getGym'),
     path('kakaojoin', stcViews.kakaoJoin, name='kakaoJoin'),
 
-    ## 현호추가 -->
+    # 현호추가 -->
 
-    ## 확정 url
+    # 확정 url
+    path('admin/initialAddressInfo', stcViews.initialAddressInfo),
+    path('admin/updateAvgAddressInfo', stcViews.updateAvgAddressInfo),
     path('getGu/', stcViews.getGu),
     path('getDong/<str:gu>/', stcViews.getDong),
     path('getCCTVCnt/', stcViews.getCCTVCnt),
@@ -51,6 +53,29 @@ urlpatterns = [
     path('getPoliceOfficeCnt/', stcViews.getPoliceOfficeCnt),
     path('getPoliceOfficeCnt/<str:gu>/', stcViews.getPoliceOfficeCnt),
     path('getPoliceOfficeCnt/<str:gu>/<str:dong>/', stcViews.getPoliceOfficeCnt),
+
+    path('getPharmacyCnt/', stcViews.getPharmacyCnt),
+    path('getPharmacyCnt/<str:gu>/', stcViews.getPharmacyCnt),
+    path('getPharmacyCnt/<str:gu>/<str:dong>/', stcViews.getPharmacyCnt),
+    path('getMarketCnt/', stcViews.getMarketCnt),
+    path('getMarketCnt/<str:gu>/', stcViews.getMarketCnt),
+    path('getMarketCnt/<str:gu>/<str:dong>/', stcViews.getMarketCnt),
+    path('getParkCnt/', stcViews.getParkCnt),
+    path('getParkCnt/<str:gu>/', stcViews.getParkCnt),
+    path('getParkCnt/<str:gu>/<str:dong>/', stcViews.getParkCnt),
+    path('getGymCnt/', stcViews.getGymCnt),
+    path('getGymCnt/<str:gu>/', stcViews.getGymCnt),
+    path('getGymCnt/<str:gu>/<str:dong>/', stcViews.getGymCnt),
+    path('getConcertHallCnt/', stcViews.getConcertHallCnt),
+    path('getConcertHallCnt/<str:gu>/', stcViews.getConcertHallCnt),
+    path('getConcertHallCnt/<str:gu>/<str:dong>/', stcViews.getConcertHallCnt),
+    path('getLibraryCnt/', stcViews.getLibraryCnt),
+    path('getLibraryCnt/<str:gu>/', stcViews.getLibraryCnt),
+    path('getLibraryCnt/<str:gu>/<str:dong>/', stcViews.getLibraryCnt),
+    path('getCulturalFacilityCnt/', stcViews.getCulturalFacilityCnt),
+    path('getCulturalFacilityCnt/<str:gu>/', stcViews.getCulturalFacilityCnt),
+    path('getCulturalFacilityCnt/<str:gu>/<str:dong>/', stcViews.getCulturalFacilityCnt),
+
     path('getRankingChartData/<str:division>/', stcViews.getRankingChartData),
     path('getRankingChartData/<str:division>/<str:gu>', stcViews.getRankingChartData),
     path('getTrendChartData/<str:division>/<int:term>/', stcViews.getTrendChartData),
@@ -59,11 +84,14 @@ urlpatterns = [
     ## 테스트 url
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('test/', stcViews.testQuery),
-    path('test/<str:division>/<int:term>/', stcViews.testQuery),
-    path('test/<str:division>/<int:term>/<str:gu>', stcViews.testQuery),
-    path('getRankingChartData/<str:division>/', stcViews.getRankingChartData),
-    # path('test2/', stcViews.testQuery2),
+    # path('test/<str:division>/', stcViews.testQuery),
+    # path('test/<str:division>/<str:gu>', stcViews.testQuery),
 
-    ## <-- 현호추가
+
+
+    # dummy data => 추후 삭제
+    path('dummyData/', stcViews.getDummyDataForDH),
+    # dummy data => 추후 삭제
+    # <-- 현호추가
 
 ]

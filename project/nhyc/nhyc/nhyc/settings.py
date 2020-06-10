@@ -49,7 +49,7 @@ REST_FRAMEWORK = {
 }
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware', #Cross-Origin Resource Sharing
+    'corsheaders.middleware.CorsMiddleware',  # Cross-Origin Resource Sharing
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -91,7 +91,8 @@ DATABASES = {
         'USER': 'root',
         'PASSWORD': '1234',
         'HOST': 'localhost',
-        'PORT': '3306'
+        'PORT': '3306',
+        'OPTIONS': {'sql_mode': 'traditional'}
     }
 }
 

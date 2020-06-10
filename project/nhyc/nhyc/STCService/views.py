@@ -1,3 +1,4 @@
+import inspect
 from collections import OrderedDict
 
 from django.db.models.query import QuerySet, RawQuerySet
@@ -30,7 +31,7 @@ from dataProcess.models import Address
 from .serializers import AddressSerializer
 from dataProcess.models import CostRecord
 from .serializers import CostRecordSerializer
-from .models import Average, Result_GuCnt, Result_GuDongCnt
+from dataProcess.models import AddressInfo
 from .models import Average, Result_GuCnt, Result_GuDongCnt, TrendChartData
 
 # 서울시 행정구
@@ -390,21 +391,28 @@ def getTrendChartData(request, division, term, gu=None):
     print("querySet ::: ", queryString)
     querySet = TrendChartData.objects.raw(queryString)
 
-    dataList = []
+    dateList = []
     avgRentalFeeList = []
     avgDepositList = []
 
     for i in querySet:
-        dataList.append(i.date)
+        # dateList.append(i.date)
+        dateShifter = str(i.date)
+        dateShifter = dateShifter[0:4] + "." + dateShifter[4:6]
+        dateList.append(dateShifter)
         avgRentalFeeList.append(i.avg_rentalFee)
         avgDepositList.append(i.avg_deposit)
         print(i.date, i.avg_rentalFee, i.avg_deposit)
-
+    dateList = list(map(str, dateList))
     avgRentalFeeList = list(map(str, avgRentalFeeList))  # Decimal 형태의 index들을 단순 string으로 변환
     avgDepositList = list(map(str, avgDepositList))  # Decimal 형태의 index들을 단순 string으로 변환
 
+    print('dateList::>>', dateList)
+    print('avgRentalFeeList::>>', avgRentalFeeList)
+    print('avgDepositList::>>', avgDepositList)
+
     json_data = OrderedDict()
-    json_data['dataList'] = dataList[-term:]
+    json_data['dateList'] = dateList[-term:]
     if division == 'rent':
         json_data['avgRentalFeeList'] = avgRentalFeeList[-term:]
     elif division == 'depo':
@@ -412,65 +420,591 @@ def getTrendChartData(request, division, term, gu=None):
 
     return myJsonResponse(json_data)
 
+
+@csrf_exempt
+def getPharmacyCnt(request, gu=None, dong=None):
+    '''
+    :param request:
+    :param gu:
+    :return: 서울시 내의 구들의 약국 갯수를 리턴. (구이름으로 정렬된 데이터)
+             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 약국 갯수를 리턴 (동이름으로 정렬된 데이터)
+             만약 dong값까지 입력되었다면 해당 동의 약국 갯수를 리턴 (값 1개)
+    '''
+    resultString = []
+
+    if gu is None:
+        querySet = Result_GuCnt.objects.raw('''
+            select gu, count(pharmacyId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_pharmacy B
+            on A.areaCode = B.areaCode_id
+            group by gu
+            order by gu
+            ''')
+        print("querySet ::: ", querySet)
+        for i in querySet:
+            # print(i.gu, i.cnt)
+            resultString.append(i.cnt)
+
+    else:
+        if dong is None:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(pharmacyId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_pharmacy B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s'
+                group by dong
+                order by dong
+                ''' % gu)
+            print(querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
+        else:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(pharmacyId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_pharmacy B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s' AND dong='%s'
+                group by dong
+                order by dong
+                ''' % (gu, dong))
+            print("querySet ::: ", querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
+
+    print(resultString)
+    return myJsonResponse(resultString)
+
+
+@csrf_exempt
+def getMarketCnt(request, gu=None, dong=None):
+    '''
+    :param request:
+    :param gu:
+    :return: 서울시 내의 구들의 전통시장 갯수를 리턴. (구이름으로 정렬된 데이터)
+             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 전통시장 갯수를 리턴 (동이름으로 정렬된 데이터)
+             만약 dong값까지 입력되었다면 해당 동의 전통시장 갯수를 리턴 (값 1개)
+    '''
+    resultString = []
+
+    if gu is None:
+        querySet = Result_GuCnt.objects.raw('''
+            select gu, count(marketId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_market B
+            on A.areaCode = B.areaCode_id
+            group by gu
+            order by gu
+            ''')
+        print("querySet ::: ", querySet)
+        for i in querySet:
+            # print(i.gu, i.cnt)
+            resultString.append(i.cnt)
+
+    else:
+        if dong is None:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(marketId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_market B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s'
+                group by dong
+                order by dong
+                ''' % gu)
+            print(querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
+        else:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(marketId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_market B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s' AND dong='%s'
+                group by dong
+                order by dong
+                ''' % (gu, dong))
+            print("querySet ::: ", querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
+
+    print(resultString)
+    return myJsonResponse(resultString)
+
+
+@csrf_exempt
+def getParkCnt(request, gu=None, dong=None):
+    '''
+    :param request:
+    :param gu:
+    :return: 서울시 내의 구들의 공원 갯수를 리턴. (구이름으로 정렬된 데이터)
+             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 공원 갯수를 리턴 (동이름으로 정렬된 데이터)
+             만약 dong값까지 입력되었다면 해당 동의 공원 갯수를 리턴 (값 1개)
+    '''
+    resultString = []
+
+    if gu is None:
+        querySet = Result_GuCnt.objects.raw('''
+            select gu, count(parkId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_park B
+            on A.areaCode = B.areaCode_id
+            group by gu
+            order by gu
+            ''')
+        print("querySet ::: ", querySet)
+        for i in querySet:
+            # print(i.gu, i.cnt)
+            resultString.append(i.cnt)
+
+    else:
+        if dong is None:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(parkId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_park B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s'
+                group by dong
+                order by dong
+                ''' % gu)
+            print(querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
+        else:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(parkId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_park B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s' AND dong='%s'
+                group by dong
+                order by dong
+                ''' % (gu, dong))
+            print("querySet ::: ", querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
+
+    print(resultString)
+    return myJsonResponse(resultString)
+
+
+@csrf_exempt
+def getGymCnt(request, gu=None, dong=None):
+    '''
+    :param request:
+    :param gu:
+    :return: 서울시 내의 구들의 공공체육시설 갯수를 리턴. (구이름으로 정렬된 데이터)
+             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 공공체육시설 갯수를 리턴 (동이름으로 정렬된 데이터)
+             만약 dong값까지 입력되었다면 해당 동의 공공체육시설 갯수를 리턴 (값 1개)
+    '''
+    resultString = []
+
+    if gu is None:
+        querySet = Result_GuCnt.objects.raw('''
+            select gu, count(gymId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_gym B
+            on A.areaCode = B.areaCode_id
+            group by gu
+            order by gu
+            ''')
+        print("querySet ::: ", querySet)
+        for i in querySet:
+            # print(i.gu, i.cnt)
+            resultString.append(i.cnt)
+
+    else:
+        if dong is None:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(gymId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_gym B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s'
+                group by dong
+                order by dong
+                ''' % gu)
+            print(querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
+        else:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(gymId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_gym B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s' AND dong='%s'
+                group by dong
+                order by dong
+                ''' % (gu, dong))
+            print("querySet ::: ", querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
+
+    print(resultString)
+    return myJsonResponse(resultString)
+
+
+@csrf_exempt
+def getConcertHallCnt(request, gu=None, dong=None):
+    '''
+    :param request:
+    :param gu:
+    :return: 서울시 내의 구들의 공연장 갯수를 리턴. (구이름으로 정렬된 데이터)
+             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 공연장 갯수를 리턴 (동이름으로 정렬된 데이터)
+             만약 dong값까지 입력되었다면 해당 동의 공연장 갯수를 리턴 (값 1개)
+    '''
+    resultString = []
+
+    if gu is None:
+        querySet = Result_GuCnt.objects.raw('''
+            select gu, count(concertHallId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_concerthall B
+            on A.areaCode = B.areaCode_id
+            group by gu
+            order by gu
+            ''')
+        print("querySet ::: ", querySet)
+        for i in querySet:
+            # print(i.gu, i.cnt)
+            resultString.append(i.cnt)
+
+    else:
+        if dong is None:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(concertHallId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_concerthall B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s'
+                group by dong
+                order by dong
+                ''' % gu)
+            print(querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
+        else:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(concertHallId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_concerthall B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s' AND dong='%s'
+                group by dong
+                order by dong
+                ''' % (gu, dong))
+            print("querySet ::: ", querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
+
+    print(resultString)
+    return myJsonResponse(resultString)
+
+
+@csrf_exempt
+def getLibraryCnt(request, gu=None, dong=None):
+    '''
+    :param request:
+    :param gu:
+    :return: 서울시 내의 구들의 도서관 갯수를 리턴. (구이름으로 정렬된 데이터)
+             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 도서관 갯수를 리턴 (동이름으로 정렬된 데이터)
+             만약 dong값까지 입력되었다면 해당 동의 도서관 갯수를 리턴 (값 1개)
+    '''
+    resultString = []
+
+    if gu is None:
+        querySet = Result_GuCnt.objects.raw('''
+            select gu, count(libraryId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_library B
+            on A.areaCode = B.areaCode_id
+            group by gu
+            order by gu
+            ''')
+        print("querySet ::: ", querySet)
+        for i in querySet:
+            # print(i.gu, i.cnt)
+            resultString.append(i.cnt)
+
+    else:
+        if dong is None:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(libraryId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_library B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s'
+                group by dong
+                order by dong
+                ''' % gu)
+            print(querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
+        else:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(libraryId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_library B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s' AND dong='%s'
+                group by dong
+                order by dong
+                ''' % (gu, dong))
+            print("querySet ::: ", querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
+
+    print(resultString)
+    return myJsonResponse(resultString)
+
+
+@csrf_exempt
+def getCulturalFacilityCnt(request, gu=None, dong=None):
+    '''
+    :param request:
+    :param gu:
+    :return: 서울시 내의 구들의 박물관/미술관 갯수를 리턴. (구이름으로 정렬된 데이터)
+             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 박물관/미술관 갯수를 리턴 (동이름으로 정렬된 데이터)
+             만약 dong값까지 입력되었다면 해당 동의 박물관/미술관 갯수를 리턴 (값 1개)
+    '''
+    resultString = []
+
+    if gu is None:
+        querySet = Result_GuCnt.objects.raw('''
+            select gu, count(culturalFacilityId) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_culturalfacility B
+            on A.areaCode = B.areaCode_id
+            group by gu
+            order by gu
+            ''')
+        print("querySet ::: ", querySet)
+        for i in querySet:
+            # print(i.gu, i.cnt)
+            resultString.append(i.cnt)
+
+    else:
+        if dong is None:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(culturalFacilityId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_culturalfacility B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s'
+                group by dong
+                order by dong
+                ''' % gu)
+            print(querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
+        else:
+            querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(culturalFacilityId) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_culturalfacility B
+                on A.areaCode = B.areaCode_id
+                where gu = '%s' AND dong='%s'
+                group by dong
+                order by dong
+                ''' % (gu, dong))
+            print("querySet ::: ", querySet)
+            for i in querySet:
+                # print(i.gu, i.dong, i.cnt)
+                resultString.append(i.cnt)
+
+    print(resultString)
+    return myJsonResponse(resultString)
+
+
+@csrf_exempt
+def initialAddressInfo(request):
+    '''
+    addressInfo 테이블 초기화 메소드
+    :param request:
+    :return:
+    '''
+
+    queryString = '''
+        SELECT * 
+        FROM dataProcess_address
+        ORDER BY gu, dong
+    '''
+
+    querySet = Address.objects.all().order_by('gu', 'dong')
+    print('querySet:>> ', querySet)
+
+    for i in querySet:
+        addressInfo, created = AddressInfo.objects.get_or_create(areaCode=i.areaCode)
+        if created:
+            print(i.gu, '데이터 존재 X!! 새로운 데이터 생성::>>')
+            addressInfo.si = i.si
+            addressInfo.gu = i.gu
+            addressInfo.dong = i.dong
+            addressInfo.save()
+            print(addressInfo)
+        else:
+            print(i.gu, '데이터 존재!! 기존 데이터 수정::>>')
+            addressInfo.si = i.si
+            addressInfo.gu = i.gu
+            addressInfo.dong = i.dong
+            addressInfo.save()
+            print(addressInfo)
+
+    print('initialAddressInfo done')
+    return HttpResponse('initialAddressInfo done')
+
+
+@csrf_exempt
+def updateAvgAddressInfo(request):
+    '''
+    addressInfo 테이블에 평균 월세, 보증금업데이트
+    :param request:
+    :return:
+    '''
+    queryString = '''
+        SELECT gu, dong, avg(rentalFee) as rentalFee, avg(deposit) as deposit, count(houseNumber_id) as cnt
+        FROM dataProcess_address A
+        LEFT OUTER JOIN dataProcess_costrecord B
+        ON A.areaCode = left(B.houseNumber_id, 10)
+        GROUP BY dong
+        ORDER BY gu, dong
+    '''
+    querySet = Average.objects.raw(queryString)  # 각 동별 평균 월세, 보증금 계산
+
+    print('querySet:>> ', querySet)
+
+    for i in querySet:
+        addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
+        addressInfo.avgDeposit = i.deposit
+        addressInfo.avgRentalFee = i.rentalFee
+        addressInfo.itemCnt = i.cnt
+        addressInfo.save()
+        print(addressInfo)
+
+    print('updateAvgAddressInfo done')
+    return HttpResponse('updateAvgAddressInfo done')
+
+
+# dummyData ↓↓↓
+@csrf_exempt
+def getDummyDataForDH(request):
+    dummyData = '''
+            {
+      "": [
+        {
+          "rank": 1,
+          "address": "서울시 강북구 번동",
+          "latitude": 37.641421,
+          "longitude": 127.030254
+        },
+        {
+          "rank": 2,
+          "address": "서울특별시 송파구 잠실본동",
+          "latitude": 37.507262,
+          "longitude": 127.08339
+        },
+        {
+          "rank": 3,
+          "address": "서울 종로구 종로5길",
+          "latitude": 37.590827,
+          "longitude": 126.978347
+        },
+        {
+          "rank": 4,
+          "address": "서울 광진구 아차산로33길 21-5",
+          "latitude": 37.541336,
+          "longitude": 127.06765
+        },
+        {
+          "rank": 5,
+          "address": "서울 성북구 보문로34길",
+          "latitude": 37.507262,
+          "longitude": 127.015587
+        },
+        {
+          "rank": 6,
+          "address": "서울 강남구 삼성로104길 23 성지빌딩",
+          "latitude": 37.51132,
+          "longitude": 127.054379
+        },
+        {
+          "rank": 7,
+          "address": "서울 강북구 월계로7나길 50",
+          "latitude": 37.61316,
+          "longitude": 127.029252
+        },
+        {
+          "rank": 8,
+          "address": "서울 광진구 동일로18길 52",
+          "latitude": 37.539101,
+          "longitude": 127.065628
+        },
+        {
+          "rank": 9,
+          "address": "서울 종로구 북촌로4길 19 1층",
+          "latitude": 37.579424,
+          "longitude": 126.984057
+        },
+        {
+          "rank": 10,
+          "address": "서울 성동구 서울숲2길 40-7 1층 엘더버거",
+          "latitude": 37.546264,
+          "longitude": 127.040826
+        }
+      ]
+    }
+    '''
+
+    return HttpResponse(dummyData)
+
+
+# dummyData ↑↑↑
 
 ########################## ↑↑↑↑↑↑↑↑ ############################
 
 
 # ########################### ↓↓↓↓테스트 코드↓↓↓↓ ###########################
 @csrf_exempt
-def testQuery(request, division, term, gu=None):
+def testQuery(request):
+    queryString = '''
+        SELECT gu, dong, avg(rentalFee) as rentalFee, avg(deposit) as deposit
+        FROM dataProcess_address A
+        LEFT OUTER JOIN dataProcess_costrecord B
+        ON A.areaCode = left(B.houseNumber_id, 10)
+        GROUP BY dong
+        ORDER BY dong
     '''
-    :param request:
-    :param division: rent면 월세, depo면 보증금 추이 차트 리딩
-    :param term: 몇 개월 간의 데이터를 보여줄지 정하는 변수
-    :param gu: 있으면 해당 구의 차트 데이터 리딩
-    :return: 정렬된 구, 월세, 보증금 리스트를 담은 JSON을 리턴
-    '''
+    querySet = Average.objects.raw(queryString)  # 각 동별 평균 월세, 보증금 계산
 
-    if gu is None:
-        print("서울시 기준 ::: ")
-        queryString = '''
-        SELECT EXTRACT(YEAR_MONTH FROM `day`) as date, avg(rentalFee) as avg_rentalFee, avg(deposit) as avg_deposit
-        FROM dataProcess_costrecord
-        WHERE day >= DATE_ADD(NOW(), INTERVAL -12 MONTH)
-        GROUP BY date
-        ORDER BY date;
-        '''
-    else:
-        print("%s 기준 ::: " % gu)
-        queryString = '''
-        SELECT EXTRACT(YEAR_MONTH FROM `day`) as date, avg(rentalFee) as avg_rentalFee, avg(deposit) as avg_deposit
-        FROM dataProcess_costrecord A
-        LEFT JOIN dataProcess_address B
-        ON LEFT(A.houseNumber_id, 10) = B.areaCode
-        WHERE day >= DATE_ADD(NOW(), INTERVAL -12 MONTH) AND gu = '%s'
-        GROUP BY date
-        ORDER BY date
-        ''' % gu
-    print("querySet ::: ", queryString)
-    querySet = TrendChartData.objects.raw(queryString)
-
-    dataList = []
-    avgRentalFeeList = []
-    avgDepositList = []
+    print('querySet:>> ', querySet)
 
     for i in querySet:
-        dataList.append(i.date)
-        avgRentalFeeList.append(i.avg_rentalFee)
-        avgDepositList.append(i.avg_deposit)
-        print(i.date, i.avg_rentalFee, i.avg_deposit)
+        addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
+        addressInfo.avgDeposit = i.deposit
+        addressInfo.avgRentalFee = i.rentalFee
+        addressInfo.save()
+        print(addressInfo)
 
-    avgRentalFeeList = list(map(str, avgRentalFeeList))  # Decimal 형태의 index들을 단순 string으로 변환
-    avgDepositList = list(map(str, avgDepositList))  # Decimal 형태의 index들을 단순 string으로 변환
-
-    json_data = OrderedDict()
-    json_data['dataList'] = dataList[-term:]
-    if division == 'rent':
-        json_data['avgRentalFeeList'] = avgRentalFeeList[-term:]
-    elif division == 'depo':
-        json_data['avgDepositList'] = avgDepositList[-term:]
-
-    return myJsonResponse(json_data)
+    print('addingAvgAddressInfo done')
+    return HttpResponse('addingAvgAddressInfo done')
 
 
 # def testQuery2(request):  # 각 구별 월세, 보증금 데이터 읽기.

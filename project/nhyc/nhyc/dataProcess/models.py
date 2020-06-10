@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Member(models.Model):
     id = models.CharField(max_length=50, primary_key=True)
     email = models.EmailField(max_length=300)
@@ -8,6 +9,7 @@ class Member(models.Model):
 
     def __str__(self):
         return self.id
+
 
 class Gu(models.Model):
     areaCode = models.CharField(max_length=10, primary_key=True)
@@ -18,6 +20,7 @@ class Gu(models.Model):
 
     def __str__(self):
         return self.areaCode
+
 
 class Address(models.Model):
     areaCode = models.CharField(max_length=10, primary_key=True)
@@ -30,6 +33,7 @@ class Address(models.Model):
     def __str__(self):
         return self.areaCode
 
+
 class MemberInfo(models.Model):
     member = models.OneToOneField('Member', on_delete=models.CASCADE, default=None)
     gender = models.CharField(max_length=1, null=True)
@@ -38,6 +42,7 @@ class MemberInfo(models.Model):
 
     def __str__(self):
         return self.id
+
 
 class FrequentPlace(models.Model):
     placeId = models.IntegerField(primary_key=True)
@@ -50,6 +55,7 @@ class FrequentPlace(models.Model):
     def __str__(self):
         return self.placeName
 
+
 class HouseInfo(models.Model):
     houseNumber = models.CharField(max_length=19, primary_key=True)
     latitude = models.FloatField()
@@ -61,6 +67,7 @@ class HouseInfo(models.Model):
     def __str__(self):
         return self.houseName
 
+
 class CostRecord(models.Model):
     costRecordId = models.CharField(max_length=25, primary_key=True, default="0")
     houseNumber = models.ForeignKey('HouseInfo', on_delete=models.CASCADE)
@@ -71,6 +78,7 @@ class CostRecord(models.Model):
     def __str__(self):
         return [self.day, self.rentalFee, self.deposit]
 
+
 class CCTV(models.Model):
     cctvId = models.AutoField(primary_key=True)
     latitude = models.FloatField()
@@ -79,6 +87,7 @@ class CCTV(models.Model):
 
     def __str__(self):
         return [self.latitude, self.longitude]
+
 
 class SecurityLight(models.Model):
     lightId = models.AutoField(primary_key=True)
@@ -89,6 +98,7 @@ class SecurityLight(models.Model):
     def __str__(self):
         return [self.latitude, self.longitude]
 
+
 class PoliceOffice(models.Model):
     policeId = models.AutoField(primary_key=True)
     latitude = models.FloatField()
@@ -98,6 +108,7 @@ class PoliceOffice(models.Model):
 
     def __str__(self):
         return self.policeOfficeName
+
 
 class Park(models.Model):
     parkId = models.AutoField(primary_key=True)
@@ -120,6 +131,7 @@ class Market(models.Model):
     def __str__(self):
         return self.marketName
 
+
 class Pharmacy(models.Model):
     pharmacyId = models.AutoField(primary_key=True)
     latitude = models.FloatField()
@@ -129,6 +141,7 @@ class Pharmacy(models.Model):
 
     def __str__(self):
         return self.pharmacyName
+
 
 class CulturalFacility(models.Model):
     culturalFacilityId = models.AutoField(primary_key=True)
@@ -140,6 +153,7 @@ class CulturalFacility(models.Model):
     def __str__(self):
         return self.culturalFacilityName
 
+
 class Library(models.Model):
     libraryId = models.AutoField(primary_key=True)
     latitude = models.FloatField()
@@ -149,6 +163,7 @@ class Library(models.Model):
 
     def __str__(self):
         return self.libraryName
+
 
 class ConcertHall(models.Model):
     concertHallId = models.AutoField(primary_key=True)
@@ -160,6 +175,7 @@ class ConcertHall(models.Model):
     def __str__(self):
         return self.concertHallName
 
+
 class Gym(models.Model):
     gymId = models.AutoField(primary_key=True)
     latitude = models.FloatField()
@@ -169,3 +185,26 @@ class Gym(models.Model):
 
     def __str__(self):
         return self.gymName
+
+
+class AddressInfo(models.Model):
+    areaCode = models.CharField(max_length=10, primary_key=True)
+    si = models.CharField(max_length=50)
+    gu = models.CharField(max_length=50)
+    dong = models.CharField(max_length=50)
+    avgRentalFee = models.FloatField(null=True)
+    avgDeposit = models.FloatField(null=True)
+    itemCnt = models.IntegerField(null=True)
+    totCCTV = models.IntegerField(null=True)
+    totPolice = models.IntegerField(null=True)
+    totLight = models.IntegerField(null=True)
+    totPharmacy = models.IntegerField(null=True)
+    totMarket = models.IntegerField(null=True)
+    totPark = models.IntegerField(null=True)
+    totGym = models.IntegerField(null=True)
+    totConcertHall = models.IntegerField(null=True)
+    totLibrary = models.IntegerField(null=True)
+    totCulturalFacility = models.IntegerField(null=True)
+
+    def __str__(self):
+        return self.areaCode

@@ -302,15 +302,15 @@ def getRankingChartData(request, division, gu=None):
                 totDeposit += float(i.avgDeposit) * int(i.itemCnt)
                 totRentalFee += float(i.avgRentalFee) * int(i.itemCnt)
                 totCnt += i.itemCnt
-            rentalFeeList.append(totRentalFee / totCnt)
-            depositList.append(totDeposit / totCnt)
+            rentalFeeList.append(int(totRentalFee / totCnt))
+            depositList.append(int(totDeposit / totCnt))
 
     else:
         querySet = AddressInfo.objects.filter(gu=gu)
         for i in querySet:
             guList.append(i.dong)
-            depositList.append(i.avgDeposit)
-            rentalFeeList.append(i.avgRentalFee)
+            depositList.append(int(i.avgDeposit))
+            rentalFeeList.append(int(i.avgRentalFee))
 
     print(guList)
     print(depositList)

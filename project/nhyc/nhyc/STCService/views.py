@@ -285,57 +285,52 @@ def getRankingChartData(request, division, gu=None):
     :return: 정렬된 구, 월세, 보증금 리스트를 담은 JSON을 리턴
     '''
 
-    if gu is None:
-        print("서울시 기준 ::: ")
-        queryString = '''
-        SELECT gu , avg(rentalFee) as rentalFee, avg(deposit) as deposit
-        FROM dataProcess_address A
-        LEFT OUTER JOIN dataProcess_costrecord B
-        ON A.areaCode = left(B.houseNumber_id, 10)
-        GROUP BY gu
-        ORDER BY gu
-        '''
-
-    else:
-        print("%s 기준 ::: " % gu)
-        queryString = '''
-        SELECT dong as gu, avg(rentalFee) as rentalFee, avg(deposit) as deposit
-        FROM dataProcess_address A
-        LEFT OUTER JOIN dataProcess_costrecord B
-        ON A.areaCode = left(B.houseNumber_id, 10)
-        WHERE gu = '%s'
-        GROUP BY dong
-        ORDER BY dong
-        ''' % gu
-
-    querySet = Average.objects.raw(queryString)
-
     guList = []
     rentalFeeList = []
     depositList = []
 
-    for i in querySet:
-        guList.append(i.gu)
-        rentalFeeList.append(i.rentalFee)
-        depositList.append(i.deposit)
+    if gu is None:
+        for gu in seoulGu:
+            totDeposit = float(0)
+            totRentalFee = float(0)
+            totCnt = int()
+            guList.append(gu)
+            print(guList)
+            querySet = AddressInfo.objects.filter(gu=gu)
 
+            for i in querySet:
+                totDeposit += float(i.avgDeposit) * int(i.itemCnt)
+                totRentalFee += float(i.avgRentalFee) * int(i.itemCnt)
+                totCnt += i.itemCnt
+            rentalFeeList.append(totRentalFee / totCnt)
+            depositList.append(totDeposit / totCnt)
+
+    else:
+        querySet = AddressInfo.objects.filter(gu=gu)
+        for i in querySet:
+            guList.append(i.dong)
+            depositList.append(i.avgDeposit)
+            rentalFeeList.append(i.avgRentalFee)
+
+    print(guList)
+    print(depositList)
+    print(rentalFeeList)
+    # 받은 데이터를 기준으로 pandas.DataFrame 객체 생성
     data = {'gu': guList,
             'rentalFee': rentalFeeList,
             'deposit': depositList}
+
     rentalFeeRank = pandas.DataFrame(data)
 
     if division == 'rent':
-        # 월세 기준
         print('월세 기준 >> :::')
         rentalFeeRank['rank'] = rentalFeeRank['rentalFee'].rank(method='min', ascending=True)  # 낮은 가격순으로 순위 저장
         rentalFeeRank.sort_values(by=['rentalFee'], axis=0, inplace=True, ascending=True)  # 낮은 순위부터 정렬
     elif division == 'depo':
-        # 보증금 기준
         print('보증금 기준 >> :::')
         rentalFeeRank['rank'] = rentalFeeRank['deposit'].rank(method='min', ascending=True)  # 낮은 가격순으로 순위 저장
         rentalFeeRank.sort_values(by=['deposit'], axis=0, inplace=True, ascending=True)  # 낮은 순위부터 정렬
     elif division == 'rent-depo':
-        # 월세 1년치(12개월) + 보증금 기준
         print('월세 1년치(12개월) + 보증금 기준 >> :::')
         rentalFeeRank['year-rent'] = rentalFeeRank['rentalFee'] * 12  # 12개월치 월세
         rentalFeeRank['rent-deposit'] = rentalFeeRank['year-rent'] + rentalFeeRank['deposit']  # 12개월치 월세 + 보증금
@@ -344,13 +339,9 @@ def getRankingChartData(request, division, gu=None):
     else:
         return JsonResponse(data.errors, status=400)
 
-    print(rentalFeeRank)
-
     guList = rentalFeeRank['gu'].tolist()
-    rentalFeeList = rentalFeeRank['rentalFee'].tolist()
-    depositList = rentalFeeRank['deposit'].tolist()
-    rentalFeeList = list(map(str, rentalFeeList))  # Decimal 형태의 index들을 단순 string으로 변환
-    depositList = list(map(str, depositList))  # Decimal 형태의 index들을 단순 string으로 변환
+    rentalFeeList = list(map(str, rentalFeeRank['rentalFee'].tolist()))
+    depositList = list(map(str, rentalFeeRank['deposit'].tolist()))
 
     json_data = OrderedDict()
     json_data['gu'] = guList
@@ -860,6 +851,9 @@ def initialAddressInfo(request):
             addressInfo.si = i.si
             addressInfo.gu = i.gu
             addressInfo.dong = i.dong
+            addressInfo.avgRentalFee = 0
+            addressInfo.avgDeposit = 0
+            addressInfo.itemCnt = 0
             addressInfo.save()
             print(addressInfo)
         else:
@@ -867,6 +861,9 @@ def initialAddressInfo(request):
             addressInfo.si = i.si
             addressInfo.gu = i.gu
             addressInfo.dong = i.dong
+            addressInfo.avgRentalFee = 0
+            addressInfo.avgDeposit = 0
+            addressInfo.itemCnt = 0
             addressInfo.save()
             print(addressInfo)
 
@@ -882,11 +879,13 @@ def updateAvgAddressInfo(request):
     :return:
     '''
     queryString = '''
-        SELECT gu, dong, avg(rentalFee) as rentalFee, avg(deposit) as deposit, count(houseNumber_id) as cnt
-        FROM dataProcess_address A
-        LEFT OUTER JOIN dataProcess_costrecord B
-        ON A.areaCode = left(B.houseNumber_id, 10)
-        GROUP BY dong
+        select  gu, dong, avg(rentalFee) as rentalFee, avg(deposit) as deposit, count(houseNumber_id) as cnt
+        from dataProcess_costrecord A
+        left join dataProcess_houseinfo B
+        on A.houseNumber_id = B.houseNumber
+        left join dataProcess_address C
+        on B.areaCode_id = C.areaCode
+        GROUP BY gu, dong
         ORDER BY gu, dong
     '''
     querySet = Average.objects.raw(queryString)  # 각 동별 평균 월세, 보증금 계산
@@ -985,28 +984,123 @@ def getDummyDataForDH(request):
 
 # ########################### ↓↓↓↓테스트 코드↓↓↓↓ ###########################
 @csrf_exempt
-def testQuery(request):
-    queryString = '''
-        SELECT gu, dong, avg(rentalFee) as rentalFee, avg(deposit) as deposit
-        FROM dataProcess_address A
-        LEFT OUTER JOIN dataProcess_costrecord B
-        ON A.areaCode = left(B.houseNumber_id, 10)
-        GROUP BY dong
-        ORDER BY dong
+def testQuery(request, division, gu=None):
     '''
-    querySet = Average.objects.raw(queryString)  # 각 동별 평균 월세, 보증금 계산
+    :param request:
+    :param division: rent면 월세기준, depo면 보증금 기준, rent-depo면 월세*12 + 보증금 기준
+    :param gu: 있으면 해당 구의 차트 데이터 리딩
+    :return: 정렬된 구, 월세, 보증금 리스트를 담은 JSON을 리턴
+    '''
 
-    print('querySet:>> ', querySet)
+    guList = []
+    rentalFeeList = []
+    depositList = []
 
-    for i in querySet:
-        addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
-        addressInfo.avgDeposit = i.deposit
-        addressInfo.avgRentalFee = i.rentalFee
-        addressInfo.save()
-        print(addressInfo)
+    if gu is None:
+        for gu in seoulGu:
+            totDeposit = float(0)
+            totRentalFee = float(0)
+            totCnt = int()
+            guList.append(gu)
+            print(guList)
+            querySet = AddressInfo.objects.filter(gu=gu)
 
-    print('addingAvgAddressInfo done')
-    return HttpResponse('addingAvgAddressInfo done')
+            for i in querySet:
+                totDeposit += float(i.avgDeposit) * int(i.itemCnt)
+                totRentalFee += float(i.avgRentalFee) * int(i.itemCnt)
+                totCnt += i.itemCnt
+            rentalFeeList.append(totRentalFee / totCnt)
+            depositList.append(totDeposit / totCnt)
+
+    else:
+        querySet = AddressInfo.objects.filter(gu=gu)
+        for i in querySet:
+            guList.append(i.dong)
+            depositList.append(i.avgDeposit)
+            rentalFeeList.append(i.avgRentalFee)
+
+    print(guList)
+    print(depositList)
+    print(rentalFeeList)
+    # 받은 데이터를 기준으로 pandas.DataFrame 객체 생성
+    data = {'gu': guList,
+            'rentalFee': rentalFeeList,
+            'deposit': depositList}
+
+    rentalFeeRank = pandas.DataFrame(data)
+
+    if division == 'rent':
+        print('월세 기준 >> :::')
+        rentalFeeRank['rank'] = rentalFeeRank['rentalFee'].rank(method='min', ascending=True)  # 낮은 가격순으로 순위 저장
+        rentalFeeRank.sort_values(by=['rentalFee'], axis=0, inplace=True, ascending=True)  # 낮은 순위부터 정렬
+    elif division == 'depo':
+        print('보증금 기준 >> :::')
+        rentalFeeRank['rank'] = rentalFeeRank['deposit'].rank(method='min', ascending=True)  # 낮은 가격순으로 순위 저장
+        rentalFeeRank.sort_values(by=['deposit'], axis=0, inplace=True, ascending=True)  # 낮은 순위부터 정렬
+    elif division == 'rent-depo':
+        print('월세 1년치(12개월) + 보증금 기준 >> :::')
+        rentalFeeRank['year-rent'] = rentalFeeRank['rentalFee'] * 12  # 12개월치 월세
+        rentalFeeRank['rent-deposit'] = rentalFeeRank['year-rent'] + rentalFeeRank['deposit']  # 12개월치 월세 + 보증금
+        rentalFeeRank['rank'] = rentalFeeRank['rent-deposit'].rank(method='min', ascending=True)  # 낮은 가격순으로 순위 저장
+        rentalFeeRank.sort_values(by=['deposit'], axis=0, inplace=True, ascending=True)  # 낮은 순위부터 정렬
+    else:
+        return JsonResponse(data.errors, status=400)
+
+    guList = rentalFeeRank['gu'].tolist()
+    rentalFeeList = list(map(str, rentalFeeRank['rentalFee'].tolist()))
+    depositList = list(map(str, rentalFeeRank['deposit'].tolist()))
+
+    json_data = OrderedDict()
+    json_data['gu'] = guList
+    json_data['rentalFee'] = rentalFeeList
+    json_data['deposit'] = depositList
+
+    return myJsonResponse(json_data)
+
+    # for i in querySet:
+    #     guList.append(i.gu)
+    #     rentalFeeList.append(i.rentalFee)
+    #     depositList.append(i.deposit)
+    #
+    # data = {'gu': guList,
+    #         'rentalFee': rentalFeeList,
+    #         'deposit': depositList}
+    # rentalFeeRank = pandas.DataFrame(data)
+    #
+    # if division == 'rent':
+    #     # 월세 기준
+    #     print('월세 기준 >> :::')
+    #     rentalFeeRank['rank'] = rentalFeeRank['rentalFee'].rank(method='min', ascending=True)  # 낮은 가격순으로 순위 저장
+    #     rentalFeeRank.sort_values(by=['rentalFee'], axis=0, inplace=True, ascending=True)  # 낮은 순위부터 정렬
+    # elif division == 'depo':
+    #     # 보증금 기준
+    #     print('보증금 기준 >> :::')
+    #     rentalFeeRank['rank'] = rentalFeeRank['deposit'].rank(method='min', ascending=True)  # 낮은 가격순으로 순위 저장
+    #     rentalFeeRank.sort_values(by=['deposit'], axis=0, inplace=True, ascending=True)  # 낮은 순위부터 정렬
+    # elif division == 'rent-depo':
+    #     # 월세 1년치(12개월) + 보증금 기준
+    #     print('월세 1년치(12개월) + 보증금 기준 >> :::')
+    #     rentalFeeRank['year-rent'] = rentalFeeRank['rentalFee'] * 12  # 12개월치 월세
+    #     rentalFeeRank['rent-deposit'] = rentalFeeRank['year-rent'] + rentalFeeRank['deposit']  # 12개월치 월세 + 보증금
+    #     rentalFeeRank['rank'] = rentalFeeRank['rent-deposit'].rank(method='min', ascending=True)  # 낮은 가격순으로 순위 저장
+    #     rentalFeeRank.sort_values(by=['deposit'], axis=0, inplace=True, ascending=True)  # 낮은 순위부터 정렬
+    # else:
+    #     return JsonResponse(data.errors, status=400)
+    #
+    # print(rentalFeeRank)
+    #
+    # guList = rentalFeeRank['gu'].tolist()
+    # rentalFeeList = rentalFeeRank['rentalFee'].tolist()
+    # depositList = rentalFeeRank['deposit'].tolist()
+    # rentalFeeList = list(map(str, rentalFeeList))  # Decimal 형태의 index들을 단순 string으로 변환
+    # depositList = list(map(str, depositList))  # Decimal 형태의 index들을 단순 string으로 변환
+    #
+    # json_data = OrderedDict()
+    # json_data['gu'] = guList
+    # json_data['rentalFee'] = rentalFeeList
+    # json_data['deposit'] = depositList
+    #
+    # return myJsonResponse(json_data)
 
 
 # def testQuery2(request):  # 각 구별 월세, 보증금 데이터 읽기.

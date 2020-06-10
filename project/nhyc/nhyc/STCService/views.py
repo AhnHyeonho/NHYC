@@ -881,7 +881,7 @@ def updateAvgAddressInfo(request):
         FROM dataProcess_costrecord A
         LEFT OUTER JOIN dataProcess_address B
         ON left(A.houseNumber_id, 10) = B.areaCode
-        GROUP BY dong
+        GROUP BY gu, dong
         ORDER BY gu, dong
     '''
     querySet = Average.objects.raw(queryString)  # 각 동별 평균 월세, 보증금 계산

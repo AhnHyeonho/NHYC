@@ -841,8 +841,9 @@ def updateTotsAddressInfo(request):
 
 # dummyData ↓↓↓
 @csrf_exempt
-def getDummyDataForDH(request):
-    dummyData = '''
+def getDummyDataForDH(request, div):
+    if div == 1:
+        dummyData1 = '''
             {
       "": [
         {
@@ -908,13 +909,8 @@ def getDummyDataForDH(request):
       ]
     }
     '''
-
-    return HttpResponse(dummyData)
-
-
-@csrf_exempt
-def getDummyDataForDH2(request):
-    dummyData = '''
+    elif div == 1:
+        dummyData = '''
                     [
                     {
           "labels": [
@@ -1020,31 +1016,28 @@ def getDummyDataForDH2(request):
         ]
 
     '''
-
-    return HttpResponse(dummyData)
-
-
-@csrf_exempt
-def getDummyDataForDH3(request):
-    dummyData = '''
-        [
-                    {
-          "labels": [
-            "교통",
-            "월세",
-            "보증금",
-            "문화",
-            "치안"
-          ],
-          "username": "김다현",
-          "traffic": 54,
-          "monthly": 47,
-          "deposit": 34,
-          "culture": 24,
-          "police": 64
-        }
-        ]
-    '''
+    elif div == 1:
+        dummyData = '''
+            [
+                        {
+              "labels": [
+                "교통",
+                "월세",
+                "보증금",
+                "문화",
+                "치안"
+              ],
+              "username": "김다현",
+              "traffic": 54,
+              "monthly": 47,
+              "deposit": 34,
+              "culture": 24,
+              "police": 64
+            }
+            ]
+        '''
+    else:
+        return HttpResponse("잘못된 url입력입니다.")
 
     return HttpResponse(dummyData)
 

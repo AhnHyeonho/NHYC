@@ -233,7 +233,7 @@ def getSecurityLight(request, filename=None):
                     content = content.decode("utf-8")
 
                     geocode = json.loads(content)
-                    if geocode["meta"]["count"] != 0:
+                    if "meta" in geocode and geocode["meta"]["count"] != 0:
                         latitude = geocode["addresses"][0]["y"]
                         longitude = geocode["addresses"][0]["x"]
                         addressSplit = geocode["addresses"][0]["jibunAddress"].split()
@@ -771,6 +771,7 @@ def getBus(request, start = 1):
                             bus.save()
         if len(datas) < 1000:
             break;
+        print(start)
         start = start + 1000
         end = end + 1000
 

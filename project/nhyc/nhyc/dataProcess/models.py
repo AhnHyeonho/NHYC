@@ -230,3 +230,16 @@ class AddressInfo(models.Model):
 
     def __str__(self):
         return self.areaCode
+
+class Subway(models.Model):
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    subwayName = models.CharField(max_length=50)
+    line = models.CharField(max_length=50)
+    areaCode = models.ForeignKey("Address", on_delete=models.CASCADE)
+
+class Bus(models.Model):
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    stationName = models.CharField(max_length=50)
+    areaCode = models.ForeignKey("Address", on_delete=models.CASCADE)

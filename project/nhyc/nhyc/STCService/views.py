@@ -1314,7 +1314,6 @@ def getPoliceOfficeInfosByGu(gu=None):  # 입력한 gu에 있는 경찰시설 �
 
 ##################### ↑↑↑↑ 당장에 안쓰는 메소드 ↑↑↑↑ #####################
 
-
 ######################### Login ####################################
 
 def kakaoJoin(request):
@@ -1378,12 +1377,12 @@ def join(request):
             setattr(memberInfo, "age_range", age_range)
 
         if "rentalFee" in request.headers:
-            money = request.headers["rentalFee"]
-            setattr(memberInfo, "rentalFee", money)
+            rentalFee = request.headers["rentalFee"]
+            setattr(memberInfo, "rentalFee", rentalFee)
 
         if "deposit" in request.headers:
-            money = request.headers["deposit"]
-            setattr(memberInfo, "deposit", money)
+            deposit = request.headers["deposit"]
+            setattr(memberInfo, "deposit", deposit)
 
         memberInfo.save()
 

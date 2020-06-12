@@ -37,6 +37,9 @@ urlpatterns = [
     path('admin/libraries', dpviews.getLibrary, name='getLibrary'),
     path('admin/concerthalls', dpviews.getConcertHall, name='getConcertHall'),
     path('admin/gyms', dpviews.getGym, name='getGym'),
+    path('admin/subway', dpviews.getSubway, name='getSubway'),
+    path('admin/bus', dpviews.getBus, name='getBus'),
+    path('admin/bus/<int:start>', dpviews.getBus, name='getBus'),
     path('kakaojoin', stcViews.kakaoJoin, name='kakaoJoin'),
     path('count/<str:id>/<str:category>/<int:milliseconds>', stcViews.count, name='count'),
     path('join', stcViews.join, name='join'),
@@ -92,8 +95,6 @@ urlpatterns = [
     path('test/<str:division>/<str:gu>', stcViews.testQuery),
     # path('test/<str:division>/', stcViews.testQuery),
     # path('test/<str:division>/<str:gu>', stcViews.testQuery),
-
-
 
     # dummy data => 추후 삭제
     path('dummyData/', stcViews.getDummyDataForDH),

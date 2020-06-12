@@ -139,7 +139,7 @@ export default function Login({ authenticated, login, location }) {
                                     Forgot password?
               </Link> */}
                         </Grid>
-                        <Grid item style={{ "margin-top": "10px" }}>
+                        <Grid item>
                             <Link href="/signup" variant="body2">
                                 {"Don't have an account? Sign Up"}
                             </Link>

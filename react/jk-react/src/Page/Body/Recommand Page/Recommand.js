@@ -35,7 +35,7 @@ class Recommand extends React.Component {
                 <div className="recommand-page-section-title">
                     <div className="decorate-bar" />
                     <span className="blank" />
-                    <span className="title"> <span className="accent-name">사용자</span> <span className="blank" />님에게 적합한 거주 지역 추천</span>
+                    <span className="title"> <span className="accent-name">김다현</span> <span className="blank" />님에게 적합한 거주 지역 추천</span>
                 </div>
 
 

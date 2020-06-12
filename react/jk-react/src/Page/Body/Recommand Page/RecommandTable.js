@@ -134,8 +134,7 @@ export default function RecommandTable(props) {
                 // loading 상태를 true 로 바꿈
                 setLoading(true);
                 const response = await axios.get(
-
-                    'http://ec2-52-78-44-165.ap-northeast-2.compute.amazonaws.com:8000/dummyData/'
+                    'http://ec2-52-78-44-165.ap-northeast-2.compute.amazonaws.com:8000/dummyData/1'
                 );
 
                 const resData = response.data[""]
@@ -155,7 +154,6 @@ export default function RecommandTable(props) {
 
                 });
 
-                console.log(rows);
 
 
             } catch (e) {
@@ -177,9 +175,6 @@ export default function RecommandTable(props) {
     if (error) return <div>에러가 발생했습니다</div>;
     // if (!users) return null;
 
-
-
-    console.log(rows);
 
     return (
 

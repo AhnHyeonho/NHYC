@@ -1099,8 +1099,7 @@ def getDummyDataForDH(request, div):
     elif div == 3:
         print('div = 3 ::')
         dummyData = '''
-            [
-                        {
+           {
               "labels": [
                 "교통",
                 "월세",
@@ -1108,14 +1107,15 @@ def getDummyDataForDH(request, div):
                 "문화",
                 "치안"
               ],
-              "username": "김다현",
-              "traffic": 54,
-              "monthly": 47,
-              "deposit": 34,
-              "culture": 24,
-              "police": 64
+              "username": "김다현”,
+              “dataset”: [
+                "traffic": 54,
+                "monthly": 47,
+                "deposit": 34,
+                "culture": 24,
+                "police": 64
+              ]	
             }
-            ]
         '''
     else:
         return HttpResponse("잘못된 url입력입니다.")

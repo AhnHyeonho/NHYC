@@ -44,6 +44,7 @@ class MemberInfo(models.Model):
     def __str__(self):
         return self.member.id
 
+
 class MemberTrend(models.Model):
     member = models.OneToOneField('Member', on_delete=models.CASCADE, default=None)
     budget = models.IntegerField(default=0)
@@ -55,16 +56,18 @@ class MemberTrend(models.Model):
     def __str__(self):
         return self.member.id
 
+
 class TrendBySession(models.Model):
     sessionId = models.CharField(max_length=255, primary_key=True)
     budget = models.IntegerField(default=0)
     safety = models.IntegerField(default=0)
     life = models.IntegerField(default=0)
     culture = models.IntegerField(default=0)
-    transportation =models.IntegerField(default=0)
+    transportation = models.IntegerField(default=0)
 
     def __str__(self):
         return self.member.id
+
 
 class FrequentPlace(models.Model):
     placeId = models.IntegerField(primary_key=True)
@@ -227,6 +230,16 @@ class AddressInfo(models.Model):
     totConcertHall = models.IntegerField(null=True)
     totLibrary = models.IntegerField(null=True)
     totCulturalFacility = models.IntegerField(null=True)
+    rateCCTV = models.FloatField(null=True)
+    ratePolice = models.FloatField(null=True)
+    rateLight = models.FloatField(null=True)
+    ratePharmacy = models.FloatField(null=True)
+    rateMarket = models.FloatField(null=True)
+    ratePark = models.FloatField(null=True)
+    rateGym = models.FloatField(null=True)
+    rateConcertHall = models.FloatField(null=True)
+    rateLibrary = models.FloatField(null=True)
+    rateCulturalFacility = models.FloatField(null=True)
 
     def __str__(self):
         return self.areaCode

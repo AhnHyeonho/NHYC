@@ -49,6 +49,7 @@ urlpatterns = [
     path('admin/updateAvgAddressInfo', stcViews.updateAvgAddressInfo),
     path('admin/updateBubbleChartData', stcViews.updateBubbleChartData),
     path('admin/updateTotsAddressInfo', stcViews.updateTotsAddressInfo),
+    path('admin/updateRatesAddressInfo', stcViews.updateRatesAddressInfo),  # api 추가하면 완성
 
     path('getGu/', stcViews.getGu),
     path('getDong/<str:gu>/', stcViews.getDong),
@@ -99,9 +100,7 @@ urlpatterns = [
     # path('test/<str:division>/<str:gu>', stcViews.testQuery),
 
     # dummy data => 추후 삭제
-    path('dummyData1/', stcViews.getDummyDataForDH),
-    path('dummyData2/', stcViews.getDummyDataForDH2),
-    path('dummyData3/', stcViews.getDummyDataForDH3),
+    path('dummyData/<int:div>', stcViews.getDummyDataForDH),
     # dummy data => 추후 삭제
     # <-- 현호추가
 

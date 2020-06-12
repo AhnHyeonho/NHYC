@@ -389,7 +389,7 @@ def getSubwayCnt(request, gu=None, dong=None):
     if gu is None:
         print('시 지하철역 데이터 출력')
         querySet = AddressInfo.objects.values('gu').annotate(totalCnt=Sum('totSubway')).values('gu',
-                                                                                                'totalCnt').order_by(
+                                                                                               'totalCnt').order_by(
             'gu')
     else:
         if dong is None:
@@ -420,7 +420,7 @@ def getBusCnt(request, gu=None, dong=None):
     if gu is None:
         print('시 버스정류장 데이터 출력')
         querySet = AddressInfo.objects.values('gu').annotate(totalCnt=Sum('totBus')).values('gu',
-                                                                                                'totalCnt').order_by(
+                                                                                            'totalCnt').order_by(
             'gu')
     else:
         if dong is None:
@@ -828,7 +828,7 @@ def updateTotsAddressInfo(request):
         addressInfo.totPolice = i.cnt
         addressInfo.save()
 
-    # SercurityLight
+    # SecurityLight
     querySet = Result_GuDongCnt.objects.raw('''
             select gu, dong, count(lightId) as cnt
             from dataProcess_address A
@@ -837,7 +837,7 @@ def updateTotsAddressInfo(request):
             group by gu, dong
             order by gu, dong
             ''')
-    print("SercurityLight querySet ::: ", querySet)
+    print("SecurityLight querySet ::: ", querySet)
     for i in querySet:
         addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
         addressInfo.totLight = i.cnt
@@ -943,6 +943,29 @@ def updateTotsAddressInfo(request):
             order by gu, dong
             ''')
     print("CulturalFacilsity querySet ::: ", querySet)
+
+    # Subway
+    querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(id) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_subway B
+                on A.areaCode = B.areaCode_id
+                group by gu, dong
+                order by gu, dong
+                ''')
+    print("Subway querySet ::: ", querySet)
+
+    # Bus
+    querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(id) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_bus B
+                on A.areaCode = B.areaCode_id
+                group by gu, dong
+                order by gu, dong
+                ''')
+    print("Bus querySet ::: ", querySet)
+
     for i in querySet:
         addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
         addressInfo.totCulturalFacility = i.cnt

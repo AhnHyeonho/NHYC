@@ -377,6 +377,68 @@ def getLibraryCnt(request, gu=None, dong=None):
 
 
 @csrf_exempt
+def getSubwayCnt(request, gu=None, dong=None):
+    '''
+    :param request:
+    :param gu:
+    :return: 서울시 내의 구들의 지하철역 갯수를 리턴. (구이름으로 정렬된 데이터)
+             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 지하철역 갯수를 리턴 (동이름으로 정렬된 데이터)
+             만약 dong값까지 입력되었다면 해당 동의 지하철역 갯수를 리턴 (값 1개)
+    '''
+    resultList = []
+    if gu is None:
+        print('시 지하철역 데이터 출력')
+        querySet = AddressInfo.objects.values('gu').annotate(totalCnt=Sum('totSubway')).values('gu',
+                                                                                                'totalCnt').order_by(
+            'gu')
+    else:
+        if dong is None:
+            print('{} 지하철역 데이터 출력'.format(gu))
+            querySet = AddressInfo.objects.filter(gu=gu).values('dong').annotate(totalCnt=Sum('totSubway')).order_by(
+                'dong')
+        else:
+            print('{} {} 지하철역 데이터 출력'.format(gu, dong))
+            querySet = AddressInfo.objects.filter(gu=gu, dong=dong).values('dong').annotate(
+                totalCnt=Sum('totSubway')).order_by('dong')
+    for i in querySet:
+        resultList.append(i['totalCnt'])
+        print(i['totalCnt'])
+
+    return myJsonResponse(resultList)
+
+
+@csrf_exempt
+def getBusCnt(request, gu=None, dong=None):
+    '''
+    :param request:
+    :param gu:
+    :return: 서울시 내의 구들의 버스정류장 갯수를 리턴. (구이름으로 정렬된 데이터)
+             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 버스정류장 갯수를 리턴 (동이름으로 정렬된 데이터)
+             만약 dong값까지 입력되었다면 해당 동의 버스정류장 갯수를 리턴 (값 1개)
+    '''
+    resultList = []
+    if gu is None:
+        print('시 버스정류장 데이터 출력')
+        querySet = AddressInfo.objects.values('gu').annotate(totalCnt=Sum('totBus')).values('gu',
+                                                                                                'totalCnt').order_by(
+            'gu')
+    else:
+        if dong is None:
+            print('{} 버스정류장 데이터 출력'.format(gu))
+            querySet = AddressInfo.objects.filter(gu=gu).values('dong').annotate(totalCnt=Sum('totBus')).order_by(
+                'dong')
+        else:
+            print('{} {} 버스정류장 데이터 출력'.format(gu, dong))
+            querySet = AddressInfo.objects.filter(gu=gu, dong=dong).values('dong').annotate(
+                totalCnt=Sum('totBus')).order_by('dong')
+    for i in querySet:
+        resultList.append(i['totalCnt'])
+        print(i['totalCnt'])
+
+    return myJsonResponse(resultList)
+
+
+@csrf_exempt
 def getCulturalFacilityCnt(request, gu=None, dong=None):
     '''
     :param request:

@@ -1,4 +1,5 @@
 import inspect
+import os
 from collections import OrderedDict
 
 from django.db.models.aggregates import Count
@@ -36,6 +37,8 @@ from dataProcess.models import AddressInfo
 from .models import Average, Result_GuCnt, Result_GuDongCnt, TrendChartData, BubbleChartData
 from dataProcess.models import MemberTrend
 from dataProcess.models import TrendBySession
+
+import nhyc.settings as settings
 
 # 서울시 행정구
 seoulGu = {'중구': '10100',
@@ -839,12 +842,11 @@ def updateRatesAddressInfo(request):
     '''
     각 항목별 지수 계산하는 함수
     '''
+    file_Path = os.path.join(settings.BASE_DIR, "STCService")
+    areaJsonData = json.loads(open(os.path.join(file_Path, "법정동별면적.json"), "r", encoding='utf8').read())
 
-    areaJsonData = json.loads('법정동별면적.json')
-
-    siArea = areaJsonData['전체']  # 임시 서울 시 전체 면적 :: api로 받아오자.
+    siArea = float(areaJsonData['전체'])  # 임시 서울 시 전체 면적 :: api로 받아오자.
     guArea = float()  # 임시 동 전체 면적
-
     totSumList = AddressInfo.objects.aggregate(
         Sum('totCCTV'),
         Sum('totPolice'),
@@ -860,58 +862,58 @@ def updateRatesAddressInfo(request):
     addressInfoQuerySet = AddressInfo.objects.all()
 
     for curDong in addressInfoQuerySet:
-        guArea = 1  # 1은 임시 데이터!! 여기서 curDong를가지고 api로 해당 guArea를 가져옴.
+        guArea = float(areaJsonData[curDong.gu][curDong.dong])  # 1은 임시 데이터!! 여기서 curDong를가지고 api로 해당 guArea를 가져옴.s
         # 그리고나서 각 항목들의 rate를 계산.
         if totSumList['totCCTV__sum'] == 0:
             curDong.rateCCTV = 0
         else:
-            curDong.rateCCTV = curDong.totCCTV * siArea / totSumList['totCCTV__sum'] / guArea  # 추가
+            curDong.rateCCTV = (curDong.totCCTV / guArea) / (totSumList['totCCTV__sum'] / siArea)
 
         if totSumList['totPolice__sum'] == 0:
             curDong.ratePolice = 0
         else:
-            curDong.ratePolice = curDong.totPolice * siArea / totSumList['totPolice__sum'] / guArea  # 추가
+            curDong.ratePolice = (curDong.totPolice / guArea) / (totSumList['totPolice__sum'] / siArea)
 
         if totSumList['totLight__sum'] == 0:
             curDong.rateLight = 0
         else:
-            curDong.rateLight = curDong.totLight * siArea / totSumList['totLight__sum'] / guArea  # 추가
+            curDong.rateLight = (curDong.totLight / guArea) / (totSumList['totLight__sum'] / siArea)
 
         if totSumList['totPharmacy__sum'] == 0:
             curDong.ratePharmacy = 0
         else:
-            curDong.ratePharmacy = curDong.totPharmacy * siArea / totSumList['totPharmacy__sum'] / guArea  # 추가
+            curDong.ratePharmacy = (curDong.totPharmacy / guArea) / (totSumList['totPharmacy__sum'] / siArea)
 
         if totSumList['totMarket__sum'] == 0:
             curDong.rateMarket = 0
         else:
-            curDong.rateMarket = curDong.totMarket * siArea / totSumList['totMarket__sum'] / guArea  # 추가
+            curDong.rateMarket = (curDong.totMarket / guArea) / (totSumList['totMarket__sum'] / siArea)
 
         if totSumList['totPark__sum'] == 0:
             curDong.ratePark = 0
         else:
-            curDong.ratePark = curDong.totPark * siArea / totSumList['totPark__sum'] / guArea  # 추가
+            curDong.ratePark = (curDong.totPark / guArea) / (totSumList['totPark__sum'] / siArea)
 
         if totSumList['totGym__sum'] == 0:
             curDong.rateGym = 0
         else:
-            curDong.rateGym = curDong.totGym * siArea / totSumList['totGym__sum'] / guArea  # 추가
+            curDong.rateGym = (curDong.totGym / guArea) / (totSumList['totGym__sum'] / siArea)
 
         if totSumList['totConcertHall__sum'] == 0:
             curDong.rateConcertHall = 0
         else:
-            curDong.rateConcertHall = curDong.totConcertHall * siArea / totSumList['totConcertHall__sum'] / guArea  # 추가
+            curDong.rateConcertHall = (curDong.totConcertHall / guArea) / (totSumList['totConcertHall__sum'] / siArea)
 
         if totSumList['totLibrary__sum'] == 0:
             curDong.rateLibrary = 0
         else:
-            curDong.rateLibrary = curDong.totLibrary * siArea / totSumList['totLibrary__sum'] / guArea  # 추가
+            curDong.rateLibrary = (curDong.totLibrary / guArea) / (totSumList['totLibrary__sum'] / siArea)
 
         if totSumList['totCulturalFacility__sum'] == 0:
             curDong.rateCulturalFacility = 0
         else:
-            curDong.rateCulturalFacility = curDong.totCulturalFacility * siArea / totSumList[
-                'totCulturalFacility__sum'] / guArea  # 추가
+            curDong.rateCulturalFacility = (curDong.totCulturalFacility / guArea) / (
+                        totSumList['totCulturalFacility__sum'] / siArea)
         curDong.save()
 
     return HttpResponse("updateRatesAddressInfo done")
@@ -1142,7 +1144,7 @@ def getDummyDataForDH(request, div):
 @csrf_exempt
 def testQuery(request):
     '''
-    각 항목별 지수 계산기
+    각 항목별 지수 계산기s
     '''
 
     # url = "http://"
@@ -1151,82 +1153,113 @@ def testQuery(request):
     # content = content.decode("utf-8")
     # jsonData = json.loads(content)
 
-    with open("법정동별면적.json", "r") as fp:
-        areaJsonData = json.load(fp)
-    print(areaJsonData)
+    file_Path = os.path.join(settings.BASE_DIR, "STCService")
+    areaJsonData = json.loads(open(os.path.join(file_Path, "법정동별면적.json"), "r", encoding='utf8').read())
 
-    # siArea = areaJsonData['전체']  # 임시 서울 시 전체 면적 :: api로 받아오자.
-    # guArea = float()  # 임시 동 전체 면적
-    #
-    # totSumList = AddressInfo.objects.aggregate(
-    #     Sum('totCCTV'),
-    #     Sum('totPolice'),
-    #     Sum('totLight'),
-    #     Sum('totPharmacy'),
-    #     Sum('totMarket'),
-    #     Sum('totPark'),
-    #     Sum('totGym'),
-    #     Sum('totConcertHall'),
-    #     Sum('totLibrary'),
-    #     Sum('totCulturalFacility'))
-    #
-    # addressInfoQuerySet = AddressInfo.objects.all()
-    #
-    # for curDong in addressInfoQuerySet:
-    #     guArea = areaJsonData[curDong.gu][curDong.dong]  # 1은 임시 데이터!! 여기서 curDong를가지고 api로 해당 guArea를 가져옴.
-    #     print(curDong, guArea)
-    #     # 그리고나서 각 항목들의 rate를 계산.
-    #     # if totSumList['totCCTV__sum'] == 0:
-    #     #     curDong.rateCCTV = 0
-    #     # else:
-    #     #     curDong.rateCCTV = curDong.totCCTV * siArea / totSumList['totCCTV__sum'] / guArea  # 추가
-    #     #
-    #     # if totSumList['totPolice__sum'] == 0:
-    #     #     curDong.ratePolice = 0
-    #     # else:
-    #     #     curDong.ratePolice = curDong.totPolice * siArea / totSumList['totPolice__sum'] / guArea  # 추가
-    #     #
-    #     # if totSumList['totLight__sum'] == 0:
-    #     #     curDong.rateLight = 0
-    #     # else:
-    #     #     curDong.rateLight = curDong.totLight * siArea / totSumList['totLight__sum'] / guArea  # 추가
-    #     #
-    #     # if totSumList['totPharmacy__sum'] == 0:
-    #     #     curDong.ratePharmacy = 0
-    #     # else:
-    #     #     curDong.ratePharmacy = curDong.totPharmacy * siArea / totSumList['totPharmacy__sum'] / guArea  # 추가
-    #     #
-    #     # if totSumList['totMarket__sum'] == 0:
-    #     #     curDong.rateMarket = 0
-    #     # else:
-    #     #     curDong.rateMarket = curDong.totMarket * siArea / totSumList['totMarket__sum'] / guArea  # 추가
-    #     #
-    #     # if totSumList['totPark__sum'] == 0:
-    #     #     curDong.ratePark = 0
-    #     # else:
-    #     #     curDong.ratePark = curDong.totPark * siArea / totSumList['totPark__sum'] / guArea  # 추가
-    #     #
-    #     # if totSumList['totGym__sum'] == 0:
-    #     #     curDong.rateGym = 0
-    #     # else:
-    #     #     curDong.rateGym = curDong.totGym * siArea / totSumList['totGym__sum'] / guArea  # 추가
-    #     #
-    #     # if totSumList['totConcertHall__sum'] == 0:
-    #     #     curDong.rateConcertHall = 0
-    #     # else:
-    #     #     curDong.rateConcertHall = curDong.totConcertHall * siArea / totSumList['totConcertHall__sum'] / guArea  # 추가
-    #     #
-    #     # if totSumList['totLibrary__sum'] == 0:
-    #     #     curDong.rateLibrary = 0
-    #     # else:
-    #     #     curDong.rateLibrary = curDong.totLibrary * siArea / totSumList['totLibrary__sum'] / guArea  # 추가
-    #     #
-    #     # if totSumList['totCulturalFacility__sum'] == 0:
-    #     #     curDong.rateCulturalFacility = 0
-    #     # else:
-    #     #     curDong.rateCulturalFacility = curDong.totCulturalFacility * siArea / totSumList[
-    #     #         'totCulturalFacility__sum'] / guArea  # 추가
-    #     # curDong.save()
+    siArea = float(areaJsonData['전체'])  # 임시 서울 시 전체 면적 :: api로 받아오자.
+    guArea = float()  # 임시 동 전체 면적
+
+    totSumList = AddressInfo.objects.aggregate(
+        Sum('totCCTV'),
+        Sum('totPolice'),
+        Sum('totLight'),
+        Sum('totPharmacy'),
+        Sum('totMarket'),
+        Sum('totPark'),
+        Sum('totGym'),
+        Sum('totConcertHall'),
+        Sum('totLibrary'),
+        Sum('totCulturalFacility'))
+
+    addressInfoQuerySet = AddressInfo.objects.all()
+
+    for curDong in addressInfoQuerySet:
+        guArea = float(areaJsonData[curDong.gu][curDong.dong])  # 1은 임시 데이터!! 여기서 curDong를가지고 api로 해당 guArea를 가져옴.
+        # print(curDong.gu, curDong.dong, guArea)
+        if totSumList['totCCTV__sum'] == 0:
+            curDong.rateCCTV = 0
+        else:
+            curDong.rateCCTV = (curDong.totCCTV / guArea) / (totSumList['totCCTV__sum'] / siArea)
+            print(
+                '{} {}!! curDong.totCCTV :: {} // totSumList[totCCTV__sum] :: {} // guArea :: {} // siArea :: {}'.format(
+                    curDong.gu, curDong.dong, curDong.totCCTV, totSumList['totCCTV__sum'], guArea, siArea))
+
+        if totSumList['totPolice__sum'] == 0:
+            curDong.ratePolice = 0
+        else:
+            curDong.ratePolice = (curDong.totPolice / guArea) / (totSumList['totPolice__sum'] / siArea)
+            print(
+                '{} {}!! curDong.totPolice :: {} // totSumList[totPolice__sum] :: {} // guArea :: {} // siArea :: {}'.format(
+                    curDong.gu, curDong.dong, curDong.totPolice, totSumList['totPolice__sum'], guArea, siArea))
+
+        if totSumList['totLight__sum'] == 0:
+            curDong.rateLight = 0
+        else:
+            curDong.rateLight = (curDong.totLight / guArea) / (totSumList['totLight__sum'] / siArea)
+            print(
+                '{} {}!! curDong.totLight :: {} // totSumList[totLight__sum] :: {} // guArea :: {} // siArea :: {}'.format(
+                    curDong.gu, curDong.dong, curDong.totLight, totSumList['totLight__sum'], guArea, siArea))
+
+        if totSumList['totPharmacy__sum'] == 0:
+            curDong.ratePharmacy = 0
+        else:
+            curDong.ratePharmacy = (curDong.totPharmacy / guArea) / (totSumList['totPharmacy__sum'] / siArea)
+            print(
+                '{} {}!! curDong.totPharmacy :: {} // totSumList[totPharmacy__sum] :: {} // guArea :: {} // siArea :: {}'.format(
+                    curDong.gu, curDong.dong, curDong.totPharmacy, totSumList['totPharmacy__sum'], guArea, siArea))
+
+        if totSumList['totMarket__sum'] == 0:
+            curDong.rateMarket = 0
+        else:
+            curDong.rateMarket = (curDong.totMarket / guArea) / (totSumList['totMarket__sum'] / siArea)
+            print(
+                '{} {}!! curDong.totMarket :: {} // totSumList[totMarket__sum] :: {} // guArea :: {} // siArea :: {}'.format(
+                    curDong.gu, curDong.dong, curDong.totMarket, totSumList['totMarket__sum'], guArea, siArea))
+
+        if totSumList['totPark__sum'] == 0:
+            curDong.ratePark = 0
+        else:
+            curDong.ratePark = (curDong.totPark / guArea) / (totSumList['totPark__sum'] / siArea)
+            print(
+                '{} {}!! curDong.totPark :: {} // totSumList[totPark__sum] :: {} // guArea :: {} // siArea :: {}'.format(
+                    curDong.gu, curDong.dong, curDong.totPark, totSumList['totPark__sum'], guArea, siArea))
+
+        if totSumList['totGym__sum'] == 0:
+            curDong.rateGym = 0
+        else:
+            curDong.rateGym = (curDong.totGym / guArea) / (totSumList['totGym__sum'] / siArea)
+            print(
+                '{} {}!! curDong.totGym :: {} // totSumList[totGym__sum] :: {} // guArea :: {} // siArea :: {}'.format(
+                    curDong.gu, curDong.dong, curDong.totGym, totSumList['totGym__sum'], guArea, siArea))
+
+        if totSumList['totConcertHall__sum'] == 0:
+            curDong.rateConcertHall = 0
+        else:
+            curDong.rateConcertHall = (curDong.totConcertHall / guArea) / (totSumList['totConcertHall__sum'] / siArea)
+            print(
+                '{} {}!! curDong.totConcertHall :: {} // totSumList[totConcertHall__sum] :: {} // guArea :: {} // siArea :: {}'.format(
+                    curDong.gu, curDong.dong, curDong.totConcertHall, totSumList['totConcertHall__sum'], guArea,
+                    siArea))
+
+        if totSumList['totLibrary__sum'] == 0:
+            curDong.rateLibrary = 0
+        else:
+            curDong.rateLibrary = (curDong.totLibrary / guArea) / (totSumList['totLibrary__sum'] / siArea)
+            print(
+                '{} {}!! curDong.totLibrary :: {} // totSumList[totLibrary__sum] :: {} // guArea :: {} // siArea :: {}'.format(
+                    curDong.gu, curDong.dong, curDong.totLibrary, totSumList['totLibrary__sum'], guArea, siArea))
+
+        if totSumList['totCulturalFacility__sum'] == 0:
+            curDong.rateCulturalFacility = 0
+        else:
+            curDong.rateCulturalFacility = (curDong.totCulturalFacility / guArea) / (
+                        totSumList['totCulturalFacility__sum'] / siArea)
+            print(
+                '{} {}!! curDong.totCulturalFacility :: {} // totSumList[totCulturalFacility__sum] :: {} // guArea :: {} // siArea :: {}'.format(
+                    curDong.gu, curDong.dong, curDong.totCulturalFacility, totSumList['totCulturalFacility__sum'],
+                    guArea, siArea))
+
+        curDong.save()
 
     return HttpResponse("updateRatesAddressInfo done")
 

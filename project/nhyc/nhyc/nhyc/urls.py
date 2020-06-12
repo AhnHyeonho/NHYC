@@ -49,6 +49,7 @@ urlpatterns = [
     path('admin/updateAvgAddressInfo', stcViews.updateAvgAddressInfo),
     path('admin/updateBubbleChartData', stcViews.updateBubbleChartData),
     path('admin/updateTotsAddressInfo', stcViews.updateTotsAddressInfo),
+    path('admin/updateRatesAddressInfo', stcViews.updateRatesAddressInfo),  # api 추가하면 완성
 
     path('getGu/', stcViews.getGu),
     path('getDong/<str:gu>/', stcViews.getDong),

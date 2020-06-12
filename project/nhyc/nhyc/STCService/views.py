@@ -65,11 +65,6 @@ seoulGu = {'중구': '10100',
            '양천구': '10158'}
 
 
-##### 메모장..
-# for gu, gu_areaCode in seoulGu.items():  # Dict형 key, value읽어오기
-# query = 'SELECT * FROM myapp_person WHERE last_name = %s' % gu
-
-#####
 ########################## ↓↓↓↓↓↓↓↓ ############################
 @csrf_exempt
 def myJsonResponse(data):
@@ -839,11 +834,95 @@ def updateTotsAddressInfo(request):
     return HttpResponse("updateTotsAddressInfo done")
 
 
+@csrf_exempt
+def updateRatesAddressInfo(request):
+    '''
+    각 항목별 지수 계산하는 함수
+    '''
+
+    areaJsonData = json.loads('법정동별면적.json')
+
+    siArea = areaJsonData['전체']  # 임시 서울 시 전체 면적 :: api로 받아오자.
+    guArea = float()  # 임시 동 전체 면적
+
+    totSumList = AddressInfo.objects.aggregate(
+        Sum('totCCTV'),
+        Sum('totPolice'),
+        Sum('totLight'),
+        Sum('totPharmacy'),
+        Sum('totMarket'),
+        Sum('totPark'),
+        Sum('totGym'),
+        Sum('totConcertHall'),
+        Sum('totLibrary'),
+        Sum('totCulturalFacility'))
+
+    addressInfoQuerySet = AddressInfo.objects.all()
+
+    for curDong in addressInfoQuerySet:
+        guArea = 1  # 1은 임시 데이터!! 여기서 curDong를가지고 api로 해당 guArea를 가져옴.
+        # 그리고나서 각 항목들의 rate를 계산.
+        if totSumList['totCCTV__sum'] == 0:
+            curDong.rateCCTV = 0
+        else:
+            curDong.rateCCTV = curDong.totCCTV * siArea / totSumList['totCCTV__sum'] / guArea  # 추가
+
+        if totSumList['totPolice__sum'] == 0:
+            curDong.ratePolice = 0
+        else:
+            curDong.ratePolice = curDong.totPolice * siArea / totSumList['totPolice__sum'] / guArea  # 추가
+
+        if totSumList['totLight__sum'] == 0:
+            curDong.rateLight = 0
+        else:
+            curDong.rateLight = curDong.totLight * siArea / totSumList['totLight__sum'] / guArea  # 추가
+
+        if totSumList['totPharmacy__sum'] == 0:
+            curDong.ratePharmacy = 0
+        else:
+            curDong.ratePharmacy = curDong.totPharmacy * siArea / totSumList['totPharmacy__sum'] / guArea  # 추가
+
+        if totSumList['totMarket__sum'] == 0:
+            curDong.rateMarket = 0
+        else:
+            curDong.rateMarket = curDong.totMarket * siArea / totSumList['totMarket__sum'] / guArea  # 추가
+
+        if totSumList['totPark__sum'] == 0:
+            curDong.ratePark = 0
+        else:
+            curDong.ratePark = curDong.totPark * siArea / totSumList['totPark__sum'] / guArea  # 추가
+
+        if totSumList['totGym__sum'] == 0:
+            curDong.rateGym = 0
+        else:
+            curDong.rateGym = curDong.totGym * siArea / totSumList['totGym__sum'] / guArea  # 추가
+
+        if totSumList['totConcertHall__sum'] == 0:
+            curDong.rateConcertHall = 0
+        else:
+            curDong.rateConcertHall = curDong.totConcertHall * siArea / totSumList['totConcertHall__sum'] / guArea  # 추가
+
+        if totSumList['totLibrary__sum'] == 0:
+            curDong.rateLibrary = 0
+        else:
+            curDong.rateLibrary = curDong.totLibrary * siArea / totSumList['totLibrary__sum'] / guArea  # 추가
+
+        if totSumList['totCulturalFacility__sum'] == 0:
+            curDong.rateCulturalFacility = 0
+        else:
+            curDong.rateCulturalFacility = curDong.totCulturalFacility * siArea / totSumList[
+                'totCulturalFacility__sum'] / guArea  # 추가
+        curDong.save()
+
+    return HttpResponse("updateRatesAddressInfo done")
+
+
 # dummyData ↓↓↓
 @csrf_exempt
 def getDummyDataForDH(request, div):
     if div == 1:
-        dummyData1 = '''
+        print('div = 1 ::')
+        dummyData = '''
             {
       "": [
         {
@@ -909,7 +988,8 @@ def getDummyDataForDH(request, div):
       ]
     }
     '''
-    elif div == 1:
+    elif div == 2:
+        print('div = 2 ::')
         dummyData = '''
                     [
                     {
@@ -1016,7 +1096,8 @@ def getDummyDataForDH(request, div):
         ]
 
     '''
-    elif div == 1:
+    elif div == 3:
+        print('div = 3 ::')
         dummyData = '''
             [
                         {
@@ -1046,24 +1127,108 @@ def getDummyDataForDH(request, div):
 
 ########################## ↑↑↑↑↑↑↑↑ ############################
 
+##### 메모장..
+# for gu, gu_areaCode in seoulGu.items():  # Dict형 key, value읽어오기
+# query = 'SELECT * FROM myapp_person WHERE last_name = %s' % gu
+
+# group by 할 필드를 values안에 넣자.
+# querySet = AddressInfo.objects.values('gu').annotate(totalCnt=Sum('totCCTV')).values('totalCnt')
+
+# ORM 특정 필드의 SUM 구하기.
+# totSumList = AddressInfo.objects.aggregate(Sum('totCCTV'))
+##### 메모장..
 
 # ########################### ↓↓↓↓테스트 코드↓↓↓↓ ###########################
 @csrf_exempt
 def testQuery(request):
     '''
-    원하는 항목 찾기
+    각 항목별 지수 계산기
     '''
 
-    resultList = []
-    querySet = AddressInfo.objects.values('gu').annotate(totalCnt=Sum('totCCTV')).values('gu', 'totalCnt').order_by(
-        'gu')
-    querySet2 = AddressInfo.objects.filter(gu='노원구').values('dong').annotate(totalCnt=Sum('totCCTV')).order_by('dong')
-    for i in querySet:
-        resultList.append(i['totalCnt'])
-        print(i['totalCnt'])
-        # print("gu: {} :: totCCTV: {}".format(i['gu'], i['totCCTV']))
+    # url = "http://"
+    # finalurl = url + str(start) + "/" + str(start + 999)
+    # response, content = http.request(finalurl, "GET")
+    # content = content.decode("utf-8")
+    # jsonData = json.loads(content)
 
-    return myJsonResponse(resultList)
+    with open("법정동별면적.json", "r") as fp:
+        areaJsonData = json.load(fp)
+    print(areaJsonData)
+
+    # siArea = areaJsonData['전체']  # 임시 서울 시 전체 면적 :: api로 받아오자.
+    # guArea = float()  # 임시 동 전체 면적
+    #
+    # totSumList = AddressInfo.objects.aggregate(
+    #     Sum('totCCTV'),
+    #     Sum('totPolice'),
+    #     Sum('totLight'),
+    #     Sum('totPharmacy'),
+    #     Sum('totMarket'),
+    #     Sum('totPark'),
+    #     Sum('totGym'),
+    #     Sum('totConcertHall'),
+    #     Sum('totLibrary'),
+    #     Sum('totCulturalFacility'))
+    #
+    # addressInfoQuerySet = AddressInfo.objects.all()
+    #
+    # for curDong in addressInfoQuerySet:
+    #     guArea = areaJsonData[curDong.gu][curDong.dong]  # 1은 임시 데이터!! 여기서 curDong를가지고 api로 해당 guArea를 가져옴.
+    #     print(curDong, guArea)
+    #     # 그리고나서 각 항목들의 rate를 계산.
+    #     # if totSumList['totCCTV__sum'] == 0:
+    #     #     curDong.rateCCTV = 0
+    #     # else:
+    #     #     curDong.rateCCTV = curDong.totCCTV * siArea / totSumList['totCCTV__sum'] / guArea  # 추가
+    #     #
+    #     # if totSumList['totPolice__sum'] == 0:
+    #     #     curDong.ratePolice = 0
+    #     # else:
+    #     #     curDong.ratePolice = curDong.totPolice * siArea / totSumList['totPolice__sum'] / guArea  # 추가
+    #     #
+    #     # if totSumList['totLight__sum'] == 0:
+    #     #     curDong.rateLight = 0
+    #     # else:
+    #     #     curDong.rateLight = curDong.totLight * siArea / totSumList['totLight__sum'] / guArea  # 추가
+    #     #
+    #     # if totSumList['totPharmacy__sum'] == 0:
+    #     #     curDong.ratePharmacy = 0
+    #     # else:
+    #     #     curDong.ratePharmacy = curDong.totPharmacy * siArea / totSumList['totPharmacy__sum'] / guArea  # 추가
+    #     #
+    #     # if totSumList['totMarket__sum'] == 0:
+    #     #     curDong.rateMarket = 0
+    #     # else:
+    #     #     curDong.rateMarket = curDong.totMarket * siArea / totSumList['totMarket__sum'] / guArea  # 추가
+    #     #
+    #     # if totSumList['totPark__sum'] == 0:
+    #     #     curDong.ratePark = 0
+    #     # else:
+    #     #     curDong.ratePark = curDong.totPark * siArea / totSumList['totPark__sum'] / guArea  # 추가
+    #     #
+    #     # if totSumList['totGym__sum'] == 0:
+    #     #     curDong.rateGym = 0
+    #     # else:
+    #     #     curDong.rateGym = curDong.totGym * siArea / totSumList['totGym__sum'] / guArea  # 추가
+    #     #
+    #     # if totSumList['totConcertHall__sum'] == 0:
+    #     #     curDong.rateConcertHall = 0
+    #     # else:
+    #     #     curDong.rateConcertHall = curDong.totConcertHall * siArea / totSumList['totConcertHall__sum'] / guArea  # 추가
+    #     #
+    #     # if totSumList['totLibrary__sum'] == 0:
+    #     #     curDong.rateLibrary = 0
+    #     # else:
+    #     #     curDong.rateLibrary = curDong.totLibrary * siArea / totSumList['totLibrary__sum'] / guArea  # 추가
+    #     #
+    #     # if totSumList['totCulturalFacility__sum'] == 0:
+    #     #     curDong.rateCulturalFacility = 0
+    #     # else:
+    #     #     curDong.rateCulturalFacility = curDong.totCulturalFacility * siArea / totSumList[
+    #     #         'totCulturalFacility__sum'] / guArea  # 추가
+    #     # curDong.save()
+
+    return HttpResponse("updateRatesAddressInfo done")
 
 
 # def testQuery2(request):  # 각 구별 월세, 보증금 데이터 읽기.
@@ -1100,66 +1265,6 @@ def testQuery(request):
 
 
 # ########################### ↑↑↑↑테스트 코드↑↑↑↑ ###########################
-
-
-# @csrf_exempt
-# def testQuery(request, gu):  # areaCode입력 안 할 경우 전체 CCTV 검색
-#     if request.method == 'GET':
-#         resultArr = []  # HouseInfo들을 받아내는 최종 결과 배열
-#
-#         areaCodeArr = findGuAreaCodes(gu)
-#
-#         TOT = queryResult = HouseInfo.objects.filter(
-#             areaCode=areaCodeArr[0])
-#         for i in TOT:
-#             resultArr.append(i)  # 그 결과값들을 resultArr에 붙여서 저장한다.
-#
-#         for currentAreaCode in areaCodeArr[1:]:
-#             queryResult = HouseInfo.objects.filter(
-#                 areaCode=currentAreaCode)  # 해당 areaCode로 검색된 결과(HouseInfo)를 testInfos에 저장
-#             for i in queryResult:
-#                 resultArr.append(i)  # 그 결과값들을 resultArr에 붙여서 저장한다.
-#             TOT = TOT | queryResult
-#
-#     serializer = HouseInfoSerializer(TOT, many=True)
-#
-#     # print("TEST>>>>>>>>>>>>>>>>>>>>>>>>>>")
-#     # print(finalResult.get(gu).length)
-#     # print("TEST>>>>>>>>>>>>>>>>>>>>>>>>>>")
-#     finalResult = JsonResponse({gu: serializer.data}, safe=False)  # <class 'django.http.response.JsonResponse'>
-#
-#     return finalResult
-
-
-# @csrf_exempt
-# def houseInfos(request, areaCode=None):  # 거래된 주택 정보 리딩 메소드
-#     if request.method == 'GET':
-#         if areaCode is not None:
-#             query_set = HouseInfo.objects.filter(areaCode=areaCode)
-#             # print(areaCode.__class__)
-#         else:
-#             query_set = HouseInfo.objects.all()  # <class 'django.db.models.query.QuerySet'>
-#
-#         serializer = HouseInfoSerializer(query_set, many=True)  # <class 'rest_framework.serializers.ListSerializer'>
-#
-#         iterator = serializer.data
-#         number = 0
-#         for i in iterator:  # i 자체가 OrderedDict형
-#             number = number + 1
-#             print("%d // " % number)
-#             print(i)
-#
-#         print("serializer.data TYPE :: ")
-#         print(iterator.__class__)
-#         return JsonResponse(serializer.data, safe=False)  # << 이부분을 입맛에 따라 변경. 현재는 Json List 형식으로 리턴.
-#
-#     elif request.method == 'POST':
-#         data = JSONParser().parse(request)
-#         serializer = HouseInfoSerializer(data=data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return JsonResponse(serializer.data, status=201)
-#         return JsonResponse(serializer.errors, status=400)
 
 
 ##################### ↓↓↓↓ 당장에 안쓰는 메소드 ↓↓↓↓ #####################

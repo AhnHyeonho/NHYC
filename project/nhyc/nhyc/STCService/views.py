@@ -733,7 +733,7 @@ def updateBubbleChartData(request):
 @csrf_exempt
 def updateTotsAddressInfo(request):
     '''
-    update CCTV, PoliceOffice, SercurityLight, Pharmacy, Market, Park, Gym, ConcertHall, Library, CulturalFacility
+    update CCTV, PoliceOffice, SercurityLight, Pharmacy, Market, Park, Gym, ConcertHall, Library, CulturalFacility, Subway, Bus
     '''
 
     # CCTV
@@ -881,6 +881,36 @@ def updateTotsAddressInfo(request):
             order by gu, dong
             ''')
     print("CulturalFacilsity querySet ::: ", querySet)
+    for i in querySet:
+        addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
+        addressInfo.totCulturalFacility = i.cnt
+        addressInfo.save()
+
+    # Subway
+    querySet = Result_GuDongCnt.objects.raw('''
+            select gu, dong, count(id) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_subway B
+            on A.areaCode = B.areaCode_id
+            group by gu, dong
+            order by gu, dong
+            ''')
+    print("Subway querySet ::: ", querySet)
+    for i in querySet:
+        addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
+        addressInfo.totCulturalFacility = i.cnt
+        addressInfo.save()
+
+    # Bus
+    querySet = Result_GuDongCnt.objects.raw('''
+                select gu, dong, count(id) as cnt
+                from dataProcess_address A
+                left outer join dataProcess_bus B
+                on A.areaCode = B.areaCode_id
+                group by gu, dong
+                order by gu, dong
+                ''')
+    print("Bus querySet ::: ", querySet)
     for i in querySet:
         addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
         addressInfo.totCulturalFacility = i.cnt

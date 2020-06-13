@@ -230,6 +230,8 @@ class AddressInfo(models.Model):
     totConcertHall = models.IntegerField(null=True)
     totLibrary = models.IntegerField(null=True)
     totCulturalFacility = models.IntegerField(null=True)
+    totSubway = models.IntegerField(null=True)
+    totBus = models.IntegerField(null=True)
     rateCCTV = models.FloatField(null=True)
     ratePolice = models.FloatField(null=True)
     rateLight = models.FloatField(null=True)
@@ -240,6 +242,8 @@ class AddressInfo(models.Model):
     rateConcertHall = models.FloatField(null=True)
     rateLibrary = models.FloatField(null=True)
     rateCulturalFacility = models.FloatField(null=True)
+    rateSubway = models.FloatField(null=True)
+    rateBus = models.FloatField(null=True)
 
     def __str__(self):
         return self.areaCode

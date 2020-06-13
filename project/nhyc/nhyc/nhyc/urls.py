@@ -44,6 +44,7 @@ urlpatterns = [
     path('count/<str:id>/<str:category>/<int:milliseconds>', stcViews.count, name='count'),
     path('join', stcViews.join, name='join'),
     path('login', stcViews.login, name='login'),
+    path('recommend', stcViews.recommendation, name='recommendation'),
 
     # 현호추가 -->
 

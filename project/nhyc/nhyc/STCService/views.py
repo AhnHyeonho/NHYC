@@ -37,6 +37,8 @@ from dataProcess.models import AddressInfo
 from .models import Average, Result_GuCnt, Result_GuDongCnt, TrendChartData, BubbleChartData
 from dataProcess.models import MemberTrend
 from dataProcess.models import TrendBySession
+from dataProcess.models import RecommendedDong
+from dataProcess.models import Recommendation
 
 import nhyc.settings as settings
 
@@ -1523,3 +1525,33 @@ def count(request, id, category, milliseconds):
         return HttpResponse("count success")
 
     return HttpResponse("count failed : " + str(milliseconds) + " milliseconds in " + category + " category")
+
+def recommendation(request):
+    user = "hoyoon"
+    memberTrend = MemberTrend.objects.get(member_id=user)
+
+    trends = {"budget" : memberTrend.budget, "safety" : memberTrend.safety, "life" : memberTrend.life, "culture" : memberTrend.culture, "transportation" : memberTrend.transportation}
+
+    trendsSorted = sorted(trends.items(), key=(lambda x : x[1]), reverse=True)
+    points = setPoint(trendsSorted)
+
+
+
+
+    return HttpResponse("추천 끝")
+
+def setPoint(trendsSorted):
+    curTrend = trendsSorted[0][1]
+    cnt = 0
+    trendsPoints = {}
+    point = len(trendsSorted)
+    for trend in trendsSorted:
+        if trend[1] == curTrend:
+            cnt += 1
+        else:
+            curTrend = trend[1]
+            point -= cnt
+            cnt = 1
+        trendsPoints[trend[0]] = point
+
+    return trendsPoints

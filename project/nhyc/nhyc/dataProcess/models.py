@@ -56,6 +56,26 @@ class MemberTrend(models.Model):
     def __str__(self):
         return self.member.id
 
+class RecommendedDong(models.Model):
+    areaCode = models.ForeignKey('Address', on_delete=models.CASCADE)
+    pointOfBudget = models.FloatField()
+    pointOfSafety = models.FloatField()
+    pointOfLife = models.FloatField()
+    pointOfCulture = models.FloatField()
+    pointOfTransportation = models.FloatField()
+
+class Recommendation(models.Model):
+    member = models.ForeignKey('Member', on_delete=models.CASCADE)
+    pointOfBudget = models.FloatField()
+    pointOfSafety = models.FloatField()
+    pointOfLife = models.FloatField()
+    pointOfCulture = models.FloatField()
+    pointOfTransportation = models.FloatField()
+    dong1 = models.ForeignKey('RecommendedDong', on_delete=models.CASCADE, related_name="dong1")
+    dong2 = models.ForeignKey('RecommendedDong', on_delete=models.CASCADE, related_name="dong2")
+    dong3 = models.ForeignKey('RecommendedDong', on_delete=models.CASCADE, related_name="dong3")
+    dong4 = models.ForeignKey('RecommendedDong', on_delete=models.CASCADE, related_name="dong4")
+    dong5 = models.ForeignKey('RecommendedDong', on_delete=models.CASCADE, related_name="dong5")
 
 class TrendBySession(models.Model):
     sessionId = models.CharField(max_length=255, primary_key=True)

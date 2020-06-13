@@ -24,6 +24,8 @@ SECRET_KEY = 'hj3qrkf75k1ijble9mfila7m8gdi4pa&6dg)@!4cm07)l9)*@-'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+DATABASE_ROUTERS = ['router.AuthRouter']
+
 ALLOWED_HOSTS = ['*']
 
 # Application definition
@@ -91,6 +93,15 @@ DATABASES = {
         'USER': 'root',
         'PASSWORD': '1234',
         'HOST': 'localhost',
+        'PORT': '3306',
+        'OPTIONS': {'sql_mode': 'traditional'}
+    },
+    'remote': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'hanbangdb',
+        'USER': 'root',
+        'PASSWORD': '1234',
+        'HOST': '52.78.44.165',
         'PORT': '3306',
         'OPTIONS': {'sql_mode': 'traditional'}
     }

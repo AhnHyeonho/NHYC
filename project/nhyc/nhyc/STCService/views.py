@@ -815,13 +815,13 @@ def updateTotsAddressInfo(request):
 
     # PoliceOffice
     querySet = Result_GuDongCnt.objects.raw('''
-            select gu, dong, count(policeId) as cnt
-            from dataProcess_address A
-            left outer join dataProcess_policeoffice B
-            on A.areaCode = B.areaCode_id
-            group by gu, dong
-            order by gu, dong
-            ''')
+        select gu, dong, count(policeId) as cnt
+        from dataProcess_address A
+        left outer join dataProcess_policeoffice B
+        on A.areaCode = B.areaCode_id
+        group by gu, dong
+        order by gu, dong
+        ''')
     print("PoliceOffice querySet ::: ", querySet)
     for i in querySet:
         addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
@@ -830,13 +830,13 @@ def updateTotsAddressInfo(request):
 
     # SecurityLight
     querySet = Result_GuDongCnt.objects.raw('''
-            select gu, dong, count(lightId) as cnt
-            from dataProcess_address A
-            left outer join dataProcess_securitylight B
-            on A.areaCode = B.areaCode_id
-            group by gu, dong
-            order by gu, dong
-            ''')
+        select gu, dong, count(lightId) as cnt
+        from dataProcess_address A
+        left outer join dataProcess_securitylight B
+        on A.areaCode = B.areaCode_id
+        group by gu, dong
+        order by gu, dong
+        ''')
     print("SecurityLight querySet ::: ", querySet)
     for i in querySet:
         addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
@@ -845,13 +845,13 @@ def updateTotsAddressInfo(request):
 
     # Pharmacy
     querySet = Result_GuDongCnt.objects.raw('''
-            select gu, dong, count(pharmacyId) as cnt
-            from dataProcess_address A
-            left outer join dataProcess_pharmacy B
-            on A.areaCode = B.areaCode_id
-            group by gu, dong
-            order by gu, dong
-            ''')
+        select gu, dong, count(pharmacyId) as cnt
+        from dataProcess_address A
+        left outer join dataProcess_pharmacy B
+        on A.areaCode = B.areaCode_id
+        group by gu, dong
+        order by gu, dong
+        ''')
     print("Pharmacy querySet ::: ", querySet)
     for i in querySet:
         addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
@@ -860,13 +860,13 @@ def updateTotsAddressInfo(request):
 
     # Market
     querySet = Result_GuDongCnt.objects.raw('''
-            select gu, dong, count(marketId) as cnt
-            from dataProcess_address A
-            left outer join dataProcess_market B
-            on A.areaCode = B.areaCode_id
-            group by gu, dong
-            order by gu, dong
-            ''')
+        select gu, dong, count(marketId) as cnt
+        from dataProcess_address A
+        left outer join dataProcess_market B
+        on A.areaCode = B.areaCode_id
+        group by gu, dong
+        order by gu, dong
+        ''')
     print("Market querySet ::: ", querySet)
     for i in querySet:
         addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
@@ -875,13 +875,13 @@ def updateTotsAddressInfo(request):
 
     # Park
     querySet = Result_GuDongCnt.objects.raw('''
-            select gu, dong, count(parkId) as cnt
-            from dataProcess_address A
-            left outer join dataProcess_park B
-            on A.areaCode = B.areaCode_id
-            group by gu, dong
-            order by gu, dong
-            ''')
+        select gu, dong, count(parkId) as cnt
+        from dataProcess_address A
+        left outer join dataProcess_park B
+        on A.areaCode = B.areaCode_id
+        group by gu, dong
+        order by gu, dong
+        ''')
     print("Park querySet ::: ", querySet)
     for i in querySet:
         addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
@@ -890,13 +890,13 @@ def updateTotsAddressInfo(request):
 
     # Gym
     querySet = Result_GuDongCnt.objects.raw('''
-            select gu, dong, count(gymId) as cnt
-            from dataProcess_address A
-            left outer join dataProcess_gym B
-            on A.areaCode = B.areaCode_id
-            group by gu, dong
-            order by gu, dong
-            ''')
+        select gu, dong, count(gymId) as cnt
+        from dataProcess_address A
+        left outer join dataProcess_gym B
+        on A.areaCode = B.areaCode_id
+        group by gu, dong
+        order by gu, dong
+        ''')
     print("Gym querySet ::: ", querySet)
     for i in querySet:
         addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
@@ -905,13 +905,13 @@ def updateTotsAddressInfo(request):
 
     # ConcertHall
     querySet = Result_GuDongCnt.objects.raw('''
-            select gu, dong, count(concertHallId) as cnt
-            from dataProcess_address A
-            left outer join dataProcess_concerthall B
-            on A.areaCode = B.areaCode_id
-            group by gu, dong
-            order by gu, dong
-            ''')
+        select gu, dong, count(concertHallId) as cnt
+        from dataProcess_address A
+        left outer join dataProcess_concerthall B
+        on A.areaCode = B.areaCode_id
+        group by gu, dong
+        order by gu, dong
+        ''')
     print("ConcertHall querySet ::: ", querySet)
     for i in querySet:
         addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
@@ -920,13 +920,13 @@ def updateTotsAddressInfo(request):
 
     # Library
     querySet = Result_GuDongCnt.objects.raw('''
-            select gu, dong, count(libraryId) as cnt
-            from dataProcess_address A
-            left outer join dataProcess_library B
-            on A.areaCode = B.areaCode_id
-            group by gu, dong
-            order by gu, dong
-            ''')
+        select gu, dong, count(libraryId) as cnt
+        from dataProcess_address A
+        left outer join dataProcess_library B
+        on A.areaCode = B.areaCode_id
+        group by gu, dong
+        order by gu, dong
+        ''')
     print("Library querySet ::: ", querySet)
     for i in querySet:
         addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
@@ -935,37 +935,15 @@ def updateTotsAddressInfo(request):
 
     # CulturalFacility
     querySet = Result_GuDongCnt.objects.raw('''
-            select gu, dong, count(culturalFacilityId) as cnt
-            from dataProcess_address A
-            left outer join dataProcess_culturalfacility B
-            on A.areaCode = B.areaCode_id
-            group by gu, dong
-            order by gu, dong
-            ''')
+        select gu, dong, count(culturalFacilityId) as cnt
+        from dataProcess_address A
+        left outer join dataProcess_culturalfacility B
+        on A.areaCode = B.areaCode_id
+        group by gu, dong
+        order by gu, dong
+        ''')
     print("CulturalFacilsity querySet ::: ", querySet)
 
-    # Subway
-    querySet = Result_GuDongCnt.objects.raw('''
-            select gu, dong, count(id) as cnt
-            from dataProcess_address A
-            left outer join dataProcess_subway B
-            on A.areaCode = B.areaCode_id
-            group by gu, dong
-            order by gu, dong
-            ''')
-    print("Subway querySet ::: ", querySet)
-
-    # Bus
-    querySet = Result_GuDongCnt.objects.raw('''
-            select gu, dong, count(id) as cnt
-            from dataProcess_address A
-            left outer join dataProcess_bus B
-            on A.areaCode = B.areaCode_id
-            group by gu, dong
-            order by gu, dong
-            ''')
-    print("Bus querySet ::: ", querySet)
-
     for i in querySet:
         addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
         addressInfo.totCulturalFacility = i.cnt
@@ -973,32 +951,34 @@ def updateTotsAddressInfo(request):
 
     # Subway
     querySet = Result_GuDongCnt.objects.raw('''
-            select gu, dong, count(id) as cnt
-            from dataProcess_address A
-            left outer join dataProcess_subway B
-            on A.areaCode = B.areaCode_id
-            group by gu, dong
-            order by gu, dong
-            ''')
+        select gu, dong, count(id) as cnt
+        from dataProcess_address A
+        left outer join dataProcess_subway B
+        on A.areaCode = B.areaCode_id
+        group by gu, dong
+        order by gu, dong
+        ''')
     print("Subway querySet ::: ", querySet)
+
     for i in querySet:
         addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
-        addressInfo.totCulturalFacility = i.cnt
+        addressInfo.totSubway = i.cnt
         addressInfo.save()
 
     # Bus
     querySet = Result_GuDongCnt.objects.raw('''
-            select gu, dong, count(id) as cnt
-            from dataProcess_address A
-            left outer join dataProcess_bus B
-            on A.areaCode = B.areaCode_id
-            group by gu, dong
-            order by gu, dong
-            ''')
+        select gu, dong, count(id) as cnt
+        from dataProcess_address A
+        left outer join dataProcess_bus B
+        on A.areaCode = B.areaCode_id
+        group by gu, dong
+        order by gu, dong
+        ''')
     print("Bus querySet ::: ", querySet)
+
     for i in querySet:
         addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
-        addressInfo.totCulturalFacility = i.cnt
+        addressInfo.totBus = i.cnt
         addressInfo.save()
 
     return HttpResponse("updateTotsAddressInfo done")

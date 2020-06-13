@@ -946,24 +946,24 @@ def updateTotsAddressInfo(request):
 
     # Subway
     querySet = Result_GuDongCnt.objects.raw('''
-                select gu, dong, count(id) as cnt
-                from dataProcess_address A
-                left outer join dataProcess_subway B
-                on A.areaCode = B.areaCode_id
-                group by gu, dong
-                order by gu, dong
-                ''')
+            select gu, dong, count(id) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_subway B
+            on A.areaCode = B.areaCode_id
+            group by gu, dong
+            order by gu, dong
+            ''')
     print("Subway querySet ::: ", querySet)
 
     # Bus
     querySet = Result_GuDongCnt.objects.raw('''
-                select gu, dong, count(id) as cnt
-                from dataProcess_address A
-                left outer join dataProcess_bus B
-                on A.areaCode = B.areaCode_id
-                group by gu, dong
-                order by gu, dong
-                ''')
+            select gu, dong, count(id) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_bus B
+            on A.areaCode = B.areaCode_id
+            group by gu, dong
+            order by gu, dong
+            ''')
     print("Bus querySet ::: ", querySet)
 
     for i in querySet:
@@ -988,13 +988,13 @@ def updateTotsAddressInfo(request):
 
     # Bus
     querySet = Result_GuDongCnt.objects.raw('''
-                select gu, dong, count(id) as cnt
-                from dataProcess_address A
-                left outer join dataProcess_bus B
-                on A.areaCode = B.areaCode_id
-                group by gu, dong
-                order by gu, dong
-                ''')
+            select gu, dong, count(id) as cnt
+            from dataProcess_address A
+            left outer join dataProcess_bus B
+            on A.areaCode = B.areaCode_id
+            group by gu, dong
+            order by gu, dong
+            ''')
     print("Bus querySet ::: ", querySet)
     for i in querySet:
         addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
@@ -1024,63 +1024,88 @@ def updateRatesAddressInfo(request):
         Sum('totGym'),
         Sum('totConcertHall'),
         Sum('totLibrary'),
-        Sum('totCulturalFacility'))
+        Sum('totCulturalFacility'),
+        Sum('totBus'),
+        Sum('totSubway'))
 
     addressInfoQuerySet = AddressInfo.objects.all()
 
     for curDong in addressInfoQuerySet:
-        guArea = float(areaJsonData[curDong.gu][curDong.dong])  # 1은 임시 데이터!! 여기서 curDong를가지고 api로 해당 guArea를 가져옴.s
+        guArea = float(areaJsonData[curDong.gu][curDong.dong])  # 1은 임시 데이터!! 여기서 curDong를가지고 api로 해당 guArea를 가져옴.
         # 그리고나서 각 항목들의 rate를 계산.
+
+        # rateCCTV 계산
         if totSumList['totCCTV__sum'] == 0:
             curDong.rateCCTV = 0
         else:
             curDong.rateCCTV = (curDong.totCCTV / guArea) / (totSumList['totCCTV__sum'] / siArea)
 
+        # ratePolice 계산
         if totSumList['totPolice__sum'] == 0:
             curDong.ratePolice = 0
         else:
             curDong.ratePolice = (curDong.totPolice / guArea) / (totSumList['totPolice__sum'] / siArea)
 
+        # rateLight 계산
         if totSumList['totLight__sum'] == 0:
             curDong.rateLight = 0
         else:
             curDong.rateLight = (curDong.totLight / guArea) / (totSumList['totLight__sum'] / siArea)
 
+        # ratePharmacy 계산
         if totSumList['totPharmacy__sum'] == 0:
             curDong.ratePharmacy = 0
         else:
             curDong.ratePharmacy = (curDong.totPharmacy / guArea) / (totSumList['totPharmacy__sum'] / siArea)
 
+        # rateMarket 계산
         if totSumList['totMarket__sum'] == 0:
             curDong.rateMarket = 0
         else:
             curDong.rateMarket = (curDong.totMarket / guArea) / (totSumList['totMarket__sum'] / siArea)
 
+        # ratePark 계산
         if totSumList['totPark__sum'] == 0:
             curDong.ratePark = 0
         else:
             curDong.ratePark = (curDong.totPark / guArea) / (totSumList['totPark__sum'] / siArea)
 
+        # rateGym 계산
         if totSumList['totGym__sum'] == 0:
             curDong.rateGym = 0
         else:
             curDong.rateGym = (curDong.totGym / guArea) / (totSumList['totGym__sum'] / siArea)
 
+        # rateConcertHall 계산
         if totSumList['totConcertHall__sum'] == 0:
             curDong.rateConcertHall = 0
         else:
             curDong.rateConcertHall = (curDong.totConcertHall / guArea) / (totSumList['totConcertHall__sum'] / siArea)
 
+        # rateLibrary 계산
         if totSumList['totLibrary__sum'] == 0:
             curDong.rateLibrary = 0
         else:
             curDong.rateLibrary = (curDong.totLibrary / guArea) / (totSumList['totLibrary__sum'] / siArea)
 
+        # rateCulturalFacility 계산
         if totSumList['totCulturalFacility__sum'] == 0:
             curDong.rateCulturalFacility = 0
         else:
             curDong.rateCulturalFacility = (curDong.totCulturalFacility / guArea) / (
                     totSumList['totCulturalFacility__sum'] / siArea)
+
+        # rateBus 계산
+        if totSumList['totBus__sum'] == 0:
+            curDong.rateBus = 0
+        else:
+            curDong.rateBus = (curDong.totBus / guArea) / (totSumList['totBus__sum'] / siArea)
+
+        # rateSubway 계산
+        if totSumList['totSubway__sum'] == 0:
+            curDong.rateSubway = 0
+        else:
+            curDong.rateSubway = (curDong.totSubway / guArea) / (totSumList['totSubway__sum'] / siArea)
         curDong.save()
 
     return HttpResponse("updateRatesAddressInfo done")

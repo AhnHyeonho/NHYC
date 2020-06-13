@@ -1,5 +1,6 @@
 import inspect
 import os
+from sklearn.preprocessing import MinMaxScaler
 from collections import OrderedDict
 from django.db.models.aggregates import Count
 from django.db.models.query import QuerySet, RawQuerySet
@@ -1089,6 +1090,79 @@ def updateRatesAddressInfo(request):
             curDong.rateSubway = (curDong.totSubway / guArea) / (totSumList['totSubway__sum'] / siArea)
         curDong.save()
 
+    print("rate 가공 시작 ::")
+    addressInfoQuerySet = AddressInfo.objects.all()
+
+    guList = []
+    dongList = []
+    rateCCTVList = []
+    ratePoliceList = []
+    rateLightList = []
+    ratePharmacyList = []
+    rateMarketList = []
+    rateParkList = []
+    rateGymList = []
+    rateConcertHallList = []
+    rateLibraryList = []
+    rateCulturalFacilityList = []
+    rateSubwayList = []
+    rateBusList = []
+
+    for i in addressInfoQuerySet:
+        guList.append(i.gu)
+        dongList.append(i.dong)
+        rateCCTVList.append(i.rateCCTV)
+        ratePoliceList.append(i.ratePolice)
+        rateLightList.append(i.rateLight)
+        ratePharmacyList.append(i.ratePharmacy)
+        rateMarketList.append(i.rateMarket)
+        rateParkList.append(i.ratePark)
+        rateGymList.append(i.rateGym)
+        rateConcertHallList.append(i.rateConcertHall)
+        rateLibraryList.append(i.rateLibrary)
+        rateCulturalFacilityList.append(i.rateCulturalFacility)
+        rateSubwayList.append(i.rateSubway)
+        rateBusList.append(i.rateBus)
+
+    data = {
+        'rateCCTV': rateCCTVList,
+        'ratePolice': ratePoliceList,
+        'rateLight': rateLightList,
+        'ratePharmacy': ratePharmacyList,
+        'rateMarket': rateMarketList,
+        'ratePark': rateParkList,
+        'rateGym': rateGymList,
+        'rateConcertHall': rateConcertHallList,
+        'rateLibrary': rateLibraryList,
+        'rateCulturalFacility': rateCulturalFacilityList,
+        'rateSubway': rateSubwayList,
+        'rateBus': rateBusList
+    }
+    df = pandas.DataFrame(data, index=[guList, dongList])
+
+    df2 = df.copy()
+    df2[:] = MinMaxScaler().fit_transform(df2[:])  # 정규화 진행
+
+    for i in range(0, len(df2)):
+        curRow = df2.iloc[i]
+        print('구: {} // 동: {} rateData Update ::'.format(curRow.name[0], curRow.name[1]))
+        changeQuery, created = AddressInfo.objects.get_or_create(gu=curRow.name[0], dong=curRow.name[1])
+        changeQuery.rateCCTV = curRow.rateCCTV
+        changeQuery.ratePolice = curRow.ratePolice
+        changeQuery.rateLight = curRow.rateLight
+        changeQuery.ratePharmacy = curRow.ratePharmacy
+        changeQuery.rateMarket = curRow.rateMarket
+        changeQuery.ratePark = curRow.ratePark
+        changeQuery.rateGym = curRow.rateGym
+        changeQuery.rateConcertHall = curRow.rateConcertHall
+        changeQuery.rateLibrary = curRow.rateLibrary
+        changeQuery.rateCulturalFacility = curRow.rateCulturalFacility
+        changeQuery.rateSubway = curRow.rateSubway
+        changeQuery.rateBus = curRow.rateBus
+        changeQuery.save()
+
+        print('rate 가공 완료')
+
     return HttpResponse("updateRatesAddressInfo done")
 
 
@@ -1320,56 +1394,7 @@ def testQuery(request):
     각 항목별 지수 계산기
     '''
 
-    addressInfoQuerySet = AddressInfo.objects.all()
-
-    guList = []
-    dongList = []
-    totCCTVList = []
-    totPoliceList = []
-    totLightList = []
-    totPharmacyList = []
-    totMarketList = []
-    totParkList = []
-    totGymList = []
-    totConcertHallList = []
-    totLibraryList = []
-    totCulturalFacilityList = []
-
-    for i in addressInfoQuerySet:
-        guList.append(i.gu)
-        dongList.append(i.dong)
-        totCCTVList.append(i.totCCTV)
-        totPoliceList.append(i.totPolice)
-        totLightList.append(i.totLight)
-        totPharmacyList.append(i.totPharmacy)
-        totMarketList.append(i.totMarket)
-        totParkList.append(i.totPark)
-        totGymList.append(i.totGym)
-        totConcertHallList.append(i.totConcertHall)
-        totLibraryList.append(i.totLibrary)
-        totCulturalFacilityList.append(i.totCulturalFacility)
-
-    data = {
-        'totCCTV': totCCTVList,
-        'totPolice': totPoliceList,
-        'totLight': totLightList,
-        'totPharmacy': totPharmacyList,
-        'totMarket': totMarketList,
-        'totPark': totParkList,
-        'totGym': totGymList,
-        'totConcertHall': totConcertHallList,
-        'totLibrary': totLibraryList,
-        'totCulturalFacility': totCulturalFacilityList
-    }
-
-    df = pandas.DataFrame(data, index=dongList)
-    # from sklearn.preprocessing import MinMaxScaler
-    #
-    # scaler = MinMaxScaler()
-    # df2 = df.copy()
-    #
-    # for i in df:
-    #     print(df)
+    return HttpResponse('testQuery Done')
 
 
 # print(i.gu, i.dong, i.totCCTV, i.totLight)
@@ -1726,19 +1751,19 @@ def count(request, id, category, milliseconds):
 
     return HttpResponse("count failed : " + str(milliseconds) + " milliseconds in " + category + " category")
 
+
 def recommendation(request):
     user = "hoyoon"
     memberTrend = MemberTrend.objects.get(member_id=user)
 
-    trends = {"budget" : memberTrend.budget, "safety" : memberTrend.safety, "life" : memberTrend.life, "culture" : memberTrend.culture, "transportation" : memberTrend.transportation}
+    trends = {"budget": memberTrend.budget, "safety": memberTrend.safety, "life": memberTrend.life,
+              "culture": memberTrend.culture, "transportation": memberTrend.transportation}
 
-    trendsSorted = sorted(trends.items(), key=(lambda x : x[1]), reverse=True)
+    trendsSorted = sorted(trends.items(), key=(lambda x: x[1]), reverse=True)
     points = setPoint(trendsSorted)
 
-
-
-
     return HttpResponse("추천 끝")
+
 
 def setPoint(trendsSorted):
     curTrend = trendsSorted[0][1]

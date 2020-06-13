@@ -113,9 +113,15 @@ def getCCTVCnt(request, gu=None, dong=None):
         querySet = AddressInfo.objects.values('gu').annotate(totalCnt=Sum('totCCTV')).values('gu', 'totalCnt').order_by(
             'gu')
     else:
-        print('{} cctv 데이터 출력'.format(gu))
-        querySet = AddressInfo.objects.filter(gu=gu).values('dong').annotate(totalCnt=Sum('totCCTV')).order_by(
-            'dong')
+        if dong is None:
+            print('{} cctv 데이터 출력'.format(gu))
+            querySet = AddressInfo.objects.filter(gu=gu).values('dong').annotate(totalCnt=Sum('totCCTV')).order_by(
+                'dong')
+        else:
+            print('{} {} cctv 데이터 출력'.format(gu, dong))
+            querySet = AddressInfo.objects.filter(gu=gu, dong=dong).values('dong').annotate(
+                totalCnt=Sum('totCCTV')).order_by('dong')
+
     for i in querySet:
         resultList.append(i['totalCnt'])
         print(i['totalCnt'])
@@ -139,9 +145,14 @@ def getSecurityLightCnt(request, gu=None, dong=None):
                                                                                               'totalCnt').order_by(
             'gu')
     else:
-        print('{} 보안등 데이터 출력'.format(gu))
-        querySet = AddressInfo.objects.filter(gu=gu).values('dong').annotate(totalCnt=Sum('totLight')).order_by(
-            'dong')
+        if dong is None:
+            print('{} 보안등 데이터 출력'.format(gu))
+            querySet = AddressInfo.objects.filter(gu=gu).values('dong').annotate(totalCnt=Sum('totLight')).order_by(
+                'dong')
+        else:
+            print('{} {} 보안등 데이터 출력'.format(gu, dong))
+            querySet = AddressInfo.objects.filter(gu=gu, dong=dong).values('dong').annotate(
+                totalCnt=Sum('totLight')).order_by('dong')
     for i in querySet:
         resultList.append(i['totalCnt'])
         print(i['totalCnt'])
@@ -165,9 +176,233 @@ def getPoliceOfficeCnt(request, gu=None, dong=None):
                                                                                                'totalCnt').order_by(
             'gu')
     else:
-        print('{} 경찰시설 데이터 출력'.format(gu))
-        querySet = AddressInfo.objects.filter(gu=gu).values('dong').annotate(totalCnt=Sum('totPolice')).order_by(
-            'dong')
+        if dong is None:
+            print('{} 경찰시설 데이터 출력'.format(gu))
+            querySet = AddressInfo.objects.filter(gu=gu).values('dong').annotate(totalCnt=Sum('totPolice')).order_by(
+                'dong')
+        else:
+            print('{} {} 경찰시설 데이터 출력'.format(gu, dong))
+            querySet = AddressInfo.objects.filter(gu=gu, dong=dong).values('dong').annotate(
+                totalCnt=Sum('totPolice')).order_by('dong')
+    for i in querySet:
+        resultList.append(i['totalCnt'])
+        print(i['totalCnt'])
+
+    return myJsonResponse(resultList)
+
+
+@csrf_exempt
+def getPharmacyCnt(request, gu=None, dong=None):
+    '''
+    :param request:
+    :param gu:
+    :return: 서울시 내의 구들의 약국 갯수를 리턴. (구이름으로 정렬된 데이터)
+             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 약국 갯수를 리턴 (동이름으로 정렬된 데이터)
+             만약 dong값까지 입력되었다면 해당 동의 약국 갯수를 리턴 (값 1개)
+    '''
+    resultList = []
+    if gu is None:
+        print('시 약국 데이터 출력')
+        querySet = AddressInfo.objects.values('gu').annotate(totalCnt=Sum('totPharmacy')).values('gu',
+                                                                                                 'totalCnt').order_by(
+            'gu')
+    else:
+        if dong is None:
+            print('{} 약국 데이터 출력'.format(gu))
+            querySet = AddressInfo.objects.filter(gu=gu).values('dong').annotate(totalCnt=Sum('totPharmacy')).order_by(
+                'dong')
+        else:
+            print('{} {} 약국 데이터 출력'.format(gu, dong))
+            querySet = AddressInfo.objects.filter(gu=gu, dong=dong).values('dong').annotate(
+                totalCnt=Sum('totPharmacy')).order_by('dong')
+    for i in querySet:
+        resultList.append(i['totalCnt'])
+        print(i['totalCnt'])
+
+    return myJsonResponse(resultList)
+
+
+@csrf_exempt
+def getMarketCnt(request, gu=None, dong=None):
+    '''
+    :param request:
+    :param gu:
+    :return: 서울시 내의 구들의 전통시장 갯수를 리턴. (구이름으로 정렬된 데이터)
+             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 전통시장 갯수를 리턴 (동이름으로 정렬된 데이터)
+             만약 dong값까지 입력되었다면 해당 동의 전통시장 갯수를 리턴 (값 1개)
+    '''
+    resultList = []
+    if gu is None:
+        print('시 전통시장 데이터 출력')
+        querySet = AddressInfo.objects.values('gu').annotate(totalCnt=Sum('totMarket')).values('gu',
+                                                                                               'totalCnt').order_by(
+            'gu')
+    else:
+        if dong is None:
+            print('{} 전통시장 데이터 출력'.format(gu))
+            querySet = AddressInfo.objects.filter(gu=gu).values('dong').annotate(totalCnt=Sum('totMarket')).order_by(
+                'dong')
+        else:
+            print('{} {} 전통시장 데이터 출력'.format(gu, dong))
+            querySet = AddressInfo.objects.filter(gu=gu, dong=dong).values('dong').annotate(
+                totalCnt=Sum('totMarket')).order_by('dong')
+    for i in querySet:
+        resultList.append(i['totalCnt'])
+        print(i['totalCnt'])
+
+    return myJsonResponse(resultList)
+
+
+@csrf_exempt
+def getParkCnt(request, gu=None, dong=None):
+    '''
+    :param request:
+    :param gu:
+    :return: 서울시 내의 구들의 공원 갯수를 리턴. (구이름으로 정렬된 데이터)
+             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 공원 갯수를 리턴 (동이름으로 정렬된 데이터)
+             만약 dong값까지 입력되었다면 해당 동의 공원 갯수를 리턴 (값 1개)
+    '''
+    resultList = []
+    if gu is None:
+        print('시 공원 데이터 출력')
+        querySet = AddressInfo.objects.values('gu').annotate(totalCnt=Sum('totPark')).values('gu',
+                                                                                             'totalCnt').order_by(
+            'gu')
+    else:
+        if dong is None:
+            print('{} 공원 데이터 출력'.format(gu))
+            querySet = AddressInfo.objects.filter(gu=gu).values('dong').annotate(totalCnt=Sum('totPark')).order_by(
+                'dong')
+        else:
+            print('{} {} 공원 데이터 출력'.format(gu, dong))
+            querySet = AddressInfo.objects.filter(gu=gu, dong=dong).values('dong').annotate(
+                totalCnt=Sum('totPark')).order_by('dong')
+    for i in querySet:
+        resultList.append(i['totalCnt'])
+        print(i['totalCnt'])
+
+    return myJsonResponse(resultList)
+
+
+@csrf_exempt
+def getGymCnt(request, gu=None, dong=None):
+    '''
+    :param request:
+    :param gu:
+    :return: 서울시 내의 구들의 공공체육시설 갯수를 리턴. (구이름으로 정렬된 데이터)
+             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 공공체육시설 갯수를 리턴 (동이름으로 정렬된 데이터)
+             만약 dong값까지 입력되었다면 해당 동의 공공체육시설 갯수를 리턴 (값 1개)
+    '''
+    resultList = []
+    if gu is None:
+        print('시 공공체육시설 데이터 출력')
+        querySet = AddressInfo.objects.values('gu').annotate(totalCnt=Sum('totGym')).values('gu',
+                                                                                            'totalCnt').order_by(
+            'gu')
+    else:
+        if dong is None:
+            print('{} 공공체육시설 데이터 출력'.format(gu))
+            querySet = AddressInfo.objects.filter(gu=gu).values('dong').annotate(totalCnt=Sum('totGym')).order_by(
+                'dong')
+        else:
+            print('{} {} 공공체육시설 데이터 출력'.format(gu, dong))
+            querySet = AddressInfo.objects.filter(gu=gu, dong=dong).values('dong').annotate(
+                totalCnt=Sum('totGym')).order_by('dong')
+    for i in querySet:
+        resultList.append(i['totalCnt'])
+        print(i['totalCnt'])
+
+    return myJsonResponse(resultList)
+
+
+@csrf_exempt
+def getConcertHallCnt(request, gu=None, dong=None):
+    '''
+    :param request:
+    :param gu:
+    :return: 서울시 내의 구들의 공연장 갯수를 리턴. (구이름으로 정렬된 데이터)
+             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 공연장 갯수를 리턴 (동이름으로 정렬된 데이터)
+             만약 dong값까지 입력되었다면 해당 동의 공연장 갯수를 리턴 (값 1개)
+    '''
+    resultList = []
+    if gu is None:
+        print('시 공연장 데이터 출력')
+        querySet = AddressInfo.objects.values('gu').annotate(totalCnt=Sum('totConcertHall')).values('gu',
+                                                                                                    'totalCnt').order_by(
+            'gu')
+    else:
+        if dong is None:
+            print('{} 공연장 데이터 출력'.format(gu))
+            querySet = AddressInfo.objects.filter(gu=gu).values('dong').annotate(
+                totalCnt=Sum('totConcertHall')).order_by(
+                'dong')
+        else:
+            print('{} {} 공연장 데이터 출력'.format(gu, dong))
+            querySet = AddressInfo.objects.filter(gu=gu, dong=dong).values('dong').annotate(
+                totalCnt=Sum('totConcertHall')).order_by('dong')
+    for i in querySet:
+        resultList.append(i['totalCnt'])
+        print(i['totalCnt'])
+
+    return myJsonResponse(resultList)
+
+
+@csrf_exempt
+def getLibraryCnt(request, gu=None, dong=None):
+    '''
+    :param request:
+    :param gu:
+    :return: 서울시 내의 구들의 도서관 갯수를 리턴. (구이름으로 정렬된 데이터)
+             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 도서관 갯수를 리턴 (동이름으로 정렬된 데이터)
+             만약 dong값까지 입력되었다면 해당 동의 도서관 갯수를 리턴 (값 1개)
+    '''
+    resultList = []
+    if gu is None:
+        print('시 도서관 데이터 출력')
+        querySet = AddressInfo.objects.values('gu').annotate(totalCnt=Sum('totLibrary')).values('gu',
+                                                                                                'totalCnt').order_by(
+            'gu')
+    else:
+        if dong is None:
+            print('{} 도서관 데이터 출력'.format(gu))
+            querySet = AddressInfo.objects.filter(gu=gu).values('dong').annotate(totalCnt=Sum('totLibrary')).order_by(
+                'dong')
+        else:
+            print('{} {} 도서관 데이터 출력'.format(gu, dong))
+            querySet = AddressInfo.objects.filter(gu=gu, dong=dong).values('dong').annotate(
+                totalCnt=Sum('totLibrary')).order_by('dong')
+    for i in querySet:
+        resultList.append(i['totalCnt'])
+        print(i['totalCnt'])
+
+    return myJsonResponse(resultList)
+
+
+@csrf_exempt
+def getCulturalFacilityCnt(request, gu=None, dong=None):
+    '''
+    :param request:
+    :param gu:
+    :return: 서울시 내의 구들의 박물관/미술관 갯수를 리턴. (구이름으로 정렬된 데이터)
+             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 박물관/미술관 갯수를 리턴 (동이름으로 정렬된 데이터)
+             만약 dong값까지 입력되었다면 해당 동의 박물관/미술관 갯수를 리턴 (값 1개)
+    '''
+    resultList = []
+    if gu is None:
+        print('시 박물관/미술관 데이터 출력')
+        querySet = AddressInfo.objects.values('gu').annotate(totalCnt=Sum('totCulturalFacility')).values('gu',
+                                                                                                         'totalCnt').order_by(
+            'gu')
+    else:
+        if dong is None:
+            print('{} 박물관/미술관 데이터 출력'.format(gu))
+            querySet = AddressInfo.objects.filter(gu=gu).values('dong').annotate(
+                totalCnt=Sum('totCulturalFacility')).order_by(
+                'dong')
+        else:
+            print('{} {} 박물관/미술관 데이터 출력'.format(gu, dong))
+            querySet = AddressInfo.objects.filter(gu=gu, dong=dong).values('dong').annotate(
+                totalCnt=Sum('totCulturalFacility')).order_by('dong')
     for i in querySet:
         resultList.append(i['totalCnt'])
         print(i['totalCnt'])
@@ -327,189 +562,6 @@ def getBubbleChartData(request, gu=None):
     for i in querySet:
         if i.r != 0:
             resultList.append([i.x, i.y, i.r])
-
-    return myJsonResponse(resultList)
-
-
-@csrf_exempt
-def getPharmacyCnt(request, gu=None, dong=None):
-    '''
-    :param request:
-    :param gu:
-    :return: 서울시 내의 구들의 약국 갯수를 리턴. (구이름으로 정렬된 데이터)
-             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 약국 갯수를 리턴 (동이름으로 정렬된 데이터)
-             만약 dong값까지 입력되었다면 해당 동의 약국 갯수를 리턴 (값 1개)
-    '''
-    resultList = []
-    if gu is None:
-        print('시 약국 데이터 출력')
-        querySet = AddressInfo.objects.values('gu').annotate(totalCnt=Sum('totPharmacy')).values('gu',
-                                                                                                 'totalCnt').order_by(
-            'gu')
-    else:
-        print('{} 약국 데이터 출력'.format(gu))
-        querySet = AddressInfo.objects.filter(gu=gu).values('dong').annotate(totalCnt=Sum('totPharmacy')).order_by(
-            'dong')
-    for i in querySet:
-        resultList.append(i['totalCnt'])
-        print(i['totalCnt'])
-
-    return myJsonResponse(resultList)
-
-
-@csrf_exempt
-def getMarketCnt(request, gu=None, dong=None):
-    '''
-    :param request:
-    :param gu:
-    :return: 서울시 내의 구들의 전통시장 갯수를 리턴. (구이름으로 정렬된 데이터)
-             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 전통시장 갯수를 리턴 (동이름으로 정렬된 데이터)
-             만약 dong값까지 입력되었다면 해당 동의 전통시장 갯수를 리턴 (값 1개)
-    '''
-    resultList = []
-    if gu is None:
-        print('시 전통시장 데이터 출력')
-        querySet = AddressInfo.objects.values('gu').annotate(totalCnt=Sum('totMarket')).values('gu',
-                                                                                               'totalCnt').order_by(
-            'gu')
-    else:
-        print('{} 전통시장 데이터 출력'.format(gu))
-        querySet = AddressInfo.objects.filter(gu=gu).values('dong').annotate(totalCnt=Sum('totMarket')).order_by(
-            'dong')
-    for i in querySet:
-        resultList.append(i['totalCnt'])
-        print(i['totalCnt'])
-
-    return myJsonResponse(resultList)
-
-
-@csrf_exempt
-def getParkCnt(request, gu=None, dong=None):
-    '''
-    :param request:
-    :param gu:
-    :return: 서울시 내의 구들의 공원 갯수를 리턴. (구이름으로 정렬된 데이터)
-             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 공원 갯수를 리턴 (동이름으로 정렬된 데이터)
-             만약 dong값까지 입력되었다면 해당 동의 공원 갯수를 리턴 (값 1개)
-    '''
-    resultList = []
-    if gu is None:
-        print('시 공원 데이터 출력')
-        querySet = AddressInfo.objects.values('gu').annotate(totalCnt=Sum('totPark')).values('gu',
-                                                                                             'totalCnt').order_by(
-            'gu')
-    else:
-        print('{} 공원 데이터 출력'.format(gu))
-        querySet = AddressInfo.objects.filter(gu=gu).values('dong').annotate(totalCnt=Sum('totPark')).order_by(
-            'dong')
-    for i in querySet:
-        resultList.append(i['totalCnt'])
-        print(i['totalCnt'])
-
-    return myJsonResponse(resultList)
-
-
-@csrf_exempt
-def getGymCnt(request, gu=None, dong=None):
-    '''
-    :param request:
-    :param gu:
-    :return: 서울시 내의 구들의 공공체육시설 갯수를 리턴. (구이름으로 정렬된 데이터)
-             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 공공체육시설 갯수를 리턴 (동이름으로 정렬된 데이터)
-             만약 dong값까지 입력되었다면 해당 동의 공공체육시설 갯수를 리턴 (값 1개)
-    '''
-    resultList = []
-    if gu is None:
-        print('시 공공체육시설 데이터 출력')
-        querySet = AddressInfo.objects.values('gu').annotate(totalCnt=Sum('totGym')).values('gu',
-                                                                                            'totalCnt').order_by(
-            'gu')
-    else:
-        print('{} 공공체육시설 데이터 출력'.format(gu))
-        querySet = AddressInfo.objects.filter(gu=gu).values('dong').annotate(totalCnt=Sum('totGym')).order_by(
-            'dong')
-    for i in querySet:
-        resultList.append(i['totalCnt'])
-        print(i['totalCnt'])
-
-    return myJsonResponse(resultList)
-
-
-@csrf_exempt
-def getConcertHallCnt(request, gu=None, dong=None):
-    '''
-    :param request:
-    :param gu:
-    :return: 서울시 내의 구들의 공연장 갯수를 리턴. (구이름으로 정렬된 데이터)
-             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 공연장 갯수를 리턴 (동이름으로 정렬된 데이터)
-             만약 dong값까지 입력되었다면 해당 동의 공연장 갯수를 리턴 (값 1개)
-    '''
-    resultList = []
-    if gu is None:
-        print('시 공연장 데이터 출력')
-        querySet = AddressInfo.objects.values('gu').annotate(totalCnt=Sum('totConcertHall')).values('gu',
-                                                                                                    'totalCnt').order_by(
-            'gu')
-    else:
-        print('{} 공연장 데이터 출력'.format(gu))
-        querySet = AddressInfo.objects.filter(gu=gu).values('dong').annotate(totalCnt=Sum('totConcertHall')).order_by(
-            'dong')
-    for i in querySet:
-        resultList.append(i['totalCnt'])
-        print(i['totalCnt'])
-
-    return myJsonResponse(resultList)
-
-
-@csrf_exempt
-def getLibraryCnt(request, gu=None, dong=None):
-    '''
-    :param request:
-    :param gu:
-    :return: 서울시 내의 구들의 도서관 갯수를 리턴. (구이름으로 정렬된 데이터)
-             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 도서관 갯수를 리턴 (동이름으로 정렬된 데이터)
-             만약 dong값까지 입력되었다면 해당 동의 도서관 갯수를 리턴 (값 1개)
-    '''
-    resultList = []
-    if gu is None:
-        print('시 도서관 데이터 출력')
-        querySet = AddressInfo.objects.values('gu').annotate(totalCnt=Sum('totLibrary')).values('gu',
-                                                                                                'totalCnt').order_by(
-            'gu')
-    else:
-        print('{} 도서관 데이터 출력'.format(gu))
-        querySet = AddressInfo.objects.filter(gu=gu).values('dong').annotate(totalCnt=Sum('totLibrary')).order_by(
-            'dong')
-    for i in querySet:
-        resultList.append(i['totalCnt'])
-        print(i['totalCnt'])
-
-    return myJsonResponse(resultList)
-
-
-@csrf_exempt
-def getCulturalFacilityCnt(request, gu=None, dong=None):
-    '''
-    :param request:
-    :param gu:
-    :return: 서울시 내의 구들의 박물관/미술관 갯수를 리턴. (구이름으로 정렬된 데이터)
-             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 박물관/미술관 갯수를 리턴 (동이름으로 정렬된 데이터)
-             만약 dong값까지 입력되었다면 해당 동의 박물관/미술관 갯수를 리턴 (값 1개)
-    '''
-    resultList = []
-    if gu is None:
-        print('시 박물관/미술관 데이터 출력')
-        querySet = AddressInfo.objects.values('gu').annotate(totalCnt=Sum('totCulturalFacility')).values('gu',
-                                                                                                         'totalCnt').order_by(
-            'gu')
-    else:
-        print('{} 박물관/미술관 데이터 출력'.format(gu))
-        querySet = AddressInfo.objects.filter(gu=gu).values('dong').annotate(
-            totalCnt=Sum('totCulturalFacility')).order_by(
-            'dong')
-    for i in querySet:
-        resultList.append(i['totalCnt'])
-        print(i['totalCnt'])
 
     return myJsonResponse(resultList)
 
@@ -915,7 +967,7 @@ def updateRatesAddressInfo(request):
             curDong.rateCulturalFacility = 0
         else:
             curDong.rateCulturalFacility = (curDong.totCulturalFacility / guArea) / (
-                        totSumList['totCulturalFacility__sum'] / siArea)
+                    totSumList['totCulturalFacility__sum'] / siArea)
         curDong.save()
 
     return HttpResponse("updateRatesAddressInfo done")
@@ -1175,95 +1227,143 @@ def testQuery(request):
 
     addressInfoQuerySet = AddressInfo.objects.all()
 
-    for curDong in addressInfoQuerySet:
-        guArea = float(areaJsonData[curDong.gu][curDong.dong])  # 1은 임시 데이터!! 여기서 curDong를가지고 api로 해당 guArea를 가져옴.
-        # print(curDong.gu, curDong.dong, guArea)
-        if totSumList['totCCTV__sum'] == 0:
-            curDong.rateCCTV = 0
-        else:
-            curDong.rateCCTV = (curDong.totCCTV / guArea) / (totSumList['totCCTV__sum'] / siArea)
-            print(
-                '{} {}!! curDong.totCCTV :: {} // totSumList[totCCTV__sum] :: {} // guArea :: {} // siArea :: {}'.format(
-                    curDong.gu, curDong.dong, curDong.totCCTV, totSumList['totCCTV__sum'], guArea, siArea))
+    guList = []
+    dongList = []
+    totCCTVList = []
+    totPoliceList = []
+    totLightList = []
+    totPharmacyList = []
+    totMarketList = []
+    totParkList = []
+    totGymList = []
+    totConcertHallList = []
+    totLibraryList = []
+    totCulturalFacilityList = []
 
-        if totSumList['totPolice__sum'] == 0:
-            curDong.ratePolice = 0
-        else:
-            curDong.ratePolice = (curDong.totPolice / guArea) / (totSumList['totPolice__sum'] / siArea)
-            print(
-                '{} {}!! curDong.totPolice :: {} // totSumList[totPolice__sum] :: {} // guArea :: {} // siArea :: {}'.format(
-                    curDong.gu, curDong.dong, curDong.totPolice, totSumList['totPolice__sum'], guArea, siArea))
+    for i in addressInfoQuerySet:
+        guList.append(i.gu)
+        dongList.append(i.dong)
+        totCCTVList.append(i.totCCTV)
+        totPoliceList.append(i.totPolice)
+        totLightList.append(i.totLight)
+        totPharmacyList.append(i.totPharmacy)
+        totMarketList.append(i.totMarket)
+        totParkList.append(i.totPark)
+        totGymList.append(i.totGym)
+        totConcertHallList.append(i.totConcertHall)
+        totLibraryList.append(i.totLibrary)
+        totCulturalFacilityList.append(i.totCulturalFacility)
 
-        if totSumList['totLight__sum'] == 0:
-            curDong.rateLight = 0
-        else:
-            curDong.rateLight = (curDong.totLight / guArea) / (totSumList['totLight__sum'] / siArea)
-            print(
-                '{} {}!! curDong.totLight :: {} // totSumList[totLight__sum] :: {} // guArea :: {} // siArea :: {}'.format(
-                    curDong.gu, curDong.dong, curDong.totLight, totSumList['totLight__sum'], guArea, siArea))
+    data = {
+        'gu': guList,
+        'dong': dongList,
+        'totCCTV': totCCTVList,
+        'totPolice': totPoliceList,
+        'totLight': totLightList,
+        'totPharmacy': totPharmacyList,
+        'totMarket': totMarketList,
+        'totPark': totParkList,
+        'totGym': totGymList,
+        'totConcertHall': totConcertHallList,
+        'totLibrary': totLibraryList,
+        'totCulturalFacility': totCulturalFacilityList
+    }
 
-        if totSumList['totPharmacy__sum'] == 0:
-            curDong.ratePharmacy = 0
-        else:
-            curDong.ratePharmacy = (curDong.totPharmacy / guArea) / (totSumList['totPharmacy__sum'] / siArea)
-            print(
-                '{} {}!! curDong.totPharmacy :: {} // totSumList[totPharmacy__sum] :: {} // guArea :: {} // siArea :: {}'.format(
-                    curDong.gu, curDong.dong, curDong.totPharmacy, totSumList['totPharmacy__sum'], guArea, siArea))
+    df = pandas.DataFrame(data, index=dongList)
 
-        if totSumList['totMarket__sum'] == 0:
-            curDong.rateMarket = 0
-        else:
-            curDong.rateMarket = (curDong.totMarket / guArea) / (totSumList['totMarket__sum'] / siArea)
-            print(
-                '{} {}!! curDong.totMarket :: {} // totSumList[totMarket__sum] :: {} // guArea :: {} // siArea :: {}'.format(
-                    curDong.gu, curDong.dong, curDong.totMarket, totSumList['totMarket__sum'], guArea, siArea))
 
-        if totSumList['totPark__sum'] == 0:
-            curDong.ratePark = 0
-        else:
-            curDong.ratePark = (curDong.totPark / guArea) / (totSumList['totPark__sum'] / siArea)
-            print(
-                '{} {}!! curDong.totPark :: {} // totSumList[totPark__sum] :: {} // guArea :: {} // siArea :: {}'.format(
-                    curDong.gu, curDong.dong, curDong.totPark, totSumList['totPark__sum'], guArea, siArea))
+# print(i.gu, i.dong, i.totCCTV, i.totLight)
 
-        if totSumList['totGym__sum'] == 0:
-            curDong.rateGym = 0
-        else:
-            curDong.rateGym = (curDong.totGym / guArea) / (totSumList['totGym__sum'] / siArea)
-            print(
-                '{} {}!! curDong.totGym :: {} // totSumList[totGym__sum] :: {} // guArea :: {} // siArea :: {}'.format(
-                    curDong.gu, curDong.dong, curDong.totGym, totSumList['totGym__sum'], guArea, siArea))
 
-        if totSumList['totConcertHall__sum'] == 0:
-            curDong.rateConcertHall = 0
-        else:
-            curDong.rateConcertHall = (curDong.totConcertHall / guArea) / (totSumList['totConcertHall__sum'] / siArea)
-            print(
-                '{} {}!! curDong.totConcertHall :: {} // totSumList[totConcertHall__sum] :: {} // guArea :: {} // siArea :: {}'.format(
-                    curDong.gu, curDong.dong, curDong.totConcertHall, totSumList['totConcertHall__sum'], guArea,
-                    siArea))
-
-        if totSumList['totLibrary__sum'] == 0:
-            curDong.rateLibrary = 0
-        else:
-            curDong.rateLibrary = (curDong.totLibrary / guArea) / (totSumList['totLibrary__sum'] / siArea)
-            print(
-                '{} {}!! curDong.totLibrary :: {} // totSumList[totLibrary__sum] :: {} // guArea :: {} // siArea :: {}'.format(
-                    curDong.gu, curDong.dong, curDong.totLibrary, totSumList['totLibrary__sum'], guArea, siArea))
-
-        if totSumList['totCulturalFacility__sum'] == 0:
-            curDong.rateCulturalFacility = 0
-        else:
-            curDong.rateCulturalFacility = (curDong.totCulturalFacility / guArea) / (
-                        totSumList['totCulturalFacility__sum'] / siArea)
-            print(
-                '{} {}!! curDong.totCulturalFacility :: {} // totSumList[totCulturalFacility__sum] :: {} // guArea :: {} // siArea :: {}'.format(
-                    curDong.gu, curDong.dong, curDong.totCulturalFacility, totSumList['totCulturalFacility__sum'],
-                    guArea, siArea))
-
-        curDong.save()
-
-    return HttpResponse("updateRatesAddressInfo done")
+# for curDong in addressInfoQuerySet:
+#     guArea = float(areaJsonData[curDong.gu][curDong.dong])  # 1은 임시 데이터!! 여기서 curDong를가지고 api로 해당 guArea를 가져옴.
+#     # print(curDong.gu, curDong.dong, guArea)
+#     if totSumList['totCCTV__sum'] == 0:
+#         curDong.rateCCTV = 0
+#     else:
+#         curDong.rateCCTV = (curDong.totCCTV / guArea) / (totSumList['totCCTV__sum'] / siArea)
+#         print(
+#             '{} {}!! curDong.totCCTV :: {} // totSumList[totCCTV__sum] :: {} // guArea :: {} // siArea :: {}'.format(
+#                 curDong.gu, curDong.dong, curDong.totCCTV, totSumList['totCCTV__sum'], guArea, siArea))
+#
+#     if totSumList['totPolice__sum'] == 0:
+#         curDong.ratePolice = 0
+#     else:
+#         curDong.ratePolice = (curDong.totPolice / guArea) / (totSumList['totPolice__sum'] / siArea)
+#         print(
+#             '{} {}!! curDong.totPolice :: {} // totSumList[totPolice__sum] :: {} // guArea :: {} // siArea :: {}'.format(
+#                 curDong.gu, curDong.dong, curDong.totPolice, totSumList['totPolice__sum'], guArea, siArea))
+#
+#     if totSumList['totLight__sum'] == 0:
+#         curDong.rateLight = 0
+#     else:
+#         curDong.rateLight = (curDong.totLight / guArea) / (totSumList['totLight__sum'] / siArea)
+#         print(
+#             '{} {}!! curDong.totLight :: {} // totSumList[totLight__sum] :: {} // guArea :: {} // siArea :: {}'.format(
+#                 curDong.gu, curDong.dong, curDong.totLight, totSumList['totLight__sum'], guArea, siArea))
+#
+#     if totSumList['totPharmacy__sum'] == 0:
+#         curDong.ratePharmacy = 0
+#     else:
+#         curDong.ratePharmacy = (curDong.totPharmacy / guArea) / (totSumList['totPharmacy__sum'] / siArea)
+#         print(
+#             '{} {}!! curDong.totPharmacy :: {} // totSumList[totPharmacy__sum] :: {} // guArea :: {} // siArea :: {}'.format(
+#                 curDong.gu, curDong.dong, curDong.totPharmacy, totSumList['totPharmacy__sum'], guArea, siArea))
+#
+#     if totSumList['totMarket__sum'] == 0:
+#         curDong.rateMarket = 0
+#     else:
+#         curDong.rateMarket = (curDong.totMarket / guArea) / (totSumList['totMarket__sum'] / siArea)
+#         print(
+#             '{} {}!! curDong.totMarket :: {} // totSumList[totMarket__sum] :: {} // guArea :: {} // siArea :: {}'.format(
+#                 curDong.gu, curDong.dong, curDong.totMarket, totSumList['totMarket__sum'], guArea, siArea))
+#
+#     if totSumList['totPark__sum'] == 0:
+#         curDong.ratePark = 0
+#     else:
+#         curDong.ratePark = (curDong.totPark / guArea) / (totSumList['totPark__sum'] / siArea)
+#         print(
+#             '{} {}!! curDong.totPark :: {} // totSumList[totPark__sum] :: {} // guArea :: {} // siArea :: {}'.format(
+#                 curDong.gu, curDong.dong, curDong.totPark, totSumList['totPark__sum'], guArea, siArea))
+#
+#     if totSumList['totGym__sum'] == 0:
+#         curDong.rateGym = 0
+#     else:
+#         curDong.rateGym = (curDong.totGym / guArea) / (totSumList['totGym__sum'] / siArea)
+#         print(
+#             '{} {}!! curDong.totGym :: {} // totSumList[totGym__sum] :: {} // guArea :: {} // siArea :: {}'.format(
+#                 curDong.gu, curDong.dong, curDong.totGym, totSumList['totGym__sum'], guArea, siArea))
+#
+#     if totSumList['totConcertHall__sum'] == 0:
+#         curDong.rateConcertHall = 0
+#     else:
+#         curDong.rateConcertHall = (curDong.totConcertHall / guArea) / (totSumList['totConcertHall__sum'] / siArea)
+#         print(
+#             '{} {}!! curDong.totConcertHall :: {} // totSumList[totConcertHall__sum] :: {} // guArea :: {} // siArea :: {}'.format(
+#                 curDong.gu, curDong.dong, curDong.totConcertHall, totSumList['totConcertHall__sum'], guArea,
+#                 siArea))
+#
+#     if totSumList['totLibrary__sum'] == 0:
+#         curDong.rateLibrary = 0
+#     else:
+#         curDong.rateLibrary = (curDong.totLibrary / guArea) / (totSumList['totLibrary__sum'] / siArea)
+#         print(
+#             '{} {}!! curDong.totLibrary :: {} // totSumList[totLibrary__sum] :: {} // guArea :: {} // siArea :: {}'.format(
+#                 curDong.gu, curDong.dong, curDong.totLibrary, totSumList['totLibrary__sum'], guArea, siArea))
+#
+#     if totSumList['totCulturalFacility__sum'] == 0:
+#         curDong.rateCulturalFacility = 0
+#     else:
+#         curDong.rateCulturalFacility = (curDong.totCulturalFacility / guArea) / (
+#                     totSumList['totCulturalFacility__sum'] / siArea)
+#         print(
+#             '{} {}!! curDong.totCulturalFacility :: {} // totSumList[totCulturalFacility__sum] :: {} // guArea :: {} // siArea :: {}'.format(
+#                 curDong.gu, curDong.dong, curDong.totCulturalFacility, totSumList['totCulturalFacility__sum'],
+#                 guArea, siArea))
+#
+#     curDong.save()
+#
+# return HttpResponse("updateRatesAddressInfo done")
 
 
 # def testQuery2(request):  # 각 구별 월세, 보증금 데이터 읽기.
@@ -1289,9 +1389,9 @@ def testQuery(request):
 #         print(i.gu, i.rentalFee, i.deposit)
 #
 #     data = {'rentalFee': rentalFeeList,
-#             'deposit': depositList}
-#
-#     df = pandas.DataFrame(data, index=guList)
+# #             'deposit': depositList}
+# #
+# #     df = pandas.DataFrame(data, index=guList)
 #
 #     for i in df:
 #         print(df)

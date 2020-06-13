@@ -1,7 +1,6 @@
 import inspect
 import os
 from collections import OrderedDict
-
 from django.db.models.aggregates import Count
 from django.db.models.query import QuerySet, RawQuerySet
 from django.http import JsonResponse, HttpResponse
@@ -1316,32 +1315,8 @@ def getDummyDataForDH(request, div):
 @csrf_exempt
 def testQuery(request):
     '''
-    각 항목별 지수 계산기s
+    각 항목별 지수 계산기
     '''
-
-    # url = "http://"
-    # finalurl = url + str(start) + "/" + str(start + 999)
-    # response, content = http.request(finalurl, "GET")
-    # content = content.decode("utf-8")
-    # jsonData = json.loads(content)
-
-    file_Path = os.path.join(settings.BASE_DIR, "STCService")
-    areaJsonData = json.loads(open(os.path.join(file_Path, "법정동별면적.json"), "r", encoding='utf8').read())
-
-    siArea = float(areaJsonData['전체'])  # 임시 서울 시 전체 면적 :: api로 받아오자.
-    guArea = float()  # 임시 동 전체 면적
-
-    totSumList = AddressInfo.objects.aggregate(
-        Sum('totCCTV'),
-        Sum('totPolice'),
-        Sum('totLight'),
-        Sum('totPharmacy'),
-        Sum('totMarket'),
-        Sum('totPark'),
-        Sum('totGym'),
-        Sum('totConcertHall'),
-        Sum('totLibrary'),
-        Sum('totCulturalFacility'))
 
     addressInfoQuerySet = AddressInfo.objects.all()
 
@@ -1373,8 +1348,6 @@ def testQuery(request):
         totCulturalFacilityList.append(i.totCulturalFacility)
 
     data = {
-        'gu': guList,
-        'dong': dongList,
         'totCCTV': totCCTVList,
         'totPolice': totPoliceList,
         'totLight': totLightList,
@@ -1388,6 +1361,13 @@ def testQuery(request):
     }
 
     df = pandas.DataFrame(data, index=dongList)
+    # from sklearn.preprocessing import MinMaxScaler
+    #
+    # scaler = MinMaxScaler()
+    # df2 = df.copy()
+    #
+    # for i in df:
+    #     print(df)
 
 
 # print(i.gu, i.dong, i.totCCTV, i.totLight)

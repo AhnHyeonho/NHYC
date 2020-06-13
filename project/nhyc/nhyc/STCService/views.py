@@ -1,7 +1,6 @@
 import inspect
 import os
 from collections import OrderedDict
-
 from django.db.models.aggregates import Count
 from django.db.models.query import QuerySet, RawQuerySet
 from django.http import JsonResponse, HttpResponse
@@ -380,6 +379,68 @@ def getLibraryCnt(request, gu=None, dong=None):
 
 
 @csrf_exempt
+def getSubwayCnt(request, gu=None, dong=None):
+    '''
+    :param request:
+    :param gu:
+    :return: 서울시 내의 구들의 지하철역 갯수를 리턴. (구이름으로 정렬된 데이터)
+             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 지하철역 갯수를 리턴 (동이름으로 정렬된 데이터)
+             만약 dong값까지 입력되었다면 해당 동의 지하철역 갯수를 리턴 (값 1개)
+    '''
+    resultList = []
+    if gu is None:
+        print('시 지하철역 데이터 출력')
+        querySet = AddressInfo.objects.values('gu').annotate(totalCnt=Sum('totSubway')).values('gu',
+                                                                                               'totalCnt').order_by(
+            'gu')
+    else:
+        if dong is None:
+            print('{} 지하철역 데이터 출력'.format(gu))
+            querySet = AddressInfo.objects.filter(gu=gu).values('dong').annotate(totalCnt=Sum('totSubway')).order_by(
+                'dong')
+        else:
+            print('{} {} 지하철역 데이터 출력'.format(gu, dong))
+            querySet = AddressInfo.objects.filter(gu=gu, dong=dong).values('dong').annotate(
+                totalCnt=Sum('totSubway')).order_by('dong')
+    for i in querySet:
+        resultList.append(i['totalCnt'])
+        print(i['totalCnt'])
+
+    return myJsonResponse(resultList)
+
+
+@csrf_exempt
+def getBusCnt(request, gu=None, dong=None):
+    '''
+    :param request:
+    :param gu:
+    :return: 서울시 내의 구들의 버스정류장 갯수를 리턴. (구이름으로 정렬된 데이터)
+             만약 gu값이 입려 되어있다면 해당 구 내의 동들의 버스정류장 갯수를 리턴 (동이름으로 정렬된 데이터)
+             만약 dong값까지 입력되었다면 해당 동의 버스정류장 갯수를 리턴 (값 1개)
+    '''
+    resultList = []
+    if gu is None:
+        print('시 버스정류장 데이터 출력')
+        querySet = AddressInfo.objects.values('gu').annotate(totalCnt=Sum('totBus')).values('gu',
+                                                                                            'totalCnt').order_by(
+            'gu')
+    else:
+        if dong is None:
+            print('{} 버스정류장 데이터 출력'.format(gu))
+            querySet = AddressInfo.objects.filter(gu=gu).values('dong').annotate(totalCnt=Sum('totBus')).order_by(
+                'dong')
+        else:
+            print('{} {} 버스정류장 데이터 출력'.format(gu, dong))
+            querySet = AddressInfo.objects.filter(gu=gu, dong=dong).values('dong').annotate(
+                totalCnt=Sum('totBus')).order_by('dong')
+    for i in querySet:
+        resultList.append(i['totalCnt'])
+        print(i['totalCnt'])
+
+    return myJsonResponse(resultList)
+
+
+@csrf_exempt
 def getCulturalFacilityCnt(request, gu=None, dong=None):
     '''
     :param request:
@@ -736,7 +797,7 @@ def updateBubbleChartData(request):
 @csrf_exempt
 def updateTotsAddressInfo(request):
     '''
-    update CCTV, PoliceOffice, SercurityLight, Pharmacy, Market, Park, Gym, ConcertHall, Library, CulturalFacility
+    update CCTV, PoliceOffice, SercurityLight, Pharmacy, Market, Park, Gym, ConcertHall, Library, CulturalFacility, Subway, Bus
     '''
 
     # CCTV
@@ -756,29 +817,29 @@ def updateTotsAddressInfo(request):
 
     # PoliceOffice
     querySet = Result_GuDongCnt.objects.raw('''
-            select gu, dong, count(policeId) as cnt
-            from dataProcess_address A
-            left outer join dataProcess_policeoffice B
-            on A.areaCode = B.areaCode_id
-            group by gu, dong
-            order by gu, dong
-            ''')
+        select gu, dong, count(policeId) as cnt
+        from dataProcess_address A
+        left outer join dataProcess_policeoffice B
+        on A.areaCode = B.areaCode_id
+        group by gu, dong
+        order by gu, dong
+        ''')
     print("PoliceOffice querySet ::: ", querySet)
     for i in querySet:
         addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
         addressInfo.totPolice = i.cnt
         addressInfo.save()
 
-    # SercurityLight
+    # SecurityLight
     querySet = Result_GuDongCnt.objects.raw('''
-            select gu, dong, count(lightId) as cnt
-            from dataProcess_address A
-            left outer join dataProcess_securitylight B
-            on A.areaCode = B.areaCode_id
-            group by gu, dong
-            order by gu, dong
-            ''')
-    print("SercurityLight querySet ::: ", querySet)
+        select gu, dong, count(lightId) as cnt
+        from dataProcess_address A
+        left outer join dataProcess_securitylight B
+        on A.areaCode = B.areaCode_id
+        group by gu, dong
+        order by gu, dong
+        ''')
+    print("SecurityLight querySet ::: ", querySet)
     for i in querySet:
         addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
         addressInfo.totLight = i.cnt
@@ -786,13 +847,13 @@ def updateTotsAddressInfo(request):
 
     # Pharmacy
     querySet = Result_GuDongCnt.objects.raw('''
-            select gu, dong, count(pharmacyId) as cnt
-            from dataProcess_address A
-            left outer join dataProcess_pharmacy B
-            on A.areaCode = B.areaCode_id
-            group by gu, dong
-            order by gu, dong
-            ''')
+        select gu, dong, count(pharmacyId) as cnt
+        from dataProcess_address A
+        left outer join dataProcess_pharmacy B
+        on A.areaCode = B.areaCode_id
+        group by gu, dong
+        order by gu, dong
+        ''')
     print("Pharmacy querySet ::: ", querySet)
     for i in querySet:
         addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
@@ -801,13 +862,13 @@ def updateTotsAddressInfo(request):
 
     # Market
     querySet = Result_GuDongCnt.objects.raw('''
-            select gu, dong, count(marketId) as cnt
-            from dataProcess_address A
-            left outer join dataProcess_market B
-            on A.areaCode = B.areaCode_id
-            group by gu, dong
-            order by gu, dong
-            ''')
+        select gu, dong, count(marketId) as cnt
+        from dataProcess_address A
+        left outer join dataProcess_market B
+        on A.areaCode = B.areaCode_id
+        group by gu, dong
+        order by gu, dong
+        ''')
     print("Market querySet ::: ", querySet)
     for i in querySet:
         addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
@@ -816,13 +877,13 @@ def updateTotsAddressInfo(request):
 
     # Park
     querySet = Result_GuDongCnt.objects.raw('''
-            select gu, dong, count(parkId) as cnt
-            from dataProcess_address A
-            left outer join dataProcess_park B
-            on A.areaCode = B.areaCode_id
-            group by gu, dong
-            order by gu, dong
-            ''')
+        select gu, dong, count(parkId) as cnt
+        from dataProcess_address A
+        left outer join dataProcess_park B
+        on A.areaCode = B.areaCode_id
+        group by gu, dong
+        order by gu, dong
+        ''')
     print("Park querySet ::: ", querySet)
     for i in querySet:
         addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
@@ -831,13 +892,13 @@ def updateTotsAddressInfo(request):
 
     # Gym
     querySet = Result_GuDongCnt.objects.raw('''
-            select gu, dong, count(gymId) as cnt
-            from dataProcess_address A
-            left outer join dataProcess_gym B
-            on A.areaCode = B.areaCode_id
-            group by gu, dong
-            order by gu, dong
-            ''')
+        select gu, dong, count(gymId) as cnt
+        from dataProcess_address A
+        left outer join dataProcess_gym B
+        on A.areaCode = B.areaCode_id
+        group by gu, dong
+        order by gu, dong
+        ''')
     print("Gym querySet ::: ", querySet)
     for i in querySet:
         addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
@@ -846,13 +907,13 @@ def updateTotsAddressInfo(request):
 
     # ConcertHall
     querySet = Result_GuDongCnt.objects.raw('''
-            select gu, dong, count(concertHallId) as cnt
-            from dataProcess_address A
-            left outer join dataProcess_concerthall B
-            on A.areaCode = B.areaCode_id
-            group by gu, dong
-            order by gu, dong
-            ''')
+        select gu, dong, count(concertHallId) as cnt
+        from dataProcess_address A
+        left outer join dataProcess_concerthall B
+        on A.areaCode = B.areaCode_id
+        group by gu, dong
+        order by gu, dong
+        ''')
     print("ConcertHall querySet ::: ", querySet)
     for i in querySet:
         addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
@@ -861,13 +922,13 @@ def updateTotsAddressInfo(request):
 
     # Library
     querySet = Result_GuDongCnt.objects.raw('''
-            select gu, dong, count(libraryId) as cnt
-            from dataProcess_address A
-            left outer join dataProcess_library B
-            on A.areaCode = B.areaCode_id
-            group by gu, dong
-            order by gu, dong
-            ''')
+        select gu, dong, count(libraryId) as cnt
+        from dataProcess_address A
+        left outer join dataProcess_library B
+        on A.areaCode = B.areaCode_id
+        group by gu, dong
+        order by gu, dong
+        ''')
     print("Library querySet ::: ", querySet)
     for i in querySet:
         addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
@@ -876,17 +937,50 @@ def updateTotsAddressInfo(request):
 
     # CulturalFacility
     querySet = Result_GuDongCnt.objects.raw('''
-            select gu, dong, count(culturalFacilityId) as cnt
-            from dataProcess_address A
-            left outer join dataProcess_culturalfacility B
-            on A.areaCode = B.areaCode_id
-            group by gu, dong
-            order by gu, dong
-            ''')
+        select gu, dong, count(culturalFacilityId) as cnt
+        from dataProcess_address A
+        left outer join dataProcess_culturalfacility B
+        on A.areaCode = B.areaCode_id
+        group by gu, dong
+        order by gu, dong
+        ''')
     print("CulturalFacilsity querySet ::: ", querySet)
+
     for i in querySet:
         addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
         addressInfo.totCulturalFacility = i.cnt
+        addressInfo.save()
+
+    # Subway
+    querySet = Result_GuDongCnt.objects.raw('''
+        select gu, dong, count(id) as cnt
+        from dataProcess_address A
+        left outer join dataProcess_subway B
+        on A.areaCode = B.areaCode_id
+        group by gu, dong
+        order by gu, dong
+        ''')
+    print("Subway querySet ::: ", querySet)
+
+    for i in querySet:
+        addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
+        addressInfo.totSubway = i.cnt
+        addressInfo.save()
+
+    # Bus
+    querySet = Result_GuDongCnt.objects.raw('''
+        select gu, dong, count(id) as cnt
+        from dataProcess_address A
+        left outer join dataProcess_bus B
+        on A.areaCode = B.areaCode_id
+        group by gu, dong
+        order by gu, dong
+        ''')
+    print("Bus querySet ::: ", querySet)
+
+    for i in querySet:
+        addressInfo, created = AddressInfo.objects.get_or_create(gu=i.gu, dong=i.dong)
+        addressInfo.totBus = i.cnt
         addressInfo.save()
 
     return HttpResponse("updateTotsAddressInfo done")
@@ -912,63 +1006,88 @@ def updateRatesAddressInfo(request):
         Sum('totGym'),
         Sum('totConcertHall'),
         Sum('totLibrary'),
-        Sum('totCulturalFacility'))
+        Sum('totCulturalFacility'),
+        Sum('totBus'),
+        Sum('totSubway'))
 
     addressInfoQuerySet = AddressInfo.objects.all()
 
     for curDong in addressInfoQuerySet:
-        guArea = float(areaJsonData[curDong.gu][curDong.dong])  # 1은 임시 데이터!! 여기서 curDong를가지고 api로 해당 guArea를 가져옴.s
+        guArea = float(areaJsonData[curDong.gu][curDong.dong])  # 1은 임시 데이터!! 여기서 curDong를가지고 api로 해당 guArea를 가져옴.
         # 그리고나서 각 항목들의 rate를 계산.
+
+        # rateCCTV 계산
         if totSumList['totCCTV__sum'] == 0:
             curDong.rateCCTV = 0
         else:
             curDong.rateCCTV = (curDong.totCCTV / guArea) / (totSumList['totCCTV__sum'] / siArea)
 
+        # ratePolice 계산
         if totSumList['totPolice__sum'] == 0:
             curDong.ratePolice = 0
         else:
             curDong.ratePolice = (curDong.totPolice / guArea) / (totSumList['totPolice__sum'] / siArea)
 
+        # rateLight 계산
         if totSumList['totLight__sum'] == 0:
             curDong.rateLight = 0
         else:
             curDong.rateLight = (curDong.totLight / guArea) / (totSumList['totLight__sum'] / siArea)
 
+        # ratePharmacy 계산
         if totSumList['totPharmacy__sum'] == 0:
             curDong.ratePharmacy = 0
         else:
             curDong.ratePharmacy = (curDong.totPharmacy / guArea) / (totSumList['totPharmacy__sum'] / siArea)
 
+        # rateMarket 계산
         if totSumList['totMarket__sum'] == 0:
             curDong.rateMarket = 0
         else:
             curDong.rateMarket = (curDong.totMarket / guArea) / (totSumList['totMarket__sum'] / siArea)
 
+        # ratePark 계산
         if totSumList['totPark__sum'] == 0:
             curDong.ratePark = 0
         else:
             curDong.ratePark = (curDong.totPark / guArea) / (totSumList['totPark__sum'] / siArea)
 
+        # rateGym 계산
         if totSumList['totGym__sum'] == 0:
             curDong.rateGym = 0
         else:
             curDong.rateGym = (curDong.totGym / guArea) / (totSumList['totGym__sum'] / siArea)
 
+        # rateConcertHall 계산
         if totSumList['totConcertHall__sum'] == 0:
             curDong.rateConcertHall = 0
         else:
             curDong.rateConcertHall = (curDong.totConcertHall / guArea) / (totSumList['totConcertHall__sum'] / siArea)
 
+        # rateLibrary 계산
         if totSumList['totLibrary__sum'] == 0:
             curDong.rateLibrary = 0
         else:
             curDong.rateLibrary = (curDong.totLibrary / guArea) / (totSumList['totLibrary__sum'] / siArea)
 
+        # rateCulturalFacility 계산
         if totSumList['totCulturalFacility__sum'] == 0:
             curDong.rateCulturalFacility = 0
         else:
             curDong.rateCulturalFacility = (curDong.totCulturalFacility / guArea) / (
                     totSumList['totCulturalFacility__sum'] / siArea)
+
+        # rateBus 계산
+        if totSumList['totBus__sum'] == 0:
+            curDong.rateBus = 0
+        else:
+            curDong.rateBus = (curDong.totBus / guArea) / (totSumList['totBus__sum'] / siArea)
+
+        # rateSubway 계산
+        if totSumList['totSubway__sum'] == 0:
+            curDong.rateSubway = 0
+        else:
+            curDong.rateSubway = (curDong.totSubway / guArea) / (totSumList['totSubway__sum'] / siArea)
         curDong.save()
 
     return HttpResponse("updateRatesAddressInfo done")
@@ -1199,32 +1318,8 @@ def getDummyDataForDH(request, div):
 @csrf_exempt
 def testQuery(request):
     '''
-    각 항목별 지수 계산기s
+    각 항목별 지수 계산기
     '''
-
-    # url = "http://"
-    # finalurl = url + str(start) + "/" + str(start + 999)
-    # response, content = http.request(finalurl, "GET")
-    # content = content.decode("utf-8")
-    # jsonData = json.loads(content)
-
-    file_Path = os.path.join(settings.BASE_DIR, "STCService")
-    areaJsonData = json.loads(open(os.path.join(file_Path, "법정동별면적.json"), "r", encoding='utf8').read())
-
-    siArea = float(areaJsonData['전체'])  # 임시 서울 시 전체 면적 :: api로 받아오자.
-    guArea = float()  # 임시 동 전체 면적
-
-    totSumList = AddressInfo.objects.aggregate(
-        Sum('totCCTV'),
-        Sum('totPolice'),
-        Sum('totLight'),
-        Sum('totPharmacy'),
-        Sum('totMarket'),
-        Sum('totPark'),
-        Sum('totGym'),
-        Sum('totConcertHall'),
-        Sum('totLibrary'),
-        Sum('totCulturalFacility'))
 
     addressInfoQuerySet = AddressInfo.objects.all()
 
@@ -1256,8 +1351,6 @@ def testQuery(request):
         totCulturalFacilityList.append(i.totCulturalFacility)
 
     data = {
-        'gu': guList,
-        'dong': dongList,
         'totCCTV': totCCTVList,
         'totPolice': totPoliceList,
         'totLight': totLightList,
@@ -1271,6 +1364,13 @@ def testQuery(request):
     }
 
     df = pandas.DataFrame(data, index=dongList)
+    # from sklearn.preprocessing import MinMaxScaler
+    #
+    # scaler = MinMaxScaler()
+    # df2 = df.copy()
+    #
+    # for i in df:
+    #     print(df)
 
 
 # print(i.gu, i.dong, i.totCCTV, i.totLight)

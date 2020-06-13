@@ -24,7 +24,7 @@
 /* 상단 타이틀 오렌지색 바 */
 .decorate-bar {
     display: inline-block;
-    background-color: orangered;
+    background-color: #568fd7;
     width: 7px;
     height: 30px;
     line-height: 1px;

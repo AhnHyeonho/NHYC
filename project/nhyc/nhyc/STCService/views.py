@@ -8,7 +8,7 @@ from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 # Create your views here.
 from django.views.decorators.csrf import csrf_exempt
-from django.db.models import Sum
+from django.db.models import Sum, Value, FloatField, F
 from rest_framework.parsers import JSONParser
 from rest_framework import viewsets
 from rest_framework import permissions
@@ -39,6 +39,7 @@ from dataProcess.models import MemberTrend
 from dataProcess.models import TrendBySession
 from dataProcess.models import RecommendedDong
 from dataProcess.models import Recommendation
+from dataProcess.models import AddressInfo
 
 import nhyc.settings as settings
 
@@ -1635,8 +1636,15 @@ def recommendation(request):
     trendsSorted = sorted(trends.items(), key=(lambda x : x[1]), reverse=True)
     points = setPoint(trendsSorted)
 
+    addresses = AddressInfo.objects.all().annotate(
+        budget = ((F("avgRentalFee") * 12) + F("avgDeposit")) / 100 * points["budget"],
+        safety = (F("rateCCTV") + F("ratePolice") + F("rateLight")) * points["safety"] / 3,
+        life = (F("ratePharmacy") + F("rateMarket") + F("ratePark") + F("rateGym")) * points["life"] / 4,
+        culture = (F("rateConcertHall") + F("rateLibrary") + F("rateCulturalFacility")) * points["culture"] / 3
 
-
+    ).values("budget", "safety", "life", "culture")
+    print(points)
+    print(addresses)
 
     return HttpResponse("추천 끝")
 

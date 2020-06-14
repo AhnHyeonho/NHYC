@@ -13,6 +13,7 @@ from knox.models import AuthToken
 import knox.auth
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 import json
+import xml.etree.ElementTree as ET
 import pandas
 import numpy as np
 import httplib2
@@ -41,6 +42,7 @@ from dataProcess.models import TrendBySession
 from dataProcess.models import RecommendedDong
 from dataProcess.models import Recommendation
 from dataProcess.models import AddressInfo
+from dataProcess.models import FrequentPlace
 
 import nhyc.settings as settings
 
@@ -1750,8 +1752,8 @@ def count(request, id, category, milliseconds):
 
 
 def recommendation(request):
-    user = "hoyoon"
-    memberTrend = MemberTrend.objects.get(member_id=user)
+    memberId = request.headers["memberId"]
+    memberTrend = MemberTrend.objects.get(member_id__memberId=memberId)
 
     trends = {"budget": memberTrend.budget, "safety": memberTrend.safety, "life": memberTrend.life,
               "culture": memberTrend.culture, "transportation": memberTrend.transportation}
@@ -1842,7 +1844,6 @@ def getRecommendedDongList(request):
 
 def getRecommendedPoint(request):
     memberId = request.headers["memberId"]
-    recommendation = Recommendation.objects.select_related("memberTrend").get(memberTrend__member_id=memberId)
     recommendation = Recommendation.objects.select_related("memberTrend") \
         .select_related("dong1").select_related("dong2").select_related("dong3") \
         .select_related("dong4").select_related("dong5").get(memberTrend__member_id=memberId)
@@ -1879,3 +1880,31 @@ def getUserPoints(request):
               "safety": recommendation.pointOfSafety}
     data = {"labels" : labels, "username" : userName, "dataset" : dataSet}
     return myJsonResponse(data)
+
+def getRoute(request):
+    memberId = request.headers["memberId"]
+    recommendation = Recommendation.objects.select_related("memberTrend") \
+        .select_related("dong1").select_related("dong2").select_related("dong3") \
+        .select_related("dong4").select_related("dong5").get(memberTrend__member_id__memberId=memberId)
+
+    dongs = [recommendation.dong1, recommendation.dong2, recommendation.dong3, recommendation.dong4,
+             recommendation.dong5]
+    starts = FrequentPlace.objects.select_related("id").filter(id__memberId=memberId)
+    url = "http://ws.bus.go.kr/api/rest/pathinfo/getPathInfoByBusNSub?serviceKey=jooMDUbQdPXfz9We%2BCA54k6P%2FwBFBviC%2FGnpipW0P%2FnnmgGfuTYjT%2BuEjxukjB78V42btkw3FkvLfhYHJd5Prg%3D%3D&"
+          #"startX=126.890001872801&startY=37.5757542035555&endX=127.04249040816&endY=37.5804217059895&"
+    data = []
+    for i, dong in enumerate(dongs, 1):
+        endX = dong.areaCode.longitude
+        endY = dong.areaCode.latitude
+        dongData = []
+        for start in starts:
+            startX = start.longitude
+            startY = start.latitude
+            http = httplib2.Http()
+            finalurl = url + "startX=" + str(startX) + "&startY=" + str(startY) + "&endX=" + str(endX) + "&endY=" + str(endY)
+            response, content = http.request(finalurl, "GET")
+            content = content.decode("utf-8")
+            xmlData = xmltodict.parse(content)
+            print(xmlData)
+
+    return HttpResponse()

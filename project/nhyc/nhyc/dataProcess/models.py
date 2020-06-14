@@ -4,7 +4,7 @@ from .managers import CustomUserManager
 
 
 class Member(AbstractUser):
-    memberId = models.CharField(max_length=100, unique=True, primary_key=True)
+    memberId = models.CharField(max_length=100, unique=True)
     email = models.EmailField(max_length=300)
     name = models.CharField(max_length=50)
 

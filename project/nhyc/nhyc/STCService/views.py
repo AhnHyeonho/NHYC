@@ -1460,7 +1460,7 @@ def saveFrequentPlace(request):
 
 # ########################### ↓↓↓↓테스트 코드↓↓↓↓ ###########################
 @csrf_exempt
-def SaveFrequentPlace(request):
+def testQuery(request):
     '''
     :param request:
     :return:

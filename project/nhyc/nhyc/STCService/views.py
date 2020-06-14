@@ -1,5 +1,6 @@
 import inspect
 import os
+from sklearn.preprocessing import MinMaxScaler
 from collections import OrderedDict
 from django.db.models.aggregates import Count
 from django.db.models.query import QuerySet, RawQuerySet
@@ -795,6 +796,46 @@ def updateBubbleChartData(request):
 
 
 @csrf_exempt
+def getPieChartData(request, gu, dong):
+    '''
+    각 항목별 지수 계산기
+    '''
+    addressInfo = AddressInfo.objects.filter(gu=gu, dong=dong)
+    decimalPlaces = 4  # 소숫점 이하 자리수
+    # 치안
+    safety_data = OrderedDict()
+    safety_data['CCTV'] = round(addressInfo[0].rateCCTV, decimalPlaces)
+    safety_data['보안등'] = round(addressInfo[0].rateLight, decimalPlaces)
+    safety_data['경찰시설'] = round(addressInfo[0].ratePolice, decimalPlaces)
+
+    # 생활
+    life_data = OrderedDict()
+    life_data['약국'] = round(addressInfo[0].ratePharmacy, decimalPlaces)
+    life_data['시장'] = round(addressInfo[0].rateMarket, decimalPlaces)
+    life_data['공원'] = round(addressInfo[0].ratePark, decimalPlaces)
+
+    # 문화
+    culture_data = OrderedDict()
+    culture_data['체육시설'] = round(addressInfo[0].rateGym, decimalPlaces)
+    culture_data['공연장'] = round(addressInfo[0].rateConcertHall, decimalPlaces)
+    culture_data['도서관'] = round(addressInfo[0].rateLibrary, decimalPlaces)
+    culture_data['박물관/미술관'] = round(addressInfo[0].rateCulturalFacility, decimalPlaces)
+
+    # 교통
+    trans_data = OrderedDict()
+    trans_data['지하철'] = round(addressInfo[0].rateSubway, decimalPlaces)
+    trans_data['버스'] = round(addressInfo[0].rateBus, decimalPlaces)
+
+    json_data = OrderedDict()
+    json_data['치안'] = safety_data
+    json_data['생활'] = life_data
+    json_data['문화'] = culture_data
+    json_data['교통'] = trans_data
+
+    return myJsonResponse(json_data)
+
+
+@csrf_exempt
 def updateTotsAddressInfo(request):
     '''
     update CCTV, PoliceOffice, SercurityLight, Pharmacy, Market, Park, Gym, ConcertHall, Library, CulturalFacility, Subway, Bus
@@ -1090,6 +1131,79 @@ def updateRatesAddressInfo(request):
             curDong.rateSubway = (curDong.totSubway / guArea) / (totSumList['totSubway__sum'] / siArea)
         curDong.save()
 
+    print("rate 가공 시작 ::")
+    addressInfoQuerySet = AddressInfo.objects.all()
+
+    guList = []
+    dongList = []
+    rateCCTVList = []
+    ratePoliceList = []
+    rateLightList = []
+    ratePharmacyList = []
+    rateMarketList = []
+    rateParkList = []
+    rateGymList = []
+    rateConcertHallList = []
+    rateLibraryList = []
+    rateCulturalFacilityList = []
+    rateSubwayList = []
+    rateBusList = []
+
+    for i in addressInfoQuerySet:
+        guList.append(i.gu)
+        dongList.append(i.dong)
+        rateCCTVList.append(i.rateCCTV)
+        ratePoliceList.append(i.ratePolice)
+        rateLightList.append(i.rateLight)
+        ratePharmacyList.append(i.ratePharmacy)
+        rateMarketList.append(i.rateMarket)
+        rateParkList.append(i.ratePark)
+        rateGymList.append(i.rateGym)
+        rateConcertHallList.append(i.rateConcertHall)
+        rateLibraryList.append(i.rateLibrary)
+        rateCulturalFacilityList.append(i.rateCulturalFacility)
+        rateSubwayList.append(i.rateSubway)
+        rateBusList.append(i.rateBus)
+
+    data = {
+        'rateCCTV': rateCCTVList,
+        'ratePolice': ratePoliceList,
+        'rateLight': rateLightList,
+        'ratePharmacy': ratePharmacyList,
+        'rateMarket': rateMarketList,
+        'ratePark': rateParkList,
+        'rateGym': rateGymList,
+        'rateConcertHall': rateConcertHallList,
+        'rateLibrary': rateLibraryList,
+        'rateCulturalFacility': rateCulturalFacilityList,
+        'rateSubway': rateSubwayList,
+        'rateBus': rateBusList
+    }
+    df = pandas.DataFrame(data, index=[guList, dongList])
+
+    df2 = df.copy()
+    df2[:] = MinMaxScaler().fit_transform(df2[:])  # 정규화 진행
+
+    for i in range(0, len(df2)):
+        curRow = df2.iloc[i]
+        print('구: {} // 동: {} rateData Update ::'.format(curRow.name[0], curRow.name[1]))
+        changeQuery, created = AddressInfo.objects.get_or_create(gu=curRow.name[0], dong=curRow.name[1])
+        changeQuery.rateCCTV = curRow.rateCCTV
+        changeQuery.ratePolice = curRow.ratePolice
+        changeQuery.rateLight = curRow.rateLight
+        changeQuery.ratePharmacy = curRow.ratePharmacy
+        changeQuery.rateMarket = curRow.rateMarket
+        changeQuery.ratePark = curRow.ratePark
+        changeQuery.rateGym = curRow.rateGym
+        changeQuery.rateConcertHall = curRow.rateConcertHall
+        changeQuery.rateLibrary = curRow.rateLibrary
+        changeQuery.rateCulturalFacility = curRow.rateCulturalFacility
+        changeQuery.rateSubway = curRow.rateSubway
+        changeQuery.rateBus = curRow.rateBus
+        changeQuery.save()
+
+        print('rate 가공 완료')
+
     return HttpResponse("updateRatesAddressInfo done")
 
 
@@ -1170,102 +1284,102 @@ def getDummyDataForDH(request, div):
                     [
                     {
           "labels": [
-            "교통",
-            "월세",
-            "보증금",
-            "문화",
-            "치안"
-          ],
+                "예산",
+                "치안",
+                "생활",
+                "문화",
+                "교통"
+              ],
           "status": [
             {
               "rank": 1,
               "address": "서울시 강북구 번동",
-              "traffic": 35,
-              "monthly": 44,
-              "deposit": 37,
+              "budget": 35,
+              "safety": 44,
+              "life": 37,
               "culture": 48,
-              "police": 50
+              "traffic": 50
             },
             {
               "rank": 2,
               "address": "서울특별시 송파구 잠실본동",
-              "traffic": 60,
-              "monthly": 47,
-              "deposit": 34,
+              "budget": 60,
+              "safety": 47,
+              "life": 34,
               "culture": 24,
-              "police": 64
+              "traffic": 64
             },
             {
               "rank": 3,
               "address": "서울 종로구 종로5길",
-              "traffic": 34,
-              "monthly": 54,
-              "deposit": 63,
+              "budget": 34,
+              "safety": 54,
+              "life": 63,
               "culture": 46,
-              "police": 27
+              "traffic": 27
             },
             {
               "rank": 4,
               "address": "서울 광진구 아차산로33길 21-5",
-              "traffic": 34,
-              "monthly": 64,
-              "deposit": 53,
+              "budget": 34,
+              "safety": 64,
+              "life": 53,
               "culture": 23,
-              "police": 54
+              "traffic": 54
             },
             {
               "rank": 5,
               "address": "서울 성북구 보문로34길",
-              "traffic": 24,
-              "monthly": 34,
-              "deposit": 54,
+              "budget": 24,
+              "safety": 34,
+              "life": 54,
               "culture": 53,
-              "police": 63
+              "traffic": 63
             },
             {
               "rank": 6,
               "address": "서울 강북구 월계로7나길 50",
-              "traffic": 63,
-              "monthly": 42,
-              "deposit": 83,
+              "budget": 63,
+              "safety": 42,
+              "life": 83,
               "culture": 35,
-              "police": 64
+              "traffic": 64
             },
             {
               "rank": 7,
               "address": "서울 광진구 동일로18길 52",
-              "traffic": 26,
-              "monthly": 74,
-              "deposit": 35,
+              "budget": 26,
+              "safety": 74,
+              "life": 35,
               "culture": 46,
-              "police": 37
+              "traffic": 37
             },
             {
               "rank": 8,
               "address": "서울 종로구 북촌로4길 19 1층",
-              "traffic": 37,
-              "monthly": 74,
-              "deposit": 63,
+              "budget": 37,
+              "safety": 74,
+              "life": 63,
               "culture": 45,
-              "police": 60
+              "traffic": 60
             },
             {
               "rank": 9,
               "address": "서울 성동구 서울숲2길 40-7 1층 엘더버거",
-              "traffic": 45,
-              "monthly": 36,
-              "deposit": 74,
+              "budget": 45,
+              "safety": 36,
+              "life": 74,
               "culture": 54,
-              "police": 43
+              "traffic": 43
             },
             {
               "rank": 10,
               "address": "서울시 강북구 번동",
-              "traffic": 54,
-              "monthly": 64,
-              "deposit": 35,
+              "budget": 54,
+              "safety": 64,
+              "life": 35,
               "culture": 46,
-              "police": 36
+              "traffic": 36
             }
           ]
         }
@@ -1275,22 +1389,24 @@ def getDummyDataForDH(request, div):
     elif div == 3:
         print('div = 3 ::')
         dummyData = '''
-           {
+            {
               "labels": [
-                "교통",
-                "월세",
-                "보증금",
+                "예산",
+                "치안",
+                "생활",
                 "문화",
-                "치안"
+                "교통"
               ],
-              "username": "김다현”,
-              “dataset”: [
-                "traffic": 54,
-                "monthly": 47,
-                "deposit": 34,
-                "culture": 24,
-                "police": 64
-              ]	
+              "username": "김다현",
+              "dataset": [
+                {
+                  "budget": 54,
+                  "safety": 47,
+                  "life": 34,
+                  "culture": 24,
+                  "traffic": 64
+                }
+              ]
             }
         '''
     else:
@@ -1316,61 +1432,43 @@ def getDummyDataForDH(request, div):
 
 # ########################### ↓↓↓↓테스트 코드↓↓↓↓ ###########################
 @csrf_exempt
-def testQuery(request):
+def testQuery(request, gu, dong):
     '''
     각 항목별 지수 계산기
     '''
+    addressInfo = AddressInfo.objects.filter(gu=gu, dong=dong)
+    decimalPlaces = 4  # 소숫점 이하 자리수
+    # 치안
+    safety_data = OrderedDict()
+    safety_data['CCTV'] = round(addressInfo[0].rateCCTV, decimalPlaces)
+    safety_data['보안등'] = round(addressInfo[0].rateLight, decimalPlaces)
+    safety_data['경찰시설'] = round(addressInfo[0].ratePolice, decimalPlaces)
 
-    addressInfoQuerySet = AddressInfo.objects.all()
+    # 생활
+    life_data = OrderedDict()
+    life_data['약국'] = round(addressInfo[0].ratePharmacy, decimalPlaces)
+    life_data['시장'] = round(addressInfo[0].rateMarket, decimalPlaces)
+    life_data['공원'] = round(addressInfo[0].ratePark, decimalPlaces)
 
-    guList = []
-    dongList = []
-    totCCTVList = []
-    totPoliceList = []
-    totLightList = []
-    totPharmacyList = []
-    totMarketList = []
-    totParkList = []
-    totGymList = []
-    totConcertHallList = []
-    totLibraryList = []
-    totCulturalFacilityList = []
+    # 문화
+    culture_data = OrderedDict()
+    culture_data['체육시설'] = round(addressInfo[0].rateGym, decimalPlaces)
+    culture_data['공연장'] = round(addressInfo[0].rateConcertHall, decimalPlaces)
+    culture_data['도서관'] = round(addressInfo[0].rateLibrary, decimalPlaces)
+    culture_data['박물관/미술관'] = round(addressInfo[0].rateCulturalFacility, decimalPlaces)
 
-    for i in addressInfoQuerySet:
-        guList.append(i.gu)
-        dongList.append(i.dong)
-        totCCTVList.append(i.totCCTV)
-        totPoliceList.append(i.totPolice)
-        totLightList.append(i.totLight)
-        totPharmacyList.append(i.totPharmacy)
-        totMarketList.append(i.totMarket)
-        totParkList.append(i.totPark)
-        totGymList.append(i.totGym)
-        totConcertHallList.append(i.totConcertHall)
-        totLibraryList.append(i.totLibrary)
-        totCulturalFacilityList.append(i.totCulturalFacility)
+    # 교통
+    trans_data = OrderedDict()
+    trans_data['지하철'] = round(addressInfo[0].rateSubway, decimalPlaces)
+    trans_data['버스'] = round(addressInfo[0].rateBus, decimalPlaces)
 
-    data = {
-        'totCCTV': totCCTVList,
-        'totPolice': totPoliceList,
-        'totLight': totLightList,
-        'totPharmacy': totPharmacyList,
-        'totMarket': totMarketList,
-        'totPark': totParkList,
-        'totGym': totGymList,
-        'totConcertHall': totConcertHallList,
-        'totLibrary': totLibraryList,
-        'totCulturalFacility': totCulturalFacilityList
-    }
+    json_data = OrderedDict()
+    json_data['치안'] = safety_data
+    json_data['생활'] = life_data
+    json_data['문화'] = culture_data
+    json_data['교통'] = trans_data
 
-    df = pandas.DataFrame(data, index=dongList)
-    # from sklearn.preprocessing import MinMaxScaler
-    #
-    # scaler = MinMaxScaler()
-    # df2 = df.copy()
-    #
-    # for i in df:
-    #     print(df)
+    return myJsonResponse(json_data)
 
 
 # print(i.gu, i.dong, i.totCCTV, i.totLight)
@@ -1727,15 +1825,18 @@ def count(request, id, category, milliseconds):
 
     return HttpResponse("count failed : " + str(milliseconds) + " milliseconds in " + category + " category")
 
+
 def recommendation(request):
     user = "hoyoon"
     memberTrend = MemberTrend.objects.get(member_id=user)
 
-    trends = {"budget" : memberTrend.budget, "safety" : memberTrend.safety, "life" : memberTrend.life, "culture" : memberTrend.culture, "transportation" : memberTrend.transportation}
+    trends = {"budget": memberTrend.budget, "safety": memberTrend.safety, "life": memberTrend.life,
+              "culture": memberTrend.culture, "transportation": memberTrend.transportation}
 
-    trendsSorted = sorted(trends.items(), key=(lambda x : x[1]), reverse=True)
+    trendsSorted = sorted(trends.items(), key=(lambda x: x[1]), reverse=True)
     points = setPoint(trendsSorted)
 
+<<<<<<< HEAD
     addresses = AddressInfo.objects.all().annotate(
         budget = ((F("avgRentalFee") * 12) + F("avgDeposit")) / 100 * points["budget"],
         safety = (F("rateCCTV") + F("ratePolice") + F("rateLight")) * points["safety"] / 3,
@@ -1777,7 +1878,10 @@ def recommendation(request):
         setattr(recommendation, "dong5", dongs[4])
 
     recommendation.save()
+=======
+>>>>>>> 13b73c9dcee70f89eb4968536eaf6d645de9ef0e
     return HttpResponse("추천 끝")
+
 
 def setPoint(trendsSorted):
     curTrend = trendsSorted[0][1]
@@ -1794,6 +1898,7 @@ def setPoint(trendsSorted):
         trendsPoints[trend[0]] = point
 
     return trendsPoints
+<<<<<<< HEAD
 
 def getRecommendedDongList(request):
     memberId = request.headers["memberId"]
@@ -1853,3 +1958,5 @@ def getUserPoints(request):
               "safety": recommendation.pointOfSafety}
     data = {"labels" : labels, "username" : userName, "dataset" : dataSet}
     return myJsonResponse(data)
+=======
+>>>>>>> 13b73c9dcee70f89eb4968536eaf6d645de9ef0e

@@ -53,7 +53,7 @@ urlpatterns = [
     path('admin/updateAvgAddressInfo', stcViews.updateAvgAddressInfo),
     path('admin/updateBubbleChartData', stcViews.updateBubbleChartData),
     path('admin/updateTotsAddressInfo', stcViews.updateTotsAddressInfo),
-    path('admin/updateRatesAddressInfo', stcViews.updateRatesAddressInfo),  # api 추가하면 완성
+    path('admin/updateRatesAddressInfo', stcViews.updateRatesAddressInfo),
 
     path('getGu/', stcViews.getGu),
     path('getDong/<str:gu>/', stcViews.getDong),
@@ -95,14 +95,13 @@ urlpatterns = [
     path('getRankingChartData/<str:division>/<str:gu>', stcViews.getRankingChartData),
     path('getTrendChartData/<str:division>/<int:term>/', stcViews.getTrendChartData),
     path('getTrendChartData/<str:division>/<int:term>/<str:gu>', stcViews.getTrendChartData),
+    path('getPieChartData/<str:gu>/<str:dong>', stcViews.getPieChartData),
 
     ## 테스트 url
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('test', stcViews.testQuery),
     path('test/<str:gu>', stcViews.testQuery),
-    # path('test/<str:division>/', stcViews.testQuery),
-    # path('test/<str:division>/<str:gu>', stcViews.testQuery),
-
+    path('test/<str:gu>/<str:dong>', stcViews.testQuery),
     # dummy data => 추후 삭제
     path('dummyData/<int:div>', stcViews.getDummyDataForDH),
     # dummy data => 추후 삭제

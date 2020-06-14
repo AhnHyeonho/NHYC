@@ -1,15 +1,20 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
+from .managers import CustomUserManager
 
 
-class Member(models.Model):
-    id = models.CharField(max_length=50, primary_key=True)
+class Member(AbstractUser):
+    memberId = models.CharField(max_length=100, unique=True, primary_key=True)
     email = models.EmailField(max_length=300)
-    password = models.CharField(max_length=50)
     name = models.CharField(max_length=50)
+
+    USERNAME_FIELD = 'memberId'
+    REQUIRED_FIELDS = ['email', 'name']
+
+    objects = CustomUserManager()
 
     def __str__(self):
         return self.id
-
 
 class Gu(models.Model):
     areaCode = models.CharField(max_length=10, primary_key=True)
@@ -65,7 +70,7 @@ class RecommendedDong(models.Model):
     pointOfTransportation = models.FloatField()
 
 class Recommendation(models.Model):
-    member = models.ForeignKey('Member', on_delete=models.CASCADE)
+    memberTrend = models.ForeignKey('MemberTrend', on_delete=models.CASCADE)
     pointOfBudget = models.FloatField()
     pointOfSafety = models.FloatField()
     pointOfLife = models.FloatField()

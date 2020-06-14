@@ -8,9 +8,9 @@ from django.shortcuts import render
 # Create your views here.
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Sum, Value, FloatField, F
-from rest_framework.parsers import JSONParser
-from rest_framework import viewsets
-from rest_framework import permissions
+from knox.models import AuthToken
+import knox.auth
+from rest_framework.authtoken.serializers import AuthTokenSerializer
 import json
 import pandas
 import numpy as np
@@ -1740,12 +1740,43 @@ def recommendation(request):
         budget = ((F("avgRentalFee") * 12) + F("avgDeposit")) / 100 * points["budget"],
         safety = (F("rateCCTV") + F("ratePolice") + F("rateLight")) * points["safety"] / 3,
         life = (F("ratePharmacy") + F("rateMarket") + F("ratePark") + F("rateGym")) * points["life"] / 4,
-        culture = (F("rateConcertHall") + F("rateLibrary") + F("rateCulturalFacility")) * points["culture"] / 3
+        culture = (F("rateConcertHall") + F("rateLibrary") + F("rateCulturalFacility")) * points["culture"] / 3,
+        transportation = (F("rateSubway") + F("rateBus")) * points["transportation"] / 2,
+        mean = (F("budget") + F("safety") + F("life") + F("culture") + F("transportation")) / 5
+    ).values("areaCode", "budget", "safety", "life", "culture", "transportation", "mean").order_by("-mean")
 
-    ).values("budget", "safety", "life", "culture")
-    print(points)
-    print(addresses)
+    dongs = []
+    for i in range(0, 5):
+        areaCode = Address.objects.get(areaCode=addresses[i]["areaCode"])
+        pointOfBudget = addresses[i]["budget"]
+        pointOfSafety = addresses[i]["safety"]
+        pointOfLife = addresses[i]["life"]
+        pointOfCulture = addresses[i]["culture"]
+        pointOfTransportation = addresses[i]["transportation"]
+        dong = RecommendedDong(areaCode=areaCode, pointOfBudget=pointOfBudget, pointOfSafety=pointOfSafety,
+                        pointOfLife=pointOfLife, pointOfCulture=pointOfCulture,
+                        pointOfTransportation=pointOfTransportation)
+        dong.save()
+        dongs.append(dong)
 
+    if Recommendation.objects.filter(memberTrend=memberTrend).count() == 0:
+        recommendation = Recommendation(memberTrend=memberTrend, pointOfBudget=points["budget"], pointOfSafety=points["safety"],
+                                        pointOfLife=points["life"], pointOfCulture=points["culture"], pointOfTransportation=points["transportation"],
+                                        dong1=dongs[0], dong2=dongs[1], dong3=dongs[2], dong4=dongs[3], dong5=dongs[4])
+    else:
+        recommendation = Recommendation.objects.get(memberTrend=memberTrend)
+        setattr(recommendation, "pointOfBudget", points["budget"])
+        setattr(recommendation, "pointOfSafety", points["safety"])
+        setattr(recommendation, "pointOfLife", points["life"])
+        setattr(recommendation, "pointOfCulture", points["culture"])
+        setattr(recommendation, "pointOfTransportation", points["transportation"])
+        setattr(recommendation, "dong1", dongs[0])
+        setattr(recommendation, "dong2", dongs[1])
+        setattr(recommendation, "dong3", dongs[2])
+        setattr(recommendation, "dong4", dongs[3])
+        setattr(recommendation, "dong5", dongs[4])
+
+    recommendation.save()
     return HttpResponse("추천 끝")
 
 def setPoint(trendsSorted):
@@ -1763,3 +1794,62 @@ def setPoint(trendsSorted):
         trendsPoints[trend[0]] = point
 
     return trendsPoints
+
+def getRecommendedDongList(request):
+    memberId = request.headers["memberId"]
+    recommendation = Recommendation.objects.select_related("memberTrend")\
+        .select_related("dong1").select_related("dong2").select_related("dong3")\
+        .select_related("dong4").select_related("dong5").get(memberTrend__member_id=memberId)
+
+    dongs = [recommendation.dong1, recommendation.dong2, recommendation.dong3, recommendation.dong4, recommendation.dong5]
+    dongToSend = []
+    for i, dong in enumerate(dongs, 1):
+        address = Address.objects.get(areaCode=dong.areaCode)
+        info = {
+            "rank" : i,
+            "address" : address.si + " " + address.gu + " " + address.dong,
+            "latitude" : address.latitude,
+            "longitude" : address.longitude
+        }
+        dongToSend.append(info)
+    return myJsonResponse({"":dongToSend})
+
+def getRecommendedPoint(request):
+    memberId = request.headers["memberId"]
+    recommendation = Recommendation.objects.select_related("memberTrend").get(memberTrend__member_id=memberId)
+    recommendation = Recommendation.objects.select_related("memberTrend") \
+        .select_related("dong1").select_related("dong2").select_related("dong3") \
+        .select_related("dong4").select_related("dong5").get(memberTrend__member_id=memberId)
+
+    labels = ["교통", "예산", "생활", "문화", "치안"]
+    dongs = [recommendation.dong1, recommendation.dong2, recommendation.dong3, recommendation.dong4,
+             recommendation.dong5]
+    points = []
+    for i, dong in enumerate(dongs, 1):
+        address = Address.objects.get(areaCode=dong.areaCode)
+        info = {
+            "rank": i,
+            "address": address.si + " " + address.gu + " " + address.dong,
+             "transportation": dong.pointOfTransportation,
+              "budget": dong.pointOfBudget,
+              "life": dong.pointOfLife,
+              "culture": dong.pointOfCulture,
+              "safety": dong.pointOfSafety
+
+        }
+        points.append(info)
+    data = {"labels" : labels, "status" : points}
+    return myJsonResponse([data])
+
+def getUserPoints(request):
+    memberId = request.headers["memberId"]
+    recommendation = Recommendation.objects.select_related("memberTrend").get(memberTrend__member_id=memberId)
+    labels = ["교통", "예산", "생활", "문화", "치안"]
+    userName = Member.objects.get(id=recommendation.memberTrend.member).name
+    dataSet = {"transportation": recommendation.pointOfTransportation,
+              "budget": recommendation.pointOfBudget,
+              "life": recommendation.pointOfLife,
+              "culture": recommendation.pointOfCulture,
+              "safety": recommendation.pointOfSafety}
+    data = {"labels" : labels, "username" : userName, "dataset" : dataSet}
+    return myJsonResponse(data)

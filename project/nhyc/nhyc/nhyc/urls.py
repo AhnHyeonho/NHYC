@@ -15,11 +15,11 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from django.urls import path
 from dataProcess import views as dpviews
 from django.urls import path, include  ### 현호추가
 from django.contrib.auth.models import User  ### 현호추가
 from STCService import views as stcViews  ### 현호추가
+from rest_framework import routers
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -45,7 +45,12 @@ urlpatterns = [
     path('join', stcViews.join, name='join'),
     path('login', stcViews.login, name='login'),
     path('recommend', stcViews.recommendation, name='recommendation'),
+    path('getRecommendedDongList', stcViews.getRecommendedDongList, name='getRecommendedDongList'),
+    path('getRecommendedPoint', stcViews.getRecommendedPoint, name='getRecommendedPoint'),
+    path('getUserPoints', stcViews.getUserPoints, name='getUserPoints'),
 
+    path("api/", include("dataProcess.urls")),
+    path("api/auth", include("knox.urls")),
     # 현호추가 -->
 
     # 확정 url

@@ -8,8 +8,6 @@ import './KakaoMap.css'
 
 class KakaoMap extends React.Component {
     
-    
-
     constructor(props) {
         super(props);
         this.state={
@@ -52,8 +50,6 @@ class KakaoMap extends React.Component {
 
         console.log(this.props.longitude)
 
-
-
         this.setCenter()
 
     }
@@ -62,13 +58,10 @@ class KakaoMap extends React.Component {
 
         return (
             <div id='recommand-map' style={{width: "65%", height: "70vh", position: "relative", display:"inline-block"}}>
-                <div>호호~</div>
             </div>
         )
     }
 
-
-    
 }
 
 export default KakaoMap;

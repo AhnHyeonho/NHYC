@@ -3,6 +3,7 @@ import React from 'react';
 
 import RecommandTable from './RecommandTable';
 import RadarChart from './RadarChart';
+import PreferRadar from './PreferRadar';
 import TrafficSection from './TrafficSection';
 
 import './DataBoard.css';
@@ -70,7 +71,7 @@ class DataBoard extends React.Component {
                 {/* 3. 추천 지표에 대한 사용자 선호도  */}
                 <div className="recommand-databoard-item">
                     <div className="recommand-databoard-item-title" > 각 추천 지표에 대한 사용자 선호도 </div>
-                    <RadarChart width={500} height={500} name="prefer" />
+                    <PreferRadar width={500} height={500} name="prefer"/>
                 </div>
 
                 {/* 4. 대중 교통 추천 섹션 */}

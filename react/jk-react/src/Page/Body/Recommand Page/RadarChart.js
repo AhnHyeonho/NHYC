@@ -4,23 +4,17 @@ import { Radar } from "react-chartjs-2"
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+import "./RadarChart.css"
+
 
 const radarData = {
 
-  // labels: ["교통", "치안", "문화", "생활", "기타"],
-
-  options: {
-    legend: {
-      display: true,
-      position: 'left',
-    }
-  },
-
-  datasets: []
-
-
-
+  labels: [],
+  datasets: [],
+  
 }
+
+
 
 
 
@@ -45,42 +39,43 @@ export default function RadarChart(props) {
     var ranNum = Math.floor(Math.random() * (max - min + 1)) + min;
     return ranNum;
   }
-  
-  
+
+
   function generateDatasets(name) {
     const datalist = status;
-  
+    
+    console.log(datalist)
+
     const dataset = []
+
+    const r = [241, 242, 188, 103, 165]
+    const g = [95, 203, 229, 153, 102]
+    const b = [95, 97, 92, 255, 255]
+
     for (let i = 0; i < 5; i++) {
       const d = datalist[i]
-  
-  
-  
-      const r = generateRandom(0, 255);
-      const g = generateRandom(0, 255);
-      const b = generateRandom(0, 255);
-  
-      const r2 = generateRandom(0, 255);
-      const g2 = generateRandom(0, 255);
-      const b2 = generateRandom(0, 255);
-  
-  
+
+      // const r = generateRandom(0, 255);
+      // const g = generateRandom(0, 255);
+      // const b = generateRandom(0, 255);
+
+
       dataset[i] = {
         label: d.address,
-        data: [d.trafic, d.police, d.culture, d.monthly, d.deposit],
-        backgroundColor: `rgba(${r}, ${g}, ${b}, 0.2)`,
-        bolderColor: `rgba(${r}, ${g}, ${b}, 1)`,
-        pointBorderColor: `rgba(${r2}, ${g2}, ${b2}, 1)`,
-        pointBackgrounColor: `rgba(${r2}, ${g2}, ${b2}, 1)`,
-        pointRadius: 1,
+        data: [d.budget, d.safety, d.life, d.culture, d.traffic],
+        backgroundColor: `rgba(${r[i]}, ${g[i]}, ${b[i]}, 0.2)`,
+        bolderColor: `rgba(${r[i]}, ${g[i]}, ${b[i]}, 1)`,
+        pointBorderColor: `rgba(${r[i]}, ${g[i]}, ${b[i]}, 1)`,
+        pointBackgrounColor: `rgba(${r[i]}, ${g[i]}, ${b[i]}, 1)`,
+        pointRadius: 2,
       };
     }
-  
+
     return dataset
-  
+
   }
-  
-  
+
+
 
 
   useEffect(() => {
@@ -95,52 +90,32 @@ export default function RadarChart(props) {
         // loading 상태를 true 로 바꿈
         setLoading(true);
 
-        let url;
-
-
-        if (props.name == "localStatus") {
-          url = "http://ec2-52-78-44-165.ap-northeast-2.compute.amazonaws.com:8000/dummyData/2"
-        }
-
-        else if (props.name == "prefer") {
-          url = "http://ec2-52-78-44-165.ap-northeast-2.compute.amazonaws.com:8000/dummyData/2"
-        }
-
+        let url = "http://ec2-52-78-44-165.ap-northeast-2.compute.amazonaws.com:8000/dummyData/2";
 
         // request
         const response = await axios.get(url);
 
         // request data - labels
         const responseLabels = response.data[0].labels;
+        const rawData = response.data[0].status;
 
-        // ======= 그래프 종류에 따라 받아오는 데이터 다르게 ======
+        console.log(rawData);
 
-        // *** 지역별 월세/보증금 및 시설 현황 차트 ***
-        if (props.name == "localStatus" || props.name == "prefer") {
-          const rawData = response.data[0].status
 
-          rawData.map(data => {
-            setStatus(status => [
-              ...status, {
-                rank: data.rank,
-                address: data.address,
-                trafic: data.traffic,
-                culture: data.culture,
-                deposit: data.deposit,
-                monthly: data.monthly,
-                police: data.police
-              }]
-            )
-          })
+        rawData.map(data => {
+          console.log("맵핑 데이터"+data)
+          setStatus(status => [
+            ...status, {
+              address: data.address,
+              budget: data.budget,
+              safety: data.safety,
+              life: data.life,
+              culture: data.culture,
+              traffic: data.traffic,
+            }]
+          )
+        })
 
-        }
-
-        // *** 각 추천 지표에 대한 사용자 선호도 ***
-        // else if (props.name == "prefer") {
-        //   // rawData = response.data[0].dataset;
-        // }
-
-        // ======= 그래프 종류에 따라 받아오는 데이터 다르게 ======
 
         setLabels(responseLabels);
 
@@ -164,21 +139,15 @@ export default function RadarChart(props) {
   if (!labels) return null;
 
 
-  // 데이터 삽입 
-  // {
-  //   radarData.labels = labels
-  //   radarData.datasets = generateDatasets("localStatus")
-  // }
-
   console.log(status)
   radarData.labels = labels
   radarData.datasets = generateDatasets("localStatus")
-  
+
 
   return (
     <div>
-
-      <Radar data={radarData} />
+     
+      <Radar data={radarData} options={{legend:{ display: true, position: "left"}}} />
 
     </div>
   )

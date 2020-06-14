@@ -1283,102 +1283,102 @@ def getDummyDataForDH(request, div):
                     [
                     {
           "labels": [
-            "교통",
-            "월세",
-            "보증금",
-            "문화",
-            "치안"
-          ],
+                "예산",
+                "치안",
+                "생활",
+                "문화",
+                "교통"
+              ],
           "status": [
             {
               "rank": 1,
               "address": "서울시 강북구 번동",
-              "traffic": 35,
-              "monthly": 44,
-              "deposit": 37,
+              "budget": 35,
+              "safety": 44,
+              "life": 37,
               "culture": 48,
-              "police": 50
+              "traffic": 50
             },
             {
               "rank": 2,
               "address": "서울특별시 송파구 잠실본동",
-              "traffic": 60,
-              "monthly": 47,
-              "deposit": 34,
+              "budget": 60,
+              "safety": 47,
+              "life": 34,
               "culture": 24,
-              "police": 64
+              "traffic": 64
             },
             {
               "rank": 3,
               "address": "서울 종로구 종로5길",
-              "traffic": 34,
-              "monthly": 54,
-              "deposit": 63,
+              "budget": 34,
+              "safety": 54,
+              "life": 63,
               "culture": 46,
-              "police": 27
+              "traffic": 27
             },
             {
               "rank": 4,
               "address": "서울 광진구 아차산로33길 21-5",
-              "traffic": 34,
-              "monthly": 64,
-              "deposit": 53,
+              "budget": 34,
+              "safety": 64,
+              "life": 53,
               "culture": 23,
-              "police": 54
+              "traffic": 54
             },
             {
               "rank": 5,
               "address": "서울 성북구 보문로34길",
-              "traffic": 24,
-              "monthly": 34,
-              "deposit": 54,
+              "budget": 24,
+              "safety": 34,
+              "life": 54,
               "culture": 53,
-              "police": 63
+              "traffic": 63
             },
             {
               "rank": 6,
               "address": "서울 강북구 월계로7나길 50",
-              "traffic": 63,
-              "monthly": 42,
-              "deposit": 83,
+              "budget": 63,
+              "safety": 42,
+              "life": 83,
               "culture": 35,
-              "police": 64
+              "traffic": 64
             },
             {
               "rank": 7,
               "address": "서울 광진구 동일로18길 52",
-              "traffic": 26,
-              "monthly": 74,
-              "deposit": 35,
+              "budget": 26,
+              "safety": 74,
+              "life": 35,
               "culture": 46,
-              "police": 37
+              "traffic": 37
             },
             {
               "rank": 8,
               "address": "서울 종로구 북촌로4길 19 1층",
-              "traffic": 37,
-              "monthly": 74,
-              "deposit": 63,
+              "budget": 37,
+              "safety": 74,
+              "life": 63,
               "culture": 45,
-              "police": 60
+              "traffic": 60
             },
             {
               "rank": 9,
               "address": "서울 성동구 서울숲2길 40-7 1층 엘더버거",
-              "traffic": 45,
-              "monthly": 36,
-              "deposit": 74,
+              "budget": 45,
+              "safety": 36,
+              "life": 74,
               "culture": 54,
-              "police": 43
+              "traffic": 43
             },
             {
               "rank": 10,
               "address": "서울시 강북구 번동",
-              "traffic": 54,
-              "monthly": 64,
-              "deposit": 35,
+              "budget": 54,
+              "safety": 64,
+              "life": 35,
               "culture": 46,
-              "police": 36
+              "traffic": 36
             }
           ]
         }
@@ -1388,22 +1388,24 @@ def getDummyDataForDH(request, div):
     elif div == 3:
         print('div = 3 ::')
         dummyData = '''
-           {
+            {
               "labels": [
-                "교통",
-                "월세",
-                "보증금",
+                "예산",
+                "치안",
+                "생활",
                 "문화",
-                "치안"
+                "교통"
               ],
-              "username": "김다현”,
-              “dataset”: [
-                "traffic": 54,
-                "monthly": 47,
-                "deposit": 34,
-                "culture": 24,
-                "police": 64
-              ]	
+              "username": "김다현",
+              "dataset": [
+                {
+                  "budget": 54,
+                  "safety": 47,
+                  "life": 34,
+                  "culture": 24,
+                  "traffic": 64
+                }
+              ]
             }
         '''
     else:

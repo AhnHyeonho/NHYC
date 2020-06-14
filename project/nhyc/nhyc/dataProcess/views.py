@@ -115,6 +115,27 @@ def getAddress(reqeust):
 
     return HttpResponse()
 
+def getDongLatLongs(request):
+    addresses = Address.objects.all()
+    for address in addresses:
+        query = address.si + " " + address.gu + " " + address.dong
+        naverURL = naverGeocodeURL + "?query=" + quote(query)
+        https = urllib.request.Request(naverURL)
+        https.add_header("X-NCP-APIGW-API-KEY-ID", naverClientId)
+        https.add_header("X-NCP-APIGW-API-KEY", naverClientPasswd)
+        response = urllib.request.urlopen(https)
+        content = response.read()
+        content = content.decode("utf-8")
+
+        geocode = json.loads(content)
+        if geocode["meta"]["count"] != 0:
+            latitude = geocode["addresses"][0]["y"]
+            longitude = geocode["addresses"][0]["x"]
+            address.latitude = latitude
+            address.longitude = longitude
+            address.save()
+    return HttpResponse("끗")
+
 
 def getHouseInfo(request, start=1, end=4000000):
     url = "http://openapi.seoul.go.kr:8088/545149464a73696c39326f47667644/json/houseRentPriceInfo/"

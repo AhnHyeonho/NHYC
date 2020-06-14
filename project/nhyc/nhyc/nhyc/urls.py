@@ -24,6 +24,7 @@ from rest_framework import routers
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('admin/addresses', dpviews.getAddress, name='getAddress'),
+    path('admin/getDongLatLongs', dpviews.getDongLatLongs, name='getDongLatLongs'),
     path('admin/houseinfos', dpviews.getHouseInfo, name='getHouseInfo'),
     path('admin/houseinfos/<int:start>', dpviews.getHouseInfo, name='getHouseInfo'),
     path('admin/houseinfos/<int:start>/<int:end>', dpviews.getHouseInfo, name='getHouseInfo'),
@@ -48,6 +49,7 @@ urlpatterns = [
     path('getRecommendedDongList', stcViews.getRecommendedDongList, name='getRecommendedDongList'),
     path('getRecommendedPoint', stcViews.getRecommendedPoint, name='getRecommendedPoint'),
     path('getUserPoints', stcViews.getUserPoints, name='getUserPoints'),
+    path('getRoute', stcViews.getRoute, name='getRoute'),
 
     path("api/", include("dataProcess.urls")),
     path("api/auth", include("knox.urls")),

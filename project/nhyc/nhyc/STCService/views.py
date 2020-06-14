@@ -1415,6 +1415,34 @@ def getDummyDataForDH(request, div):
     return HttpResponse(dummyData)
 
 
+@csrf_exempt
+def saveFrequentPlace(request):
+    '''
+    :param request:
+    :return:
+    '''
+    request = json.loads(request.body)
+
+    memberId = request['id']
+    latitude = request['latitude']
+    longitude = request['longitude']
+    PlaceName = request['placeName']
+    gu = request['gu']
+    dong = request['dong']
+
+    querySet, created = FrequentPlace.objects.get_or_create(
+        id=Member.objects.get(id=memberId),
+        latitude=latitude,
+        longitude=longitude,
+        placeName=PlaceName,
+        areaCode=Address.objects.get(gu=gu, dong=dong)
+    )
+    querySet.save()
+    # return 해주는건 수정
+    return HttpResponse("SaveFrequentPlace done")
+    # return myJsonResponse(json_data)
+
+
 # dummyData ↑↑↑
 
 ########################## ↑↑↑↑↑↑↑↑ ############################
@@ -1432,9 +1460,10 @@ def getDummyDataForDH(request, div):
 
 # ########################### ↓↓↓↓테스트 코드↓↓↓↓ ###########################
 @csrf_exempt
-def testQuery(request, gu, dong):
+def SaveFrequentPlace(request):
     '''
-    SaveFrequentPlace testing
+    :param request:
+    :return:
     '''
     request = json.loads(request.body)
 
@@ -1444,18 +1473,17 @@ def testQuery(request, gu, dong):
     PlaceName = request['placeName']
     gu = request['gu']
     dong = request['dong']
-    areaCode = Address.objects.get(gu=gu, dong=dong)
 
     querySet, created = FrequentPlace.objects.get_or_create(
-        id=memberId,
+        id=Member.objects.get(id=memberId),
         latitude=latitude,
         longitude=longitude,
         placeName=PlaceName,
-        areaCode=areaCode
+        areaCode=Address.objects.get(gu=gu, dong=dong)
     )
     querySet.save()
-
-    return HttpResponse("testQuery done")
+    # return 해주는건 수정
+    return HttpResponse("SaveFrequentPlace done")
     # return myJsonResponse(json_data)
 
 

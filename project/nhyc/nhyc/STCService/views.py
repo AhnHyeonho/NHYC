@@ -1836,7 +1836,7 @@ def recommendation(request):
     trendsSorted = sorted(trends.items(), key=(lambda x: x[1]), reverse=True)
     points = setPoint(trendsSorted)
 
-<<<<<<< HEAD
+
     addresses = AddressInfo.objects.all().annotate(
         budget = ((F("avgRentalFee") * 12) + F("avgDeposit")) / 100 * points["budget"],
         safety = (F("rateCCTV") + F("ratePolice") + F("rateLight")) * points["safety"] / 3,
@@ -1878,8 +1878,7 @@ def recommendation(request):
         setattr(recommendation, "dong5", dongs[4])
 
     recommendation.save()
-=======
->>>>>>> 13b73c9dcee70f89eb4968536eaf6d645de9ef0e
+
     return HttpResponse("추천 끝")
 
 
@@ -1898,7 +1897,6 @@ def setPoint(trendsSorted):
         trendsPoints[trend[0]] = point
 
     return trendsPoints
-<<<<<<< HEAD
 
 def getRecommendedDongList(request):
     memberId = request.headers["memberId"]
@@ -1958,5 +1956,3 @@ def getUserPoints(request):
               "safety": recommendation.pointOfSafety}
     data = {"labels" : labels, "username" : userName, "dataset" : dataSet}
     return myJsonResponse(data)
-=======
->>>>>>> 13b73c9dcee70f89eb4968536eaf6d645de9ef0e

@@ -795,6 +795,46 @@ def updateBubbleChartData(request):
 
 
 @csrf_exempt
+def getPieChartData(request, gu, dong):
+    '''
+    각 항목별 지수 계산기
+    '''
+    addressInfo = AddressInfo.objects.filter(gu=gu, dong=dong)
+    decimalPlaces = 4  # 소숫점 이하 자리수
+    # 치안
+    safety_data = OrderedDict()
+    safety_data['CCTV'] = round(addressInfo[0].rateCCTV, decimalPlaces)
+    safety_data['보안등'] = round(addressInfo[0].rateLight, decimalPlaces)
+    safety_data['경찰시설'] = round(addressInfo[0].ratePolice, decimalPlaces)
+
+    # 생활
+    life_data = OrderedDict()
+    life_data['약국'] = round(addressInfo[0].ratePharmacy, decimalPlaces)
+    life_data['시장'] = round(addressInfo[0].rateMarket, decimalPlaces)
+    life_data['공원'] = round(addressInfo[0].ratePark, decimalPlaces)
+
+    # 문화
+    culture_data = OrderedDict()
+    culture_data['체육시설'] = round(addressInfo[0].rateGym, decimalPlaces)
+    culture_data['공연장'] = round(addressInfo[0].rateConcertHall, decimalPlaces)
+    culture_data['도서관'] = round(addressInfo[0].rateLibrary, decimalPlaces)
+    culture_data['박물관/미술관'] = round(addressInfo[0].rateCulturalFacility, decimalPlaces)
+
+    # 교통
+    trans_data = OrderedDict()
+    trans_data['지하철'] = round(addressInfo[0].rateSubway, decimalPlaces)
+    trans_data['버스'] = round(addressInfo[0].rateBus, decimalPlaces)
+
+    json_data = OrderedDict()
+    json_data['치안'] = safety_data
+    json_data['생활'] = life_data
+    json_data['문화'] = culture_data
+    json_data['교통'] = trans_data
+
+    return myJsonResponse(json_data)
+
+
+@csrf_exempt
 def updateTotsAddressInfo(request):
     '''
     update CCTV, PoliceOffice, SercurityLight, Pharmacy, Market, Park, Gym, ConcertHall, Library, CulturalFacility, Subway, Bus
@@ -1389,12 +1429,43 @@ def getDummyDataForDH(request, div):
 
 # ########################### ↓↓↓↓테스트 코드↓↓↓↓ ###########################
 @csrf_exempt
-def testQuery(request):
+def testQuery(request, gu, dong):
     '''
     각 항목별 지수 계산기
     '''
+    addressInfo = AddressInfo.objects.filter(gu=gu, dong=dong)
+    decimalPlaces = 4  # 소숫점 이하 자리수
+    # 치안
+    safety_data = OrderedDict()
+    safety_data['CCTV'] = round(addressInfo[0].rateCCTV, decimalPlaces)
+    safety_data['보안등'] = round(addressInfo[0].rateLight, decimalPlaces)
+    safety_data['경찰시설'] = round(addressInfo[0].ratePolice, decimalPlaces)
 
-    return HttpResponse('testQuery Done')
+    # 생활
+    life_data = OrderedDict()
+    life_data['약국'] = round(addressInfo[0].ratePharmacy, decimalPlaces)
+    life_data['시장'] = round(addressInfo[0].rateMarket, decimalPlaces)
+    life_data['공원'] = round(addressInfo[0].ratePark, decimalPlaces)
+
+    # 문화
+    culture_data = OrderedDict()
+    culture_data['체육시설'] = round(addressInfo[0].rateGym, decimalPlaces)
+    culture_data['공연장'] = round(addressInfo[0].rateConcertHall, decimalPlaces)
+    culture_data['도서관'] = round(addressInfo[0].rateLibrary, decimalPlaces)
+    culture_data['박물관/미술관'] = round(addressInfo[0].rateCulturalFacility, decimalPlaces)
+
+    # 교통
+    trans_data = OrderedDict()
+    trans_data['지하철'] = round(addressInfo[0].rateSubway, decimalPlaces)
+    trans_data['버스'] = round(addressInfo[0].rateBus, decimalPlaces)
+
+    json_data = OrderedDict()
+    json_data['치안'] = safety_data
+    json_data['생활'] = life_data
+    json_data['문화'] = culture_data
+    json_data['교통'] = trans_data
+
+    return myJsonResponse(json_data)
 
 
 # print(i.gu, i.dong, i.totCCTV, i.totLight)

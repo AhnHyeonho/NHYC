@@ -88,6 +88,12 @@ urlpatterns = [
     path('getCulturalFacilityCnt/', stcViews.getCulturalFacilityCnt),
     path('getCulturalFacilityCnt/<str:gu>/', stcViews.getCulturalFacilityCnt),
     path('getCulturalFacilityCnt/<str:gu>/<str:dong>/', stcViews.getCulturalFacilityCnt),
+    path('getSubwayCnt/', stcViews.getSubwayCnt),
+    path('getSubwayCnt/<str:gu>/', stcViews.getSubwayCnt),
+    path('getSubwayCnt/<str:gu>/<str:dong>/', stcViews.getSubwayCnt),
+    path('getBusCnt/', stcViews.getBusCnt),
+    path('getBusCnt/<str:gu>/', stcViews.getBusCnt),
+    path('getBusCnt/<str:gu>/<str:dong>/', stcViews.getBusCnt),
 
     path('getBubbleChartData', stcViews.getBubbleChartData),
     path('getBubbleChartData/<str:gu>', stcViews.getBubbleChartData),

@@ -138,8 +138,6 @@ export default function RadarChart(props) {
   if (error) return <div>에러가 발생했습니다</div>;
   if (!labels) return null;
 
-
-  console.log(status)
   radarData.labels = labels
   radarData.datasets = generateDatasets("localStatus")
 

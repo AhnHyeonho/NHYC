@@ -95,7 +95,7 @@ class TrendBySession(models.Model):
 
 
 class FrequentPlace(models.Model):
-    placeId = models.IntegerField(primary_key=True)
+    placeId = models.AutoField(primary_key=True)
     id = models.ForeignKey('Member', on_delete=models.CASCADE)
     latitude = models.FloatField()
     longitude = models.FloatField()

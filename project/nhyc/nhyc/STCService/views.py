@@ -1210,6 +1210,50 @@ def updateRatesAddressInfo(request):
     return HttpResponse("updateRatesAddressInfo done")
 
 
+@csrf_exempt
+def getDongPoint(request, gu, dong):
+    '''
+    :param request:
+    :return:
+    '''
+
+    addressInfo = AddressInfo.objects.get(gu=gu, dong=dong)
+    decimalPlaces = 4  # 소숫점 이하 자리수
+
+    # 치안
+    cctv = round(addressInfo.rateCCTV, decimalPlaces)
+    light = round(addressInfo.rateLight, decimalPlaces)
+    police = round(addressInfo.ratePolice, decimalPlaces)
+    safety = round((cctv + light + police) * 100 / 3, decimalPlaces)
+
+    # 생활
+    pharmacy = round(addressInfo.ratePharmacy, decimalPlaces)
+    market = round(addressInfo.rateMarket, decimalPlaces)
+    park = round(addressInfo.ratePark, decimalPlaces)
+    life = round((pharmacy + market + park) * 100 / 3, decimalPlaces)
+
+    # 문화
+    gym = round(addressInfo.rateGym, decimalPlaces)
+    concertHall = round(addressInfo.rateConcertHall, decimalPlaces)
+    library = round(addressInfo.rateLibrary, decimalPlaces)
+    culturalFacility = round(addressInfo.rateCulturalFacility, decimalPlaces)
+    culture = round((gym + concertHall + library + culturalFacility) * 100 / 4, decimalPlaces)
+
+    # 교통
+    subway = round(addressInfo.rateSubway, decimalPlaces)
+    bus = round(addressInfo.rateBus, decimalPlaces)
+    trans = round((subway + bus) * 100 / 2, decimalPlaces)
+
+    json_data = OrderedDict()
+    json_data['치안'] = safety
+    json_data['생활'] = life
+    json_data['문화'] = culture
+    json_data['교통'] = trans
+
+    # return HttpResponse("SaveFrequentPlace done")
+    return myJsonResponse(json_data)
+
+
 # dummyData ↓↓↓
 @csrf_exempt
 def getDummyDataForDH(request, div):

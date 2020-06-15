@@ -12,7 +12,7 @@ from django.db.models import Sum, Value, FloatField, F
 from knox.models import AuthToken
 import knox.auth
 from rest_framework.authtoken.serializers import AuthTokenSerializer
-import json
+import json, xmltodict
 import xml.etree.ElementTree as ET
 import pandas
 import numpy as np
@@ -1658,7 +1658,7 @@ def getPoliceOfficeInfosByGu(gu=None):  # 입력한 gu에 있는 경찰시설 �
 ##################### ↑↑↑↑ 당장에 안쓰는 메소드 ↑↑↑↑ #####################
 
 ######################### Login ####################################
-
+'''
 def kakaoJoin(request):
     accessToken = request.headers["AccessToken"]
     baseUrl = "https://kapi.kakao.com/v2/user/me"
@@ -1700,8 +1700,8 @@ def kakaoJoin(request):
             memberInfo.save()
 
     return HttpResponse(jsonData)
-
-
+'''
+'''
 def join(request):
     id = request.headers["id"]
     email = request.headers["email"]
@@ -1735,8 +1735,8 @@ def join(request):
 
         return HttpResponse("join success")
     return HttpResponse("id or email is already exist")
-
-
+'''
+'''
 def login(request):
     id = request.headers["id"]
     password = request.headers["password"]
@@ -1745,7 +1745,7 @@ def login(request):
         return HttpResponse("login success")
     else:
         return HttpResponse("login fail")
-
+'''
 
 def count(request, id, category, milliseconds):
     m = 1000
@@ -1928,6 +1928,24 @@ def getRoute(request):
             response, content = http.request(finalurl, "GET")
             content = content.decode("utf-8")
             xmlData = xmltodict.parse(content)
-            print(xmlData)
+            jsonData = json.loads(json.dumps(xmlData, indent=4))
+            print(jsonData)
+            if jsonData["ServiceResult"]["msgHeader"]["headerCd"] == '0':
+                items = jsonData["ServiceResult"]["msgBody"]["itemList"][0]["pathList"]
+                route = ""
+                routeDetail = []
+                time = jsonData["ServiceResult"]["msgBody"]["itemList"][0]["time"]
+                for item in items:
+                    name = item["fname"]
+                    number = item["routeNm"]
+                    latitude = item["fy"]
+                    longitude = item["fx"]
+                    path = {"name" : name, "호선" : number, "위도" : latitude, "경도" : longitude}
+                    routeDetail.append(path)
+                    route += name + "(" + number + ")" + "->"
+                route = route[0 : len(route) - 2]
+                dataToSend = {"소요시간" : time, "경로" : route, "역정보" : routeDetail}
+                dongData.append(dataToSend)
+        data.append({"rank" : i, "route" : dongData})
 
-    return HttpResponse()
+    return myJsonResponse(data)

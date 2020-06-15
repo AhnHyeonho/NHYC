@@ -1731,21 +1731,29 @@ def login(request):
         return HttpResponse("login fail")
 '''
 
-def count(request, id, category, milliseconds):
+def count(request, category, milliseconds):
+    sessionId = request.headers["sessionId"]
+    if "memberId" in request.headers:
+        memberId = request.headers["memberId"]
+        memberTrend = MemberTrend.objects.get(member_id__memberId=memberId)
+        if TrendBySession.objects.filter(sessionId=sessionId).exists():
+            trendBySession = TrendBySession.objects.get(sessionId=sessionId)
+            colunms = TrendBySession._meta.fields
+            for colunm in colunms:
+                colunmName = colunm.name
+                if colunmName is not "sessionId":
+                    setattr(memberTrend, colunmName, getattr(memberTrend, colunmName) + getattr(trendBySession, colunmName))
+            trendBySession.delete()
+    else:
+        if TrendBySession.objects.filter(sessionId=sessionId).exists():
+            memberTrend = TrendBySession.objects.get(sessionId=sessionId)
+        else:
+            memberTrend = TrendBySession(sessionId=sessionId)
+
     m = 1000
     if 2 * m < milliseconds < 60 * m:
-        if MemberTrend.objects.filter(member_id=id).count() == 1:
-            memberTrend = MemberTrend.objects.get(member_id=id)
-            setattr(memberTrend, category, getattr(memberTrend, category) + 1)
-            memberTrend.save()
-        else:
-            if TrendBySession.objects.filter(sessionId=id).count() == 1:
-                trendBySession = TrendBySession.objects.get(sessionId=id)
-            else:
-                trendBySession = TrendBySession(sessionId=id)
-
-            setattr(trendBySession, category, getattr(trendBySession, category) + 1)
-            trendBySession.save()
+        setattr(memberTrend, category, getattr(memberTrend, category) + 1)
+        memberTrend.save()
         return HttpResponse("count success")
 
     return HttpResponse("count failed : " + str(milliseconds) + " milliseconds in " + category + " category")

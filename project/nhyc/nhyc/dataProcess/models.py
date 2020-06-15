@@ -91,7 +91,7 @@ class TrendBySession(models.Model):
     transportation = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.member.id
+        return self.sessionId
 
 
 class FrequentPlace(models.Model):

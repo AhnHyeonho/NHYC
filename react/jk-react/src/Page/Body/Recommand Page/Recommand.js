@@ -12,18 +12,26 @@ class Recommand extends React.Component {
         this.state = {
             lati : '',
             long : '',
+            zoom : null,
         }
 
         this.receiveData = this.receiveData.bind(this);
     }
     
-    receiveData(lat, lon){
+    // 
+
+    // 테이블에서 쓰이는 함수 - 지도 위치 변경 시 
+    receiveData(lat, lon, level){
         console.log("최상위 컴포넌트")
+
+        console.log(level)
 
         this.setState({
             lati:lat,
-            long:lon
+            long:lon,
+            level: level
         })
+
     }
 
     render() {
@@ -40,7 +48,7 @@ class Recommand extends React.Component {
 
 
                 {/* 카카오 맵 */}
-                <KakaoMap className="kakao" latitude={this.state.lati} longitude={this.state.long} zoom={'7'} />
+                <KakaoMap className="kakao" latitude={this.state.lati} longitude={this.state.long} zoom={this.state.level} />
 
                 <DataBoard onChange={this.receiveData} sival="zz"/>
 

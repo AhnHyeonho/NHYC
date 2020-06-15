@@ -115,9 +115,9 @@ export default function RecommandTable(props) {
     const classes = useStyles();
 
 
-    function changeMap(lat, lon){
+    function changeMap(lat, lon, level){
        
-        props.changeMap(lat, lon);
+        props.changeMap(lat, lon, level);
     }
     
 
@@ -207,13 +207,13 @@ export default function RecommandTable(props) {
 
                             <StyledTableCell align="center" > {row.index} </StyledTableCell>
                             <StyledTableCell align="center"> {row.address} </StyledTableCell>
-                            <StyledTableCell align="center" ><button className="map-btn" onClick={()=>changeMap(row.latitude,row.longitude)}><RoomIcon style={{ fill: "#1976d2" }} /></button></StyledTableCell>
+                            <StyledTableCell align="center" ><button className="map-btn" onClick={()=>changeMap(row.latitude,row.longitude, 7)}><RoomIcon style={{ fill: "#1976d2" }} /></button></StyledTableCell>
                             <StyledTableCell align="center" ><a href={row.url}><LinkIcon style={{ fill: "#1976d2" }} /></a></StyledTableCell>
 
 
                             <StyledTableCell align="center">{row.index2}</StyledTableCell>
                             <StyledTableCell align="center">{row.address2}</StyledTableCell>
-                            <StyledTableCell align="center" ><button className="map-btn"  onClick={()=>changeMap(row.latitude2,row.longitude2)}><RoomIcon style={{ fill: "#1976d2" }} /></button></StyledTableCell>
+                            <StyledTableCell align="center" ><button className="map-btn"  onClick={()=>changeMap(row.latitude2,row.longitude2, 7)}><RoomIcon style={{ fill: "#1976d2" }} /></button></StyledTableCell>
                             <StyledTableCell align="center" ><a href={row.url}><LinkIcon style={{ fill: "#1976d2" }} /></a></StyledTableCell>
 
 

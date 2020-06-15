@@ -34,13 +34,13 @@ export default function RadarChart(props) {
   const [error, setError] = useState(null);
 
 
-
+  // 컬러 랜덤 생성 함수 
   var generateRandom = function (min, max) {
     var ranNum = Math.floor(Math.random() * (max - min + 1)) + min;
     return ranNum;
   }
 
-
+  // 데이터셋 가공 함수
   function generateDatasets(name) {
     const datalist = status;
     
@@ -48,6 +48,7 @@ export default function RadarChart(props) {
 
     const dataset = []
 
+    // 그래프 색깔 빨노초파보~
     const r = [241, 242, 188, 103, 165]
     const g = [95, 203, 229, 153, 102]
     const b = [95, 97, 92, 255, 255]
@@ -55,6 +56,7 @@ export default function RadarChart(props) {
     for (let i = 0; i < 5; i++) {
       const d = datalist[i]
 
+      // 그래프 컬러 랜덤으로 줄 때
       // const r = generateRandom(0, 255);
       // const g = generateRandom(0, 255);
       // const b = generateRandom(0, 255);
@@ -74,8 +76,6 @@ export default function RadarChart(props) {
     return dataset
 
   }
-
-
 
 
   useEffect(() => {

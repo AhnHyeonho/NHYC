@@ -59,9 +59,6 @@ function App() {
           )}
         />
 
-        
-
-
       </div>
 
       {/* footer */}

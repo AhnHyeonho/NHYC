@@ -1,33 +1,19 @@
 /* global kakao */
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import TextField from '@material-ui/core/TextField';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+import { Button } from '@material-ui/core';
 
-
-export default function TrafficSection(props) {
+export default function AddressForm() {
 
     const [inputPlace, setInputPlace] = useState(null);
-
-    // 목적지 이름
-    const [selectedPlace, setSelectedPlace] = useState(null);
-
-    // 목적지 좌표 설정
-    const [selectedLocation, setSelectedLocation] = useState({
-        x: null,
-        y: null
-    });
-
-    // 목적지 전체 정보 
-    const [destinationInfo, setDestinationInfo] = useState(null);
-
-    // 페이지정보
     const [pagi, setPagi] = useState(null);
-
-    function sendData(title, obj, x, y) {
-        props.getTrafficData(title, obj, x, y);
-    }
 
 
     /* ========== 카카오맵 검색 관련 function 시작 ========== */
-
 
     // 1. 키워드 검색을 요청하는 함수
     function searchPlaces(event) {
@@ -38,7 +24,7 @@ export default function TrafficSection(props) {
         var ps = new kakao.maps.services.Places();
 
         // input태그에 입력한 정보 받아옴
-        var keyword = document.getElementById('keyword').value;
+        var keyword = document.getElementById('frequent').value;
 
         if (!keyword.replace(/^\s+|\s+$/g, '')) {
             alert('키워드를 입력해주세요!');
@@ -51,10 +37,12 @@ export default function TrafficSection(props) {
     }
 
     function placesSearchCB(data, status, pagination) {
-
+        
         setPagi(pagination);
 
         if (status === kakao.maps.services.Status.OK) {
+
+            console.log(pagination)
 
             // 정상적으로 검색이 완료됐으면
             // 검색 목록과 마커를 표출합니다
@@ -81,7 +69,7 @@ export default function TrafficSection(props) {
     function displayPlaces(places) {
 
         var listEl = document.getElementById('placesList'),
-            menuEl = document.getElementById('menu_wrap'),
+            menuEl = document.getElementById('search_wrap'),
             fragment = document.createDocumentFragment(),
             bounds = new kakao.maps.LatLngBounds(),
             listStr = '';
@@ -90,7 +78,7 @@ export default function TrafficSection(props) {
         removeAllChildNods(listEl);
 
 
-        for (var i = 0; i < places.length; i++) {
+        for (var i = 0; i < places.length / 3; i++) {
 
             var itemEl = getListItem(i, places[i]); // 검색 결과 항목 Element를 생성합니다
 
@@ -99,28 +87,27 @@ export default function TrafficSection(props) {
 
                 // 리스트 아이템 리스너
                 itemEl.onmousedown = function () {
-                    
+
                     // 장소명, 장소 전체정보 담은 객체, 장소 좌표(위도, 경도)
-                    setSelectedPlace(title)
-                    setDestinationInfo(selectedListItem)
-                    setSelectedLocation({
-                        x: selectedListItem.x,
-                        y: selectedListItem.y
-                    })
+                    // setSelectedPlace(title)
+                    // setDestinationInfo(selectedListItem)
+                    // setSelectedLocation({
+                    //     x: selectedListItem.x,
+                    //     y: selectedListItem.y
+                    // })
 
-                    console.log(selectedListItem)
-                    sendData(title, selectedListItem, selectedListItem.x, selectedListItem.y)
+                    // sendData(title, selectedListItem, selectedListItem.x, selectedListItem.y)
 
+                    setInputPlace(title)
+
+                    // 리스트 아이템 삭제
                     removeAllChildNods(listEl)
-
-                    var paginationEl = document.getElementById('change-section')
-
-                    while (paginationEl.hasChildNodes()) {
-                        
-                        paginationEl.removeChild(paginationEl.lastChild);
-                    }
-
                     
+                    // 페이지 인덱스 삭제
+                    var paginationEl = document.getElementById('pagination')
+
+                    removeAllChildNods(paginationEl)
+
 
                 };
 
@@ -202,25 +189,50 @@ export default function TrafficSection(props) {
 
     /* ========== 카카오맵 검색 관련 function 끝 ========== */
 
-
-
     return (
-        <div className="map_wrap" id="change-section">
+        <React.Fragment>
 
-            <div id="menu_wrap" className="bg_white">
-                <div className="option">
-                    <div>
-                        <form onSubmit={searchPlaces}>
-                            키워드 : <input type="text" value={inputPlace || ''} id="keyword" size="15" onChange={e => { setInputPlace(e.target.value) }} />
-                            <button type="submit">검색하기</button>
-                        </form>
+            <br />
+            <Typography variant="h6" gutterBottom>자주가는 장소를 입력하세요.</Typography>
+
+            <Grid container >
+                <div className="map_wrap" id="change-section">
+                    <div id="search_wrap" className="bg_white">
+                        <div className="option">
+                            <div>
+                                <form onSubmit={searchPlaces}>
+                                    <Grid item xs={12} sm={12}>
+                                        <TextField
+                                            focused
+                                            required
+                                            id="frequent"
+                                            name="frequent-place"
+                                            label="거주 지역 추천에 사용됩니다! "
+                                            fullWidth
+                                            autoComplete="given-name"
+
+                                            // 기능 조작을 위한 attribute
+                                            type="text"
+                                            value={inputPlace || ''}
+                                            onChange={e => { setInputPlace(e.target.value) }}
+                                        />
+                                    </Grid>
+
+                                    <Grid item xs={3} sm={12}>
+
+                                        <Button type="submit">
+                                            select
+                                    </Button>
+                                    </Grid>
+                                </form>
+                            </div>
+                        </div>
                     </div>
+                    <hr />
+                    <ul id="placesList"></ul>
+                    <div id="pagination"></div>
                 </div>
-                <hr />
-                <ul id="placesList"></ul>
-                <div id="pagination"></div>
-            </div>
-        </div>
-    )
-
+            </Grid>
+        </React.Fragment>
+    );
 }

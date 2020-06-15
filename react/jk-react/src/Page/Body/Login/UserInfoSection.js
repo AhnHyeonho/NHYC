@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
@@ -23,9 +23,25 @@ const useStyles = makeStyles((theme) => ({
 
 
 
-export default function UserInfoSection() {
+export default function UserInfoSection(props) {
 
   const classes = useStyles();
+
+  const ageGroupLabel = ['1~9', '10~14', '15~19', '20~29', '30~39', '40~49', '50~59', '60~69', '70~79', '80~89', '90~'];
+
+  const [userInfo, setUserInfo] = useState({
+    id: '',
+    email: '',
+    password: '',
+    rePassword: '',
+    name: '',
+    sex: '',
+    ageGroup: '',
+    monthlyRent: '',
+    deposit: '',
+  });
+
+
 
   return (
     <React.Fragment>
@@ -40,9 +56,10 @@ export default function UserInfoSection() {
             required
             id="id"
             name="id"
-            label="Id"
+            label="아이디 (id)"
             fullWidth
             autoComplete="id"
+            onChange={e=> { props.handleUserInfo("id", e.target.value)}}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -50,9 +67,10 @@ export default function UserInfoSection() {
             required
             id="email"
             name="email"
-            label="E-Mail"
+            label="이메일 (e-mail)"
             fullWidth
             autoComplete="email"
+            onChange={e=> { props.handleUserInfo("email", e.target.value)}}
           />
         </Grid>
 
@@ -61,20 +79,23 @@ export default function UserInfoSection() {
             required
             id="password"
             name="password"
-            label="Password"
+            label="비밀번호 (password)"
             fullWidth
             autoComplete="password"
+            type="password"
+            onChange={e=> { props.handleUserInfo("password", e.target.value)}}
           />
         </Grid>
 
         <Grid item xs={12}>
           <TextField
             required
-            id="password"
-            name="password"
-            label="Password Confirm"
+            id="rePassword"
+            name="rePassword"
+            label="비밀번호 확인 (password confirm)"
             fullWidth
             autoComplete="password comfirm"
+            type="password"
           />
         </Grid>
 
@@ -83,43 +104,40 @@ export default function UserInfoSection() {
             required
             id="name"
             name="name"
-            label="Name"
+            label="이름 (name)"
             fullWidth
             autoComplete="name"
+            onChange={e=> { props.handleUserInfo("name", e.target.value)}}
           />
         </Grid>
-        
+
         <Grid item xs={12} sm={3}>
           {/* 성별 */}
           <FormControl className={classes.formControl}>
-            <InputLabel htmlFor="grouped-native-select">Sex</InputLabel>
-            <Select native defaultValue="" id="grouped-native-select">
+            <InputLabel htmlFor="grouped-native-select">성별</InputLabel>
+            <Select native defaultValue="" id="grouped-native-select" onChange={e=> { props.handleUserInfo("sex", e.target.value)}}>
+
               <option aria-label="None" value="" />
-              <optgroup label="Category 1">
-                <option value={1}>Option 1</option>
-                <option value={2}>Option 2</option>
-              </optgroup>
-              <optgroup label="Category 2">
-                <option value={3}>Option 3</option>
-                <option value={4}>Option 4</option>
-              </optgroup>
+              <option value={"f"} id="f">여자 (female)</option>
+              <option value={"m"} id="m">남자 (male)</option>
+
             </Select>
           </FormControl>
         </Grid>
         <Grid item xs={12} sm={3}>
           {/* 나이 */}
+
           <FormControl className={classes.formControl}>
-            <InputLabel htmlFor="grouped-select">Age Group</InputLabel>
-            <Select defaultValue="" id="grouped-select">
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              <ListSubheader>Category 1</ListSubheader>
-              <MenuItem value={1}>Option 1</MenuItem>
-              <MenuItem value={2}>Option 2</MenuItem>
-              <ListSubheader>Category 2</ListSubheader>
-              <MenuItem value={3}>Option 3</MenuItem>
-              <MenuItem value={4}>Option 4</MenuItem>
+            <InputLabel htmlFor="grouped-native-select">연령대</InputLabel>
+            <Select native defaultValue="" id="grouped-native-select" onChange={e=> { props.handleUserInfo("ageGroup",ageGroupLabel[e.target.value] ) } }>
+
+              <option aria-label="None" value="" />
+              {
+                ageGroupLabel.map((label, i) => (
+                <option key={i} value={i}>{label}</option>
+                ))
+              }
+
             </Select>
           </FormControl>
 
@@ -129,24 +147,20 @@ export default function UserInfoSection() {
           <TextField
             id="monthly"
             name="monthly"
-            label="Monthly Rent"
+            label="희망 월세 가격 (만원)"
             fullWidth
             autoComplete="monthly"
+            onChange={e=> { props.handleUserInfo("monthly", e.target.value)}}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <TextField
             id="deposit"
             name="deposit"
-            label="Deposit"
+            label="희망 보증금 가격 (만원)"
             fullWidth
             autoComplete="Deposit"
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <FormControlLabel
-            control={<Checkbox color="secondary" name="saveAddress" value="yes" />}
-            label="Use this address for payment details"
+            onChange={e=> { props.handleUserInfo("deposit", e.target.value)}}
           />
         </Grid>
       </Grid>

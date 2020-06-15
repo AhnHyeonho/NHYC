@@ -12,7 +12,8 @@ class KakaoMap extends React.Component {
         super(props);
         this.state={
             lat:0,
-            lon:0
+            lon:0,
+            level:0
         }
     }
 
@@ -33,7 +34,6 @@ class KakaoMap extends React.Component {
         };
 
         this.map = new kakao.maps.Map(container, options);
-
         
     }
 
@@ -41,7 +41,9 @@ class KakaoMap extends React.Component {
     setCenter() {            
         // 이동할 위도 경도 위치를 생성합니다 
         var moveLatLon = new kakao.maps.LatLng(this.props.latitude, this.props.longitude);
-        
+        this.map.setLevel(this.props.zoom)
+
+       
         // 지도 중심을 이동 시킵니다
         this.map.setCenter(moveLatLon);
     }

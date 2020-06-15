@@ -17,8 +17,6 @@ class CreateUserSerializer(serializers.ModelSerializer):
             name=validated_data["name"],
             email=validated_data["email"],
         )
-        memberTrend = MemberTrend(member=member)
-        memberTrend.save()
         return member
 
 

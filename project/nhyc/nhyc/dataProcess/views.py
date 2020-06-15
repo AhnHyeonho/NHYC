@@ -24,6 +24,7 @@ from .models import CostRecord
 from .models import FrequentPlace
 from .models import HouseInfo
 from .models import Member
+from .models import MemberTrend
 from .models import MemberInfo
 from .models import PoliceOffice
 from .models import SecurityLight
@@ -36,8 +37,6 @@ from .models import ConcertHall
 from .models import Gym
 from .models import Subway
 from .models import Bus
-
-from .managers import CustomUserManager
 
 naverClientId = "tw8yh1kfp6"
 naverClientPasswd = "Djx3jNQ1bbXODDxgZM9GS8XL391dPXB2VyxsbO2E"
@@ -59,6 +58,26 @@ class RegistrationAPI(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
+        memberTrend = MemberTrend(member=user)
+        memberTrend.save()
+        memberInfo = MemberInfo(member=user, gender=None, age_range=None, rentalFee=None, deposit=None)
+        if "gender" in request.headers:
+            gender = request.headers["gender"]
+            setattr(memberInfo, "gender", gender)
+
+        if "age_range" in request.data:
+            age_range = request.data["age_range"]
+            setattr(memberInfo, "age_range", age_range)
+
+        if "rentalFee" in request.data:
+            rentalFee = request.data["rentalFee"]
+            setattr(memberInfo, "rentalFee", rentalFee)
+
+        if "deposit" in request.data:
+            deposit = request.data["deposit"]
+            setattr(memberInfo, "deposit", deposit)
+        memberInfo.save()
+
         return Response(
             {
                 "user": UserSerializer(
@@ -76,6 +95,61 @@ class LoginAPI(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data
+        return Response(
+            {
+                "user": UserSerializer(
+                    user, context=self.get_serializer_context()
+                ).data,
+                "token": AuthToken.objects.create(user)[1],
+            }
+        )
+
+class KakaoLoginAPI(generics.GenericAPIView):
+    class Meta:
+        model = Member
+        fields = ("memberId", "name", "email", "password")
+        extra_kwargs = {"password": {"write_only": True}}
+
+    def post(self, request, *args, **kwargs):
+        accessToken = request.data["access_token"]
+        baseUrl = "https://kapi.kakao.com/v2/user/me"
+        authorization = "Bearer " + accessToken
+        propertyKeys = ["properties.nickname", "kakao_account.age_range", "kakao_account.gender"]
+        print(str(propertyKeys))
+
+        http = httplib2.Http()
+
+        response, content = http.request(baseUrl, method="POST", headers={"Authorization": authorization},
+                                         body="property_keys=" + str(propertyKeys))
+
+        content = content.decode("utf-8")
+        jsonData = json.loads(content)
+        print(jsonData)
+        if Member.objects.filter(memberId=jsonData["id"]).exists():
+            user = Member.objects.get(memberId=jsonData["id"])
+        else:
+            user = Member.objects.create_user(
+                memberId=jsonData["id"],
+                password="",
+                name=jsonData["properties"]["nickname"],
+                email=jsonData["kakao_account"].get("email", None),
+            )
+            memberTrend = MemberTrend(member=user)
+            memberTrend.save()
+            memberInfo = MemberInfo(member=user, gender=None, age_range=None, rentalFee=None, deposit=None)
+
+            if (jsonData["kakao_account"]["age_range_needs_agreement"] == "False" and jsonData["kakao_account"][
+                "has_age_range"] == "True"):
+                age_range = jsonData["kakao_account"]["age_range"]
+                setattr(memberInfo, "age_range", age_range)
+
+            if (jsonData["kakao_account"]["gender_needs_agreement"] == "False" and jsonData["kakao_account"][
+                "has_gender"] == "True"):
+                gender = jsonData["kakao_account"]["gender"]
+                setattr(memberInfo, "gender", gender)
+
+            memberInfo.save()
+
         return Response(
             {
                 "user": UserSerializer(

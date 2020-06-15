@@ -1,7 +1,6 @@
 from django.contrib.auth.base_user import BaseUserManager
 from django.utils.translation import ugettext_lazy as _
 
-
 class CustomUserManager(BaseUserManager):
     def create_user(self, memberId, email, name, password, **extra_fields):
         if not email:

@@ -822,7 +822,7 @@ def getPieChartData(request, gu, dong):
     culture_data['체육시설'] = round(addressInfo[0].rateGym, decimalPlaces)
     culture_data['공연장'] = round(addressInfo[0].rateConcertHall, decimalPlaces)
     culture_data['도서관'] = round(addressInfo[0].rateLibrary, decimalPlaces)
-    culture_data['박물관/미술관'] = round(addressInfo[0].rateCulturalFacility, decimalPlaces)
+    culture_data['전시회관'] = round(addressInfo[0].rateCulturalFacility, decimalPlaces)
 
     # 교통
     trans_data = OrderedDict()
@@ -1463,31 +1463,47 @@ def saveFrequentPlace(request):
 
 # ########################### ↓↓↓↓테스트 코드↓↓↓↓ ###########################
 @csrf_exempt
-def testQuery(request):
+def testQuery(request, gu, dong):
     '''
     :param request:
     :return:
     '''
-    request = json.loads(request.body)
 
-    memberId = request['id']
-    latitude = request['latitude']
-    longitude = request['longitude']
-    PlaceName = request['placeName']
-    gu = request['gu']
-    dong = request['dong']
+    addressInfo = AddressInfo.objects.get(gu=gu, dong=dong)
+    decimalPlaces = 4  # 소숫점 이하 자리수
 
-    querySet, created = FrequentPlace.objects.get_or_create(
-        id=Member.objects.get(id=memberId),
-        latitude=latitude,
-        longitude=longitude,
-        placeName=PlaceName,
-        areaCode=Address.objects.get(gu=gu, dong=dong)
-    )
-    querySet.save()
-    # return 해주는건 수정
-    return HttpResponse("SaveFrequentPlace done")
-    # return myJsonResponse(json_data)
+    # 치안
+    cctv = round(addressInfo.rateCCTV, decimalPlaces)
+    light = round(addressInfo.rateLight, decimalPlaces)
+    police = round(addressInfo.ratePolice, decimalPlaces)
+    safety = round((cctv + light + police) * 100 / 3, decimalPlaces)
+
+    # 생활
+    pharmacy = round(addressInfo.ratePharmacy, decimalPlaces)
+    market = round(addressInfo.rateMarket, decimalPlaces)
+    park = round(addressInfo.ratePark, decimalPlaces)
+    life = round((pharmacy + market + park) * 100 / 3, decimalPlaces)
+
+    # 문화
+    gym = round(addressInfo.rateGym, decimalPlaces)
+    concertHall = round(addressInfo.rateConcertHall, decimalPlaces)
+    library = round(addressInfo.rateLibrary, decimalPlaces)
+    culturalFacility = round(addressInfo.rateCulturalFacility, decimalPlaces)
+    culture = round((gym + concertHall + library + culturalFacility) * 100 / 4, decimalPlaces)
+
+    # 교통
+    subway = round(addressInfo.rateSubway, decimalPlaces)
+    bus = round(addressInfo.rateBus, decimalPlaces)
+    trans = round((subway + bus) * 100 / 2, decimalPlaces)
+
+    json_data = OrderedDict()
+    json_data['치안'] = safety
+    json_data['생활'] = life
+    json_data['문화'] = culture
+    json_data['교통'] = trans
+
+    # return HttpResponse("SaveFrequentPlace done")
+    return myJsonResponse(json_data)
 
 
 # def testQuery2(request):  # 각 구별 월세, 보증금 데이터 읽기.
@@ -1761,14 +1777,13 @@ def recommendation(request):
     trendsSorted = sorted(trends.items(), key=(lambda x: x[1]), reverse=True)
     points = setPoint(trendsSorted)
 
-
     addresses = AddressInfo.objects.all().annotate(
-        budget = ((F("avgRentalFee") * 12) + F("avgDeposit")) / 100 * points["budget"],
-        safety = (F("rateCCTV") + F("ratePolice") + F("rateLight")) * points["safety"] / 3,
-        life = (F("ratePharmacy") + F("rateMarket") + F("ratePark") + F("rateGym")) * points["life"] / 4,
-        culture = (F("rateConcertHall") + F("rateLibrary") + F("rateCulturalFacility")) * points["culture"] / 3,
-        transportation = (F("rateSubway") + F("rateBus")) * points["transportation"] / 2,
-        mean = (F("budget") + F("safety") + F("life") + F("culture") + F("transportation")) / 5
+        budget=((F("avgRentalFee") * 12) + F("avgDeposit")) / 100 * points["budget"],
+        safety=(F("rateCCTV") + F("ratePolice") + F("rateLight")) * points["safety"] / 3,
+        life=(F("ratePharmacy") + F("rateMarket") + F("ratePark") + F("rateGym")) * points["life"] / 4,
+        culture=(F("rateConcertHall") + F("rateLibrary") + F("rateCulturalFacility")) * points["culture"] / 3,
+        transportation=(F("rateSubway") + F("rateBus")) * points["transportation"] / 2,
+        mean=(F("budget") + F("safety") + F("life") + F("culture") + F("transportation")) / 5
     ).values("areaCode", "budget", "safety", "life", "culture", "transportation", "mean").order_by("-mean")
 
     dongs = []
@@ -1780,14 +1795,16 @@ def recommendation(request):
         pointOfCulture = addresses[i]["culture"]
         pointOfTransportation = addresses[i]["transportation"]
         dong = RecommendedDong(areaCode=areaCode, pointOfBudget=pointOfBudget, pointOfSafety=pointOfSafety,
-                        pointOfLife=pointOfLife, pointOfCulture=pointOfCulture,
-                        pointOfTransportation=pointOfTransportation)
+                               pointOfLife=pointOfLife, pointOfCulture=pointOfCulture,
+                               pointOfTransportation=pointOfTransportation)
         dong.save()
         dongs.append(dong)
 
     if Recommendation.objects.filter(memberTrend=memberTrend).count() == 0:
-        recommendation = Recommendation(memberTrend=memberTrend, pointOfBudget=points["budget"], pointOfSafety=points["safety"],
-                                        pointOfLife=points["life"], pointOfCulture=points["culture"], pointOfTransportation=points["transportation"],
+        recommendation = Recommendation(memberTrend=memberTrend, pointOfBudget=points["budget"],
+                                        pointOfSafety=points["safety"],
+                                        pointOfLife=points["life"], pointOfCulture=points["culture"],
+                                        pointOfTransportation=points["transportation"],
                                         dong1=dongs[0], dong2=dongs[1], dong3=dongs[2], dong4=dongs[3], dong5=dongs[4])
     else:
         recommendation = Recommendation.objects.get(memberTrend=memberTrend)
@@ -1823,24 +1840,27 @@ def setPoint(trendsSorted):
 
     return trendsPoints
 
+
 def getRecommendedDongList(request):
     memberId = request.headers["memberId"]
-    recommendation = Recommendation.objects.select_related("memberTrend")\
-        .select_related("dong1").select_related("dong2").select_related("dong3")\
+    recommendation = Recommendation.objects.select_related("memberTrend") \
+        .select_related("dong1").select_related("dong2").select_related("dong3") \
         .select_related("dong4").select_related("dong5").get(memberTrend__member_id=memberId)
 
-    dongs = [recommendation.dong1, recommendation.dong2, recommendation.dong3, recommendation.dong4, recommendation.dong5]
+    dongs = [recommendation.dong1, recommendation.dong2, recommendation.dong3, recommendation.dong4,
+             recommendation.dong5]
     dongToSend = []
     for i, dong in enumerate(dongs, 1):
         address = Address.objects.get(areaCode=dong.areaCode)
         info = {
-            "rank" : i,
-            "address" : address.si + " " + address.gu + " " + address.dong,
-            "latitude" : address.latitude,
-            "longitude" : address.longitude
+            "rank": i,
+            "address": address.si + " " + address.gu + " " + address.dong,
+            "latitude": address.latitude,
+            "longitude": address.longitude
         }
         dongToSend.append(info)
-    return myJsonResponse({"":dongToSend})
+    return myJsonResponse({"": dongToSend})
+
 
 def getRecommendedPoint(request):
     memberId = request.headers["memberId"]
@@ -1857,16 +1877,17 @@ def getRecommendedPoint(request):
         info = {
             "rank": i,
             "address": address.si + " " + address.gu + " " + address.dong,
-             "transportation": dong.pointOfTransportation,
-              "budget": dong.pointOfBudget,
-              "life": dong.pointOfLife,
-              "culture": dong.pointOfCulture,
-              "safety": dong.pointOfSafety
+            "transportation": dong.pointOfTransportation,
+            "budget": dong.pointOfBudget,
+            "life": dong.pointOfLife,
+            "culture": dong.pointOfCulture,
+            "safety": dong.pointOfSafety
 
         }
         points.append(info)
-    data = {"labels" : labels, "status" : points}
+    data = {"labels": labels, "status": points}
     return myJsonResponse([data])
+
 
 def getUserPoints(request):
     memberId = request.headers["memberId"]
@@ -1874,12 +1895,13 @@ def getUserPoints(request):
     labels = ["교통", "예산", "생활", "문화", "치안"]
     userName = Member.objects.get(id=recommendation.memberTrend.member).name
     dataSet = {"transportation": recommendation.pointOfTransportation,
-              "budget": recommendation.pointOfBudget,
-              "life": recommendation.pointOfLife,
-              "culture": recommendation.pointOfCulture,
-              "safety": recommendation.pointOfSafety}
-    data = {"labels" : labels, "username" : userName, "dataset" : dataSet}
+               "budget": recommendation.pointOfBudget,
+               "life": recommendation.pointOfLife,
+               "culture": recommendation.pointOfCulture,
+               "safety": recommendation.pointOfSafety}
+    data = {"labels": labels, "username": userName, "dataset": dataSet}
     return myJsonResponse(data)
+
 
 def getRoute(request):
     memberId = request.headers["memberId"]
@@ -1891,7 +1913,7 @@ def getRoute(request):
              recommendation.dong5]
     starts = FrequentPlace.objects.select_related("id").filter(id__memberId=memberId)
     url = "http://ws.bus.go.kr/api/rest/pathinfo/getPathInfoByBusNSub?serviceKey=jooMDUbQdPXfz9We%2BCA54k6P%2FwBFBviC%2FGnpipW0P%2FnnmgGfuTYjT%2BuEjxukjB78V42btkw3FkvLfhYHJd5Prg%3D%3D&"
-          #"startX=126.890001872801&startY=37.5757542035555&endX=127.04249040816&endY=37.5804217059895&"
+    # "startX=126.890001872801&startY=37.5757542035555&endX=127.04249040816&endY=37.5804217059895&"
     data = []
     for i, dong in enumerate(dongs, 1):
         endX = dong.areaCode.longitude
@@ -1901,7 +1923,8 @@ def getRoute(request):
             startX = start.longitude
             startY = start.latitude
             http = httplib2.Http()
-            finalurl = url + "startX=" + str(startX) + "&startY=" + str(startY) + "&endX=" + str(endX) + "&endY=" + str(endY)
+            finalurl = url + "startX=" + str(startX) + "&startY=" + str(startY) + "&endX=" + str(endX) + "&endY=" + str(
+                endY)
             response, content = http.request(finalurl, "GET")
             content = content.decode("utf-8")
             xmlData = xmltodict.parse(content)

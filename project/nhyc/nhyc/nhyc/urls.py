@@ -102,6 +102,7 @@ urlpatterns = [
     path('getBusCnt/<str:gu>/', stcViews.getBusCnt),
     path('getBusCnt/<str:gu>/<str:dong>/', stcViews.getBusCnt),
     path('getDongPoint/<str:gu>/<str:dong>/', stcViews.getDongPoint),
+    path('saveFrequentPlace', stcViews.saveFrequentPlace),
 
     path('getBubbleChartData', stcViews.getBubbleChartData),
     path('getBubbleChartData/<str:gu>', stcViews.getBubbleChartData),

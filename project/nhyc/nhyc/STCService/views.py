@@ -1992,8 +1992,11 @@ def getRoute(request):
             time = jsonData["result"]["path"][0]["info"]["totalTime"]
             if time / 60 > 0:
                 time = str(int(time / 60)) + "시간 " + str(time % 60) + "분"
+            type = "walk"
+            number = "도보"
+            latitude = startY
+            longitude = startX
             name = dong.areaCode.gu + " " + dong.areaCode.dong
-            path = {"type" : "walk", "name" : name, "번호" : "도보", "위도" : startY, "경도" : startX}
             route = name + " -> "
 
             for j, item in enumerate(items):
@@ -2007,7 +2010,6 @@ def getRoute(request):
                     number = number[0: idx]
                     latitude = item["startY"]
                     longitude = item["startX"]
-                    path = {"type" : type, "name": name, "번호": number, "시작위도": latitude, "시작경도": longitude}
                     route += number + "(" + name + " ~ " + item["endName"] + ")" + " -> "
 
                 elif item["trafficType"] == 2:
@@ -2020,20 +2022,22 @@ def getRoute(request):
                     number = number[0 : idx]
                     latitude = item["startY"]
                     longitude = item["startX"]
-                    path = {"type": type, "name": name, "번호": number, "위도": latitude, "경도": longitude}
+                    route += number + "(" + name + " ~ " + item["endName"] + ")" + " -> "
+
                 elif item["trafficType"] == 3:
                     if j != 0:
                         type = "walk"
+                        number = "도보"
                         latitude = items[j - 1]["endY"]
                         longitude = items[j - 1]["endX"]
                         name = items[j - 1]["endName"]
-                        path = {"type" : type, "name": name, "번호" : "도보", "위도": latitude, "경도": longitude}
 
+                path = {"type": type, "name": name, "번호": number, "위도": latitude, "경도": longitude}
                 routeDetail.append(path)
 
             name = end.placeName
             route += name
-            path = {"type" : "끗", "name": name, "호선" : "도착", "위도": endX, "경도": endY}
+            path = {"type" : "end", "name": name, "호선" : "도착", "위도": endX, "경도": endY}
             routeDetail.append(path)
 
         dataToSend = {"소요시간": time, "경로": route, "역정보": routeDetail}

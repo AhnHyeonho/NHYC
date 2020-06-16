@@ -1791,6 +1791,7 @@ def login(request):
         return HttpResponse("login fail")
 '''
 
+
 def count(request, category, milliseconds):
     sessionId = request.headers["sessionId"]
     if "memberId" in request.headers:
@@ -1802,7 +1803,8 @@ def count(request, category, milliseconds):
             for colunm in colunms:
                 colunmName = colunm.name
                 if colunmName is not "sessionId":
-                    setattr(memberTrend, colunmName, getattr(memberTrend, colunmName) + getattr(trendBySession, colunmName))
+                    setattr(memberTrend, colunmName,
+                            getattr(memberTrend, colunmName) + getattr(trendBySession, colunmName))
             trendBySession.delete()
     else:
         if TrendBySession.objects.filter(sessionId=sessionId).exists():
@@ -1963,43 +1965,79 @@ def getRoute(request):
 
     dongs = [recommendation.dong1, recommendation.dong2, recommendation.dong3, recommendation.dong4,
              recommendation.dong5]
-    starts = FrequentPlace.objects.select_related("id").filter(id__memberId=memberId)
+    ends = FrequentPlace.objects.select_related("id").filter(id__memberId=memberId)
     url = "http://ws.bus.go.kr/api/rest/pathinfo/getPathInfoByBusNSub?serviceKey=jooMDUbQdPXfz9We%2BCA54k6P%2FwBFBviC%2FGnpipW0P%2FnnmgGfuTYjT%2BuEjxukjB78V42btkw3FkvLfhYHJd5Prg%3D%3D&"
     # "startX=126.890001872801&startY=37.5757542035555&endX=127.04249040816&endY=37.5804217059895&"
     data = []
     for i, dong in enumerate(dongs, 1):
-        endX = dong.areaCode.longitude
-        endY = dong.areaCode.latitude
+        startX = dong.areaCode.longitude
+        startY = dong.areaCode.latitude
         dongData = []
-        for start in starts:
-            startX = start.longitude
-            startY = start.latitude
+        for end in ends:
+            endX = end.longitude
+            endY = end.latitude
             http = httplib2.Http()
-            finalurl = url + "startX=" + str(startX) + "&startY=" + str(startY) + "&endX=" + str(endX) + "&endY=" + str(
-                endY)
+            key = "lEe3GqYiy3oOIOLLwpPHWU52cIAGdumPSrGdbZIy5xg"
+            # finalurl = url + "startX=" + str(startX) + "&startY=" + str(startY) + "&endX=" + str(endX) + "&endY=" + str(endY)
+            finalurl = "https://api.odsay.com/v1/api/searchPubTransPath?SX=" + str(startX) + "&SY=" + str(
+                startY) + "&EX=" + str(endX) + "&EY=" + str(endY) + "&apiKey=" + key
+            print(finalurl)
             response, content = http.request(finalurl, "GET")
             content = content.decode("utf-8")
-            xmlData = xmltodict.parse(content)
-            jsonData = json.loads(json.dumps(xmlData, indent=4))
+            jsonData = json.loads(content)
             print(jsonData)
-            if jsonData["ServiceResult"]["msgHeader"]["headerCd"] == '0':
-                items = jsonData["ServiceResult"]["msgBody"]["itemList"][0]["pathList"]
-                route = ""
-                routeDetail = []
-                time = jsonData["ServiceResult"]["msgBody"]["itemList"][0]["time"]
-                if "fid" in items:
-                    items = [items]
-                for item in items:
-                    name = item["fname"]
-                    number = item["routeNm"]
-                    latitude = item["fy"]
-                    longitude = item["fx"]
-                    path = {"name" : name, "호선" : number, "위도" : latitude, "경도" : longitude}
-                    routeDetail.append(path)
-                    route += name + "(" + number + ")" + "->"
-                route = route[0 : len(route) - 2]
-                dataToSend = {"소요시간" : time, "경로" : route, "역정보" : routeDetail}
-                dongData.append(dataToSend)
-        data.append({"rank" : i, "route" : dongData})
+
+            items = jsonData["result"]["path"][0]["subPath"]
+            routeDetail = []
+            time = jsonData["result"]["path"][0]["info"]["totalTime"]
+            if time / 60 > 0:
+                time = str(int(time / 60)) + "시간 " + str(time % 60) + "분"
+            name = dong.areaCode.gu + " " + dong.areaCode.dong
+            path = {"type" : "walk", "name" : name, "번호" : "도보", "위도" : startY, "경도" : startX}
+            route = name + " -> "
+
+            for j, item in enumerate(items):
+                if item["trafficType"] == 1:
+                    type = "subway"
+                    name = item["startName"]
+                    number = ""
+                    for lane in item["lane"]:
+                        number += lane["name"] + ", "
+                    idx = len(number) - 2
+                    number = number[0: idx]
+                    latitude = item["startY"]
+                    longitude = item["startX"]
+                    path = {"type" : type, "name": name, "번호": number, "시작위도": latitude, "시작경도": longitude}
+                    route += number + "(" + name + " ~ " + item["endName"] + ")" + " -> "
+
+                elif item["trafficType"] == 2:
+                    type = "bus"
+                    name = item["startName"]
+                    number = ""
+                    for lane in item["lane"]:
+                        number += lane["busNo"] + "번, "
+                    idx = len(number) - 2
+                    number = number[0 : idx]
+                    latitude = item["startY"]
+                    longitude = item["startX"]
+                    path = {"type": type, "name": name, "번호": number, "위도": latitude, "경도": longitude}
+                elif item["trafficType"] == 3:
+                    if j != 0:
+                        type = "walk"
+                        latitude = items[j - 1]["endY"]
+                        longitude = items[j - 1]["endX"]
+                        name = items[j - 1]["endName"]
+                        path = {"type" : type, "name": name, "번호" : "도보", "위도": latitude, "경도": longitude}
+
+                routeDetail.append(path)
+
+            name = end.placeName
+            route += name
+            path = {"type" : "끗", "name": name, "호선" : "도착", "위도": endX, "경도": endY}
+            routeDetail.append(path)
+
+        dataToSend = {"소요시간": time, "경로": route, "역정보": routeDetail}
+        dongData.append(dataToSend)
+        data.append({"rank": i, "route": dongData})
 
     return myJsonResponse(data)

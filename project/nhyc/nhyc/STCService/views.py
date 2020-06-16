@@ -1987,6 +1987,8 @@ def getRoute(request):
                 route = ""
                 routeDetail = []
                 time = jsonData["ServiceResult"]["msgBody"]["itemList"][0]["time"]
+                if "fid" in items:
+                    items = [items]
                 for item in items:
                     name = item["fname"]
                     number = item["routeNm"]

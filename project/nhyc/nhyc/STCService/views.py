@@ -1897,7 +1897,7 @@ def getRecommendedDongList(request):
     memberId = request.headers["memberId"]
     recommendation = Recommendation.objects.select_related("memberTrend") \
         .select_related("dong1").select_related("dong2").select_related("dong3") \
-        .select_related("dong4").select_related("dong5").get(memberTrend__member_id=memberId)
+        .select_related("dong4").select_related("dong5").get(memberTrend__member_id__memberId=memberId)
 
     dongs = [recommendation.dong1, recommendation.dong2, recommendation.dong3, recommendation.dong4,
              recommendation.dong5]
@@ -1918,7 +1918,7 @@ def getRecommendedPoint(request):
     memberId = request.headers["memberId"]
     recommendation = Recommendation.objects.select_related("memberTrend") \
         .select_related("dong1").select_related("dong2").select_related("dong3") \
-        .select_related("dong4").select_related("dong5").get(memberTrend__member_id=memberId)
+        .select_related("dong4").select_related("dong5").get(memberTrend__member_id__memberId=memberId)
 
     labels = ["교통", "예산", "생활", "문화", "치안"]
     dongs = [recommendation.dong1, recommendation.dong2, recommendation.dong3, recommendation.dong4,
@@ -1943,9 +1943,9 @@ def getRecommendedPoint(request):
 
 def getUserPoints(request):
     memberId = request.headers["memberId"]
-    recommendation = Recommendation.objects.select_related("memberTrend").get(memberTrend__member_id=memberId)
+    recommendation = Recommendation.objects.select_related("memberTrend").get(memberTrend__member_id__memberId=memberId)
     labels = ["교통", "예산", "생활", "문화", "치안"]
-    userName = Member.objects.get(id=recommendation.memberTrend.member).name
+    userName = Member.objects.get(id=recommendation.memberTrend.member_id).name
     dataSet = {"transportation": recommendation.pointOfTransportation,
                "budget": recommendation.pointOfBudget,
                "life": recommendation.pointOfLife,

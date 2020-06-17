@@ -2037,7 +2037,7 @@ def getRoute(request):
 
             name = end.placeName
             route += name
-            path = {"type" : "end", "name": name, "호선" : "도착", "위도": endX, "경도": endY}
+            path = {"type" : "end", "name": name, "호선" : "도착", "위도": endY, "경도": endX}
             routeDetail.append(path)
 
         dataToSend = {"소요시간": time, "경로": route, "역정보": routeDetail}

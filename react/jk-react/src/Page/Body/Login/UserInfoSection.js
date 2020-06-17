@@ -29,20 +29,7 @@ export default function UserInfoSection(props) {
 
   const ageGroupLabel = ['1~9', '10~14', '15~19', '20~29', '30~39', '40~49', '50~59', '60~69', '70~79', '80~89', '90~'];
 
-  const [userInfo, setUserInfo] = useState({
-    id: '',
-    email: '',
-    password: '',
-    rePassword: '',
-    name: '',
-    sex: '',
-    ageGroup: '',
-    monthlyRent: '',
-    deposit: '',
-  });
-
-
-
+ 
   return (
     <React.Fragment>
 
@@ -54,17 +41,19 @@ export default function UserInfoSection(props) {
         <Grid item xs={12} sm={6}>
           <TextField
             required
+            error={props.validation.isId ? "" : "error"}
             id="id"
             name="id"
             label="아이디 (id)"
             fullWidth
             autoComplete="id"
-            onChange={e=> { props.handleUserInfo("id", e.target.value)}}
+            onChange={e=> {props.handleUserInfo("id", e.target.value)}}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <TextField
             required
+            error={props.validation.isEmail ? "" : "error"}
             id="email"
             name="email"
             label="이메일 (e-mail)"
@@ -77,6 +66,7 @@ export default function UserInfoSection(props) {
         <Grid item xs={12}>
           <TextField
             required
+            error={props.validation.TextField ? "" : "error"}
             id="password"
             name="password"
             label="비밀번호 (password)"
@@ -84,24 +74,28 @@ export default function UserInfoSection(props) {
             autoComplete="password"
             type="password"
             onChange={e=> { props.handleUserInfo("password", e.target.value)}}
+            
           />
         </Grid>
 
         <Grid item xs={12}>
           <TextField
             required
+            error={props.validation.passwordConfirm ? "" : "error"}
             id="rePassword"
             name="rePassword"
             label="비밀번호 확인 (password confirm)"
             fullWidth
             autoComplete="password comfirm"
             type="password"
+            onChange={e=> { props.handleUserInfo("passwordConfirm", e.target.value)}}
           />
         </Grid>
 
         <Grid item xs={12} sm={6}>
           <TextField
             required
+            error={props.validation.name ? "" : "error"}
             id="name"
             name="name"
             label="이름 (name)"

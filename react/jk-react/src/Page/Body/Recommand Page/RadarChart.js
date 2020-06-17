@@ -44,8 +44,6 @@ export default function RadarChart(props) {
   function generateDatasets(name) {
     const datalist = status;
     
-    console.log(datalist)
-
     const dataset = []
 
     // 그래프 색깔 빨노초파보~
@@ -99,11 +97,9 @@ export default function RadarChart(props) {
         const responseLabels = response.data[0].labels;
         const rawData = response.data[0].status;
 
-        console.log(rawData);
-
-
+        
         rawData.map(data => {
-          console.log("맵핑 데이터"+data)
+          
           setStatus(status => [
             ...status, {
               address: data.address,

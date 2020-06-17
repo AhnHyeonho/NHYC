@@ -93,10 +93,8 @@ const useStyles = makeStyles({
     },
 });
 
-const rows =[
-    createData(1, "서울시 강북구 5동", )
+const rows =[]
 
-]
 // let rows = []
 
 export default function RecommandTable(props) {

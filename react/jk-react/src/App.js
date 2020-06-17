@@ -34,16 +34,16 @@ function App() {
         <Route exact path='/' component={About} />
         <Route exact path='/about' component={About} />
         <Route path='/map' component={MapInfo} />
-        {/* <Route path='/recommand' component={Recommand} /> */}
+        <Route path='/recommand' component={Recommand} />
         {/* <Route path='/login' component={Login} /> */}
 
         {/* <Route path="/profile" component={Profile} /> */}
 
-        <AuthRoute
+        {/* <AuthRoute
           authenticated={authenticated}
           path="/recommand"
           render={props => <Recommand user={user} {...props} />}
-        />
+        /> */}
 
         <Route
           path="/login"

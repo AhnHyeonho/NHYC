@@ -1,0 +1,36 @@
+.traffic-subtitle-section {
+    line-height: 30px; 
+    display: table;
+}
+
+.decorate-bar-databoard {
+    display: inline-block;
+    background-color: #568fd7;
+    width: 5px;
+    height: 25px;
+    line-height: 1px;
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.recommand-route {
+    display: inline-block;
+}
+
+
+.detail-comment-sub {
+    background-color: #568fd7;
+    font-size: 14px;
+    display: table-cell;
+    vertical-align: bottom;
+}
+
+.traffic-deco-bar {
+    display: inline-block;
+    background-color: #568fd7;
+    width: 5px;
+    height: 25px;
+    line-height: 1px;
+    display: table-cell;
+    vertical-align: middle;
+}

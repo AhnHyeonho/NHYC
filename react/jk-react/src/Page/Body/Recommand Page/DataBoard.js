@@ -4,7 +4,8 @@ import React from 'react';
 import RecommandTable from './RecommandTable';
 import RadarChart from './RadarChart';
 import PreferRadar from './PreferRadar';
-import TrafficSection from './TrafficSection'; 
+import RecommandTraffic from './RecommandTraffic/RecommandTraffic'
+
 
 import './DataBoard.css';
 
@@ -20,7 +21,7 @@ class DataBoard extends React.Component {
 
             selectedPlace: null,
             destinationInfo: null
-            
+
         };
 
         this.changeMap = this.changeMap.bind(this)
@@ -87,20 +88,9 @@ class DataBoard extends React.Component {
                 {/* 4. 대중 교통 추천 섹션 */}
                 <div className="recommand-databoard-item">
                     <div className="recommand-databoard-item-title"> 추천지역 접근성 비교 </div>
-                    <div className="traffic-subtitle-section">
-                        <div className="decorate-bar-databoard" />
-                        <span className="recommand-databoard-item-subtitle">자주가는 장소 등록</span>
-
-                        <span className="detail-comment">자주가는 장소와 추천 지역간의 교통을 한눈에 확인하세요!</span>
-                    </div>
-
-                    <div className="traffic-search-result">
-                        <br />
-                        <div className="recommand-databoard-item-subtitle">목적지 <span className="destination-label">{this.state.selectedPlace}</span></div>
-                    </div>
-
-                    <TrafficSection getTrafficData={this.getTrafficData}/>
-
+                    
+                    <RecommandTraffic/>
+                
 
                 </div>
 

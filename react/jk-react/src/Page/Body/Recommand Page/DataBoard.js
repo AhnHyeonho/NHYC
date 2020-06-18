@@ -26,13 +26,17 @@ class DataBoard extends React.Component {
 
         this.changeMap = this.changeMap.bind(this)
         this.getTrafficData = this.getTrafficData.bind(this)
+        this.drawMap = this.drawMap.bind(this)
     }
 
 
-    changeMap(lat, lon, level) {
-        this.props.onChange(lat, lon, level)
+    changeMap(stationInfo, lat, lon, level) {
+        this.props.onChange(stationInfo, lat, lon, level)
     }
 
+    drawMap(stationInfo, departName, lat, lon, level) {
+        this.props.onChange(stationInfo, departName, lat, lon, level)
+    }
 
     getTrafficData(name, obj, y, x){
 
@@ -89,7 +93,7 @@ class DataBoard extends React.Component {
                 <div className="recommand-databoard-item">
                     <div className="recommand-databoard-item-title"> 추천지역 접근성 비교 </div>
                     
-                    <RecommandTraffic/>
+                    <RecommandTraffic drawMap={this.drawMap}/>
                 
 
                 </div>

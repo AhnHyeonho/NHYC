@@ -4,24 +4,43 @@ import './Recommand.css'
 import KakaoMap from './KakaoMap';
 import DataBoard from './DataBoard';
 
+import axios from 'axios';
+
 class Recommand extends React.Component {
     
     constructor(props){
         super(props);
 
         this.state = {
-            lati : '',
-            long : '',
-            zoom : null,
+            station: null,
+            name: '',
+            lati: 0,
+            long: 0,
+            level: 7
         }
 
         this.receiveData = this.receiveData.bind(this);
+        this.receiveStation = this.receiveStation.bind(this);
+
     }
-    
-    // 
+
+
+
+
+    requestRecommand(){
+
+        const url = 'http://ec2-52-78-44-165.ap-northeast-2.compute.amazonaws.com:8000/recommend';
+
+        const res = axios({
+            method: 'get',     //put
+            url: url,
+            data: ''
+          });
+
+    }
 
     // 테이블에서 쓰이는 함수 - 지도 위치 변경 시 
-    receiveData(lat, lon, level){
+    receiveData(stationInfo, lat, lon, level){
         console.log("최상위 컴포넌트")
 
         console.log(level)
@@ -32,6 +51,24 @@ class Recommand extends React.Component {
             level: level
         })
 
+    }
+
+    // 경로 정보 받는 함수 - 지도 보기 버튼 클릭했을 때
+    receiveStation(stationInfo, departName, lat, lon, level){
+        console.log("최상위 컴포넌트 - 스테이션")
+        console.log(level)
+        console.log(stationInfo)
+        console.log(departName)
+        console.log("=====")
+        
+
+        this.setState({
+            station: stationInfo,
+            name: departName,
+            lati: lat,
+            long: lon,
+            level: 11
+        })
     }
 
     render() {
@@ -48,9 +85,15 @@ class Recommand extends React.Component {
 
 
                 {/* 카카오 맵 */}
-                <KakaoMap className="kakao" latitude={this.state.lati} longitude={this.state.long} zoom={this.state.level} />
+                <KakaoMap className="kakao" 
+                    latitude={this.state.lati} 
+                    longitude={this.state.long} 
+                    zoom={this.state.level} 
+                    station={this.state.station}  
+                    name={this.state.name}    
+                />
 
-                <DataBoard onChange={this.receiveData} sival="zz"/>
+                <DataBoard onChange={this.receiveStation} />
 
             </div>
         )

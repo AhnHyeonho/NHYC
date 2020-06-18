@@ -68,8 +68,6 @@ export default function PreferRadar(props) {
     }
 
 
-
-
     useEffect(() => {
 
         const fetchLabels = async () => {

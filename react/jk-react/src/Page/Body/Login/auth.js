@@ -1,5 +1,5 @@
 const users = [
-    { email: "kim", password: "123", name: "Kim" },
+    { email: "dhdh3311", password: "kg001108!!", name: "김다현" },
     { email: "lee@test.com", password: "456", name: "Lee" },
     { email: "park@test.com", password: "789", name: "Park" },
 ]

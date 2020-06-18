@@ -113,9 +113,9 @@ export default function RecommandTable(props) {
     const classes = useStyles();
 
 
-    function changeMap(lat, lon, level){
+    function changeMap(set, name, lat, lon, level){
        
-        props.changeMap(lat, lon, level);
+        props.changeMap(null, name, lat, lon, level);
     }
     
 
@@ -146,9 +146,10 @@ export default function RecommandTable(props) {
 
 
                 resData.forEach(function (element, i, array) {
+                    
                     if (i < 5) {
                         rows[i] = createData(resRank[i], resAddr[i], resLat[i], resLon[i], resRank[i + 5], resAddr[i + 5], resLat[i + 5], resLon[i + 5]);
-                    }
+                    } 
 
                 });
 
@@ -205,13 +206,13 @@ export default function RecommandTable(props) {
 
                             <StyledTableCell align="center" > {row.index} </StyledTableCell>
                             <StyledTableCell align="center"> {row.address} </StyledTableCell>
-                            <StyledTableCell align="center" ><button className="map-btn" onClick={()=>changeMap(row.latitude,row.longitude, 7)}><RoomIcon style={{ fill: "#1976d2" }} /></button></StyledTableCell>
+                            <StyledTableCell align="center" ><button className="map-btn" onClick={()=>changeMap(null,row.address, row.latitude,row.longitude, 7)}><RoomIcon style={{ fill: "#1976d2" }} /></button></StyledTableCell>
                             <StyledTableCell align="center" ><a href={row.url}><LinkIcon style={{ fill: "#1976d2" }} /></a></StyledTableCell>
 
 
                             <StyledTableCell align="center">{row.index2}</StyledTableCell>
                             <StyledTableCell align="center">{row.address2}</StyledTableCell>
-                            <StyledTableCell align="center" ><button className="map-btn"  onClick={()=>changeMap(row.latitude2,row.longitude2, 7)}><RoomIcon style={{ fill: "#1976d2" }} /></button></StyledTableCell>
+                            <StyledTableCell align="center" ><button className="map-btn"  onClick={()=>changeMap(null, row.address2, row.latitude2,row.longitude2, 7)}><RoomIcon style={{ fill: "#1976d2" }} /></button></StyledTableCell>
                             <StyledTableCell align="center" ><a href={row.url}><LinkIcon style={{ fill: "#1976d2" }} /></a></StyledTableCell>
 
 

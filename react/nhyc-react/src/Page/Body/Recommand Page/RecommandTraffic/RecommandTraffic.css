@@ -1,0 +1,84 @@
+.traffic-subtitle-section {
+    line-height: 30px; 
+    display: table;
+}
+
+.decorate-bar-databoard {
+    display: inline-block;
+    background-color: #568fd7;
+    width: 5px;
+    height: 25px;
+    line-height: 1px;
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.recommand-route {
+    display: inline-block;
+}
+
+
+.detail-comment-sub {
+    background-color: #568fd7;
+    font-size: 14px;
+    display: table-cell;
+    vertical-align: bottom;
+}
+
+.traffic-deco-bar {
+    display: inline-block;
+    background-color: #568fd7;
+    width: 5px;
+    height: 25px;
+    line-height: 1px;
+    display: table-cell;
+    vertical-align: middle;
+}
+
+
+.detail-comment {
+    font-size: 14px;
+    display: table-cell;
+    vertical-align: top;
+    background-color: #568fd7;
+    color: white;
+}
+
+
+.recommand-databoard-item-subtitle2{
+    font-size: 18px;
+    padding-left: 3px;
+    padding-right: 10px;
+    padding-bottom: 5px;
+    display: table-cell;
+    vertical-align: middle;
+    font-weight: 500;
+    color: #568fd7;
+
+}
+
+
+.draw-line-btn {
+    width:100px;
+
+    background-color: #f8585b;
+
+    border: none;
+
+    color:#fff;
+
+    padding: 5px 0;
+
+    text-align: center;
+
+    text-decoration: none;
+
+    display: inline-block;
+
+    font-size: 15px;
+
+    margin: 4px;
+
+    cursor: pointer;
+
+}

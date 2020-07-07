@@ -1,0 +1,27 @@
+.row{
+    background-color: orangered;
+    color: white;
+}
+
+.col{
+    color: orangered;
+}
+
+.guName{
+    width: 60vw;
+    height: 8vh;
+    background-color: orangered;
+    font-size: 6px;
+    background: orangered;
+    margin-bottom: 0;
+}
+
+.fo{
+    font-size: 1.3em;
+}
+
+
+.btn-orangered.btn.Ripple-parent.btn-lg.guName{
+    margin: 1%;
+    box-shadow: 0 0 2px 0 rgba(0,0,0,0.16), 0 0px 2px 0 rgba(0,0,0,0.12);
+}

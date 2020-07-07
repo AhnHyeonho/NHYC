@@ -1,0 +1,167 @@
+.app-body-mapinfo-wrapper{
+    
+    position: relative;
+    max-width: 100%;
+    height:100%;
+    text-align: center;
+
+}
+
+.app-body-mapinfo{
+    background-color : white;
+    position: absolute;
+    width:75%;
+    height: 90%;
+    left: 12.5%;
+    top:3vh;
+    z-index: 10;
+    
+}
+
+.mapinfo-header{
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    height: 10%;
+    background-color: white;
+}
+
+.header{
+    position: absolute;
+    display: inline-block;
+    
+}
+
+
+.header.bar{
+    width:0.4vw;
+    height: 5vh;
+    top: 1.8vh;
+    left:0%;
+    background-color:rgb(33, 76, 196);
+    opacity: 0.6;
+}
+
+.header.Seoul{
+    width: 10%;
+    height: fit-content;
+    top:2.1vh;
+    left:0;
+    font-size: 1.5em;
+    color: gray;
+    font-family: YoonGodic360;
+}
+
+.header.SeoulComent{
+    width: 20%;
+    height: fit-content;
+    top:3.8vh;
+    left:7.5%;
+    font-size: 1em;
+    color:rgb(33, 76, 196);
+    font-family: YoonGodic360;
+}
+
+.map-section-container{
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    height: 51.7vh;
+    top: 6vh;
+    background-color: white;
+    border: 1.2px solid #1976D2;
+    
+}
+
+.seoulMap{
+    position: absolute;
+    display: inline-block;
+}
+
+.seoulMap.mapImg-container{
+    width:70%;
+    height: 100%;
+    top:0;
+    left:0%;
+
+    background-color:white;
+    
+}
+
+
+
+div.seoulMap.guList{
+    width:30%;
+    height: 51.7vh;
+    top:0;
+    right: 0%;
+    background-color:#1976D2;
+    opacity: 0.9;
+    
+}
+
+.guList-label{
+    position: relative;
+    display: block;
+    width: 93%;
+    height:15%;
+    top:1%;
+    left:4.8%;
+    background-color: white;
+    
+
+}
+
+.guList-label-content{
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #1976D2;
+    position: relative;
+    top:15%;
+    left: 0;
+    font-family: YoonGodic360;
+    
+
+}
+
+@font-face {
+    font-family: YoonGodic360;
+    src: url("../../fonts/YoonGodic/윤고딕360.ttf") format("woff");
+    font-style: normal;
+}
+
+
+
+
+.guList-container{
+    background-color:#1976D2;
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 80%;
+    top: 2%;
+    
+    
+
+}
+
+
+
+
+
+
+.chart-section-container{
+
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    height: 70%;
+    top:5vh;
+    background-color:white;
+    border: 4px gray;
+
+}
+
+.App-Header{
+    height: 10vh;
+}

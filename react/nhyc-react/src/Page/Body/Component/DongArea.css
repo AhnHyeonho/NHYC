@@ -1,0 +1,150 @@
+.line_dong {
+    background-color: rgb(33, 76, 196);
+    display: inline-block;
+    width: 10px;
+    height: 50px;
+    vertical-align: text-bottom;
+    opacity: 0.7;
+}
+
+.title_dong {
+    vertical-align: middle;
+    display: inline-block;
+
+    font-size:1.5em;
+    font-weight: bold;
+    color: gray;
+
+    margin-left: 1vw;
+    position: relative;
+    bottom: 0.8vh;
+
+}
+
+.dong-show{
+    display: inline;
+    position: relative;
+    left:0;
+}
+
+
+
+.title-wrapper{
+    text-align: left;
+}
+
+.blank{
+    height: 10vh;
+}
+
+
+.card-wrapper{
+    width: 100%;
+    margin: 10px auto;
+
+}
+
+.card1{
+    float: left; 
+    width: 33%;
+    padding-bottom: 50px;
+}
+
+
+
+.card-background {
+    position: relative;
+    top: 3vh;
+    left: 0;
+    width: 350px;
+    height: 460px;
+    border-radius: 18px;
+    background-color: rgba(255, 218, 208, 0.52);
+    text-align: center;
+    display: inline-block;
+  }
+
+
+
+
+
+.Rectangle {
+    position: absolute;
+    top:3.5vh;
+    left:1.3vw;
+    margin-bottom: 3.5vh;
+    width: 308px;
+    height: 53px;
+    background-color: #ffbdab;
+    text-align: center;
+    
+  }
+
+
+  .texting {
+    width: 229px;
+    height: 45px;
+    font-family: AppleSDGothicNeo;
+    font-size: 26px;
+    font-weight: 400;
+    color: white;
+    position: relative;
+    left: 2.5vw;
+    top:1vh;
+  }
+
+
+  .policeImg{
+      width: 50%;
+      position: relative;
+      top: 5vh;
+      left: 1vw;
+     
+  }
+
+
+  .pinImg{
+      width: 9%;
+      position: relative;
+      top: 14vh;
+      left: 3vw;
+  }
+
+  .content1-background {
+    width: 308px;
+    height: 111px;
+    background-color: white;
+    position: relative;
+    top: 8vh;
+    
+
+  }
+
+  .content-text{
+    width: 160px;
+    height: 45px;
+    font-family: AppleSDGothicNeo;
+    font-size: 17px;
+    font-weight: 600;
+    color: #919191;
+    position: relative;
+    left: 4.8vw;
+    top:2vh;
+  }
+
+
+.content-count{
+
+    position: relative;
+    bottom: 1.5vh;
+    font-weight: bold;
+    font-size: 30px;
+}
+
+
+
+.horizonLine-section{
+    width: 1350vw;
+    height: 1vh;
+    color: #568fd7;
+}

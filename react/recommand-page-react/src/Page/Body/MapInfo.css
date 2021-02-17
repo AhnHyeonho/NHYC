@@ -1,0 +1,163 @@
+.app-body-mapinfo-wrapper{
+    background-color:white;
+    position: relative;
+    max-width: 100%;
+    height:100%;
+    text-align: center;
+
+}
+
+.app-body-mapinfo{
+    background-color : white;
+    position: absolute;
+    width:75%;
+    height: 90%;
+    left: 12.5%;
+    top:10%;
+    z-index: 10;
+    
+}
+
+.mapinfo-header{
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    height: 10%;
+    background-color: white;
+}
+
+.header{
+    position: absolute;
+    display: inline-block;
+}
+
+
+.header.bar{
+    width:1%;
+    height: 100%;
+    top:0%;
+    left:0%;
+    background-color: orangered;
+}
+
+.header.Seoul{
+    width: 10%;
+    height: fit-content;
+    top:30%;
+    left:1%;
+    font-size: 2em;
+    color: gray;
+}
+
+.header.SeoulComent{
+    width: 20%;
+    height: fit-content;
+    top:60%;
+    left:9%;
+    font-size: 1em;
+    color:orangered;
+}
+
+.map-section-container{
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    height: 65%;
+    background-color: white;
+    border: 1px solid gray;
+    
+}
+
+.seoulMap{
+    position: absolute;
+    display: inline-block;
+}
+
+.seoulMap.mapImg-container{
+    width:70%;
+    height: 100%;
+    top:0%;
+    left:0%;
+
+    background-color:white;
+    
+}
+
+.mapImg{
+    position: relative;
+    top:5%;
+    left:3vw;
+}
+
+.mapImg.info{
+    width: 30%;
+    height: 50%;
+    left: 0;
+    
+}
+
+.seoulMap.guList{
+    width:30%;
+    height: 100%;
+    top:0%;
+    right: 0%;
+    background-color: orangered;
+    
+}
+
+.guList-label{
+    position: relative;
+    display: block;
+    width: 98%;
+    height:15%;
+    top:1%;
+    left:1%;
+    background-color: white;
+
+}
+
+.guList-label-content{
+    font-size: 1.5em;
+    font-weight: bold;
+    color: orangered;
+    position: absolute;
+    top:25%;
+    left: 40%;
+
+}
+
+.guList-container{
+    background-color: orangered;
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 80%;
+    top: 2%;
+    left: 0;
+    
+
+}
+
+
+
+
+.monthly-section-container{
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    height: 70%;
+    background-color: blue;
+    border: 4px gray;
+    
+}
+
+.chart-section-container{
+
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    height: 70%;
+    background-color: blue;
+    border: 4px gray;
+
+}

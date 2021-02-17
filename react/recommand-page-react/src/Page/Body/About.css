@@ -1,0 +1,95 @@
+.app-body-about{
+    position: relative;
+    max-width: 100%;
+    height:100%;
+}
+
+.logo-image-wrapper-wrapper{
+    position: absolute;
+    display: inline-block;
+    top: 25vh;
+    left : 35vw;
+}
+
+.logo-image-wrapper{
+    position: relative;
+    text-align: center;
+    width: 30vw;
+}
+
+.logo1{
+    max-width: 30%;
+    max-height: 30%;
+}
+
+.middle-bar-image-wrapper-wrapper{
+    position: absolute;
+    display: inline-block;
+    top: 35vh;
+    left : 35vw;
+}
+
+.middle-bar-image-wrapper{
+    position: relative;
+    text-align: center;
+    width: 30vw;
+}
+
+
+.middle-bar{
+    max-width: 10%;
+    max-height: 20%;
+}
+
+.content-wrapper{
+    position: absolute;
+    display: inline-block;
+    top: 40vh;
+    left : 35vw;
+    color: white;
+}
+
+
+.content{
+    position: relative;
+    text-align: center;
+    width: 30vw;  
+}
+
+
+
+
+
+
+
+
+.button1-image-wrapper-wrapper{
+    position: absolute;
+    display: inline-block;
+    top: 55vh;
+    left : 35vw;
+}
+
+.button1-image-wrapper{
+    position: relative;
+    text-align: center;
+    width: 30vw;
+}
+
+.button1{
+    max-width: 30%;
+    max-height: 30%;
+}
+
+.background-image{
+    width: 100%;
+    height: 100%;
+    Align-Items: center;
+    Justify-Content: center;
+}
+
+
+.carousel-indicators {
+    top:45vh;
+  }
+

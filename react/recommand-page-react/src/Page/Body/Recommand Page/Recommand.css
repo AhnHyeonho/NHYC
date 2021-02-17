@@ -1,0 +1,65 @@
+/* 전체 페이지 틀 */
+.recommand-page-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 0px;
+    padding-left: 100px;
+    padding-right: 100px;
+}
+
+
+
+/* title section */
+.recommand-page-section-title {
+    position: relative;
+    /* div 내부 vertical-align 주는 방법 - display, align-items 동시에 주기 */
+    display: flex;
+    align-items: center;
+    margin-top: 80px;
+    margin-bottom: 20px;
+}
+
+
+/* 상단 타이틀 오렌지색 바 */
+.decorate-bar {
+    display: inline-block;
+    background-color: #568fd7;
+    width: 7px;
+    height: 30px;
+    line-height: 1px;
+}
+
+.recommand-page.map{
+    display: inline-block;
+}
+
+.recommand-databoard {
+    display: inline-block;
+    height: fit-content;
+}
+
+/* .recommand-map {
+    display: inline-block;
+} */
+
+.kakao {
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+}
+
+.accent-name {
+    font-size: 24px;
+    font-weight: 400;
+}
+
+.title {
+    font-size: 20px;
+}
+
+/* 빈칸 스타일  */
+.blank {
+    width: 10px;
+    height: 25px;
+}

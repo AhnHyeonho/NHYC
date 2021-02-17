@@ -1,0 +1,49 @@
+{
+  "name": "hanbang",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.3.2",
+    "@testing-library/user-event": "^7.1.2",
+    "axios": "^0.19.2",
+    "bootstrap": "^4.4.1",
+    "canvasjs": "^1.8.3",
+    "chart.js": "^2.9.3",
+    "jquery": "^3.4.1",
+    "popper.js": "^1.16.1",
+    "react": "^16.13.1",
+    "react-addons-css-transition-group": "^15.6.2",
+    "react-addons-transition-group": "^15.6.2",
+    "react-bootstrap": "^1.0.0",
+    "react-canvas-js": "^1.0.1",
+    "react-chartjs-2": "^2.9.0",
+    "react-dom": "^16.13.1",
+    "react-kakao-maps": "Musma/react-kakao-maps#0.0.1",
+    "react-scripts": "3.4.0",
+    "react-vis": "^1.11.7",
+    "reactstrap": "^8.4.1",
+    "tether": "^1.4.7"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

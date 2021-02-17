@@ -1,0 +1,21 @@
+.fas fa-arrow-circle-left{
+    color: tomato;
+    width: 5vw;
+    height: 5vh;
+}
+
+.mapImg.info{
+    position: absolute;
+    width: 50%;
+    height: 30%;
+    left: 2%;
+    top:31%;
+ 
+
+
+}
+.mapImg{
+    position: relative;
+    top:5%;
+    left:12vw;
+}

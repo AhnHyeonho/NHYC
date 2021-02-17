@@ -1,0 +1,134 @@
+.line {
+    background-color: rgb(33, 76, 196);
+    display: inline-block;
+    width: 8px;
+    height: 50px;
+    vertical-align: text-bottom;
+    opacity: 0.6;
+}
+
+.line-dongtotal{
+    background-color: rgb(33, 76, 196);
+    display: inline-block;
+    width: 8px;
+    height: 50px;
+    margin-left: 10px;
+    opacity: 0.6;
+
+}
+
+.title {
+    vertical-align: middle;
+    display: inline-block;
+
+    font-size:1.5em;
+    font-weight: bold;
+    color: gray;
+
+    margin-left: 1vw;
+    position: relative;
+    bottom: 0.8vh;
+
+}
+
+.graph {
+    display: inline;
+    position: relative;
+    left:0;
+}
+
+
+
+.graph-title{
+    text-align: left;
+}
+
+.blank{
+    height: 10vh;
+}
+
+
+.btn-group-sm{
+    display: inline-block;
+    position: absolute;
+    left: 17vw;
+    top: 2vh;
+    width: 20vw;
+    border: 0;
+    outline: 0;
+}
+
+.btn-group-d{
+    display: inline-block;
+    position: absolute;
+    left: 7vw;
+    top: 2vh;
+    width: 35vw;
+
+    border: 0;
+    outline: 0;
+}
+
+.btn-group-g{
+    display: inline-block;
+    position: absolute;
+    left: 19.5vw;
+    top: 2vh;
+    width: 20vw;
+
+    border: 0;
+    outline: 0;
+}
+
+
+.btn-group-d.c{
+    background-color:rgb(33, 76, 196);
+    color: white;
+    
+    font-family: YoonGodic320;
+    font-size: 0.8em;
+    opacity: 0.6;
+    
+    box-shadow: 0 0 2px 0 rgba(0,0,0,0.16), 0 0px 2px 0 rgba(0,0,0,0.12);
+}
+
+
+.btn.btn-sm.c{
+    background-color:rgb(33, 76, 196);
+    color: white;
+    font-family: YoonGodic320;
+    font-size: 0.8em;
+    opacity: 0.6;
+    
+    box-shadow: 0 0 2px 0 rgba(0,0,0,0.16), 0 0px 2px 0 rgba(0,0,0,0.12);
+
+}
+
+
+.selection_Graph{
+    position: relative;
+    left: 5vw;
+}
+
+
+.securityBarTotal{
+    display: inline;
+}
+
+.lifeBarTotal{
+    display: inline;
+}
+
+.barcontainer{
+    display: inline-block;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+
+@font-face{
+    font-family: "YoonGodic320";
+    src: url("../../../fonts/YoonGodic/윤고딕320.ttf") format("woff");
+    font-style: normal;
+    
+}

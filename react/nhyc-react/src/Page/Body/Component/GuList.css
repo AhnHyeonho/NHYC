@@ -1,0 +1,33 @@
+
+
+
+
+div.row{
+    background-color: #1976D2;
+    color: white;
+    padding-left: 0;
+}
+
+
+.col{
+    background-color: #1976D2;
+
+}
+.guName{
+    width: 60vw;
+    height: 8vh;
+    background-color: rgb(33, 76, 196);
+    font-size: 6px;
+    background: rgb(33, 76, 196);
+    margin-bottom: 0;
+}
+
+.fo{
+    font-size: 1.3em;
+}
+
+
+.btn-blue.btn.Ripple-parent.btn-lg.guName{
+    margin: 0%;
+    box-shadow: 0 0 2px 0 rgba(0,0,0,0.16), 0 0px 2px 0 rgba(0,0,0,0.12);
+}

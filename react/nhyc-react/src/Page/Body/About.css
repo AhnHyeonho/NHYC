@@ -1,0 +1,243 @@
+.app-body-about{
+    position: relative;
+    max-width: 100%;
+    height:100%;
+}
+
+.logo-image-wrapper-wrapper{
+    position: absolute;
+    display: inline-block;
+    top: 30vh;
+    left : 35vw;
+}
+
+.carousel.slide{
+    position: absolute;
+    z-index: 0;
+}
+
+.linkTest{
+    position: relative;
+    display: inline-block;
+    top: 200px;
+    left : 32vw;;
+    z-index: 100;
+}
+
+.logo-image-wrapper{
+    position: relative;
+    text-align: center;
+    width: 30vw;
+}
+
+.coment-wrapper{
+    position: relative;
+    text-align: center;
+    width: 50vw;
+    right: 9vw;
+
+}
+
+.rankingImg{
+    max-width: 30%;
+    max-height: 30%;
+    position: relative;
+    bottom: 22vh;
+}
+
+.middle-bar-image-wrapper-wrapper{
+    position: absolute;
+    display: inline-block;
+    top: 35vh;
+    left : 35vw;
+}
+
+.middle-bar-image-wrapper{
+    position: relative;
+    text-align: center;
+    width: 30vw;
+}
+
+
+.middle-bar{
+    max-width: 10%;
+    max-height: 20%;
+}
+
+.content-wrapper{
+    position: absolute;
+    display: inline-block;
+    top: 47vh;
+    left : 32vw;
+    color: white;
+    font-family: YoonGodic360;
+    font-size: 1.2em;
+    
+}
+
+
+.content{
+    position: relative;
+    text-align: center;
+    width: 30vw;  
+}
+
+
+.containerAbout{
+    position: absolute;
+    top: 60vh;
+    left:44.75%;
+}
+
+
+
+
+
+
+.button1-image-wrapper-wrapper{
+    position: absolute;
+    display: inline-block;
+    top: 55vh;
+    left : 44.5vw;
+}
+
+.button1-image-wrapper{
+    position: relative;
+    text-align: center;
+    width: 30vw;
+}
+
+.button1{
+    max-width: 30%;
+    max-height: 30%;
+}
+
+.background-image{
+    width: 100%;
+    height: 100%;
+    Align-Items: center;
+    Justify-Content: center;
+}
+
+.background-image2{
+    width: 100%;
+    height: 100%;
+    Align-Items: center;
+    Justify-Content: center;
+
+}
+
+
+.carousel-indicators {
+    top:45vh;
+  }
+
+
+
+.logoAbout{
+
+    color: white;
+    font-family: myriad-bold;
+    font-size: 3.2em;
+
+}
+
+.comentAbout{
+
+    color: white;
+    font-size: 1.5em;
+    position: relative;
+    bottom: 17vh;
+    font-family: YoonGodic360;
+
+}
+
+.comentAbout_c{
+
+    color: white;
+    font-family: myriad-bold;
+    font-size: 1em;
+    position: relative;
+    bottom: 8vh;
+    font-family: YoonGodic360;
+
+}
+
+
+
+
+
+
+.barAbout{
+    width: 10vw;
+    height: 0.2vh;
+    background-color:#4999df;
+    position: relative;
+    left: 32%;
+    top: 6vh;
+    opacity: 0.5;
+}
+
+
+.carousel-indicators li{
+    position: relative;
+    top:40vh;
+}
+
+
+
+
+.btn.expand, .expand-on-hover {
+    padding: 1em 2em 1em 3.5em;
+    max-width: 14em;
+    width: auto;
+
+}
+
+
+
+.blue {
+    background-image: linear-gradient(147deg, rgb(75, 138, 167) 0%, rgba(54, 43, 148, 0.795) 74%);
+    opacity: 0.8;
+  }
+
+.textAbout{
+    font: YoonGodic320;
+    color: white;
+    font-size: 1em;
+    
+
+}
+
+
+
+
+
+
+@font-face {
+    font-family: "YoonGodic320";
+    src: url("../../fonts/YoonGodic/윤고딕320.ttf") format("woff");
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "YoonGodic360";
+    src: url("../../fonts/YoonGodic/윤고딕360.ttf") format("woff");
+    font-style: normal;
+}
+
+@font-face{
+    font-family: "myriad-bold";
+    src: url("../../fonts/myriad-pro/MYRIADPRO-BOLD.OTF") format("woff");
+    font-style: normal;
+    
+}
+
+@font-face{
+    font-family: "myriad-regular";
+    src: url("../../fonts/myriad-pro/MYRIADPRO-REGULAR.OTF") format("woff");
+    font-style: normal;
+    
+}
+
+

@@ -4,7 +4,7 @@ distlib==0.3.0
 Django==3.0.7
 django-cors-headers==3.3.0
 django-filter==2.2.0
-djangorestframework==3.11.0
+djangorestframework==3.11.2
 filelock==3.0.12
 httplib2==0.18.1
 Markdown==3.2.2
